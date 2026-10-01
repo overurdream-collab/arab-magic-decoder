@@ -9,7 +9,7 @@ const WMI: Record<string, string> = {
 };
 const YEARS = "ABCDEFGHJKLMNPRSTVWXY123456789";
 
-export type VinResult = { valid: boolean; error?: string; make?: string; year?: number; vin: string };
+export type VinResult = { valid: boolean; error?: string | undefined; make?: string | undefined; year?: number | undefined; vin: string };
 
 export function decodeVin(raw: string): VinResult {
   const vin = raw.trim().toUpperCase();
@@ -17,7 +17,7 @@ export function decodeVin(raw: string): VinResult {
   if (/[IOQ]/.test(vin) || !/^[A-Z0-9]+$/.test(vin))
     return { valid: false, vin, error: "رقم الهيكل يحتوي حروفًا غير مسموحة" };
   const make = WMI[vin.slice(0, 3)] ?? WMI[vin.slice(0, 2)];
-  const idx = YEARS.indexOf(vin[9]);
+  const idx = YEARS.indexOf(vin[9] ?? "");
   let year: number | undefined;
   if (idx >= 0) {
     year = 2010 + idx;

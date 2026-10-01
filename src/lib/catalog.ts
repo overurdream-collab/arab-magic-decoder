@@ -20,7 +20,7 @@ export async function fetchMakes() {
   return data;
 }
 
-export type SearchArgs = { q?: string; category?: string; model?: string; year?: number };
+export type SearchArgs = { q?: string | undefined; category?: string | undefined; model?: string | undefined; year?: number | undefined };
 
 export async function searchParts(a: SearchArgs) {
   let partIds: string[] | null = null;

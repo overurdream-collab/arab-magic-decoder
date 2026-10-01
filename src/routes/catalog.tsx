@@ -23,7 +23,7 @@ export const Route = createFileRoute("/catalog")({
   component: Catalog,
 });
 
-type Row = PartRow & { seller_offers: (PartRow["seller_offers"][number] & { quality_grade: string; sellers: { city: string } | null })[] };
+type Row = Omit<PartRow, "seller_offers"> & { seller_offers: (PartRow["seller_offers"][number] & { quality_grade: string; sellers: { city: string } | null })[] };
 
 function Catalog() {
   const s = Route.useSearch();
