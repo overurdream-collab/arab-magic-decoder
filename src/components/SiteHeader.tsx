@@ -12,6 +12,7 @@ export function SiteHeader() {
         <nav className="flex gap-5 text-sm font-semibold">
           <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "text-primary" }}>الرئيسية</Link>
           <Link to="/catalog" activeProps={{ className: "text-primary" }}>الكتالوج</Link>
+          <Link to="/garage" activeProps={{ className: "text-primary" }}>سياراتي</Link>
         </nav>
       </div>
     </header>
