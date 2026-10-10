@@ -194,7 +194,8 @@ function AddVehicle({ userId, first, onDone }: { userId: string; first: boolean;
   );
 }
 
-type V = NonNullable<ReturnType<typeof useQuery<any>>["data"]>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type V = any;
 function VehicleCard({ v, userId, onActive, onChange }: { v: V; userId: string; onActive: () => void; onChange: () => void }) {
   const [km, setKm] = useState(String(v.current_mileage));
   const [logOpen, setLogOpen] = useState(false);
