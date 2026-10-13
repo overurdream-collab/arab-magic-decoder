@@ -121,7 +121,7 @@ function Catalog() {
         <h1 className="mb-1 text-2xl font-black">النتائج</h1>
         {s.model && (
           <p className="mb-4 text-sm font-semibold text-primary">
-            ✓ معروض فقط ما يتوافق مع سيارتك{s.year ? ` (${s.year})` : ""}
+            قائمة مرشحة حسب بيانات توافق أولية؛ أكّد الملاءمة مع التاجر{s.year ? ` (${s.year})` : ""}
           </p>
         )}
         {isLoading ? (
