@@ -1,0 +1,32 @@
+name: Qitaa Browser Smoke
+on:
+  push:
+    branches: [feat/qitaa-phase1-seller-admin-review]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  anonymous-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Install browser test runner
+        run: bun add -d @playwright/test
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+      - name: Start app
+        run: |
+          bun run dev --host 127.0.0.1 --port 4173 > /tmp/qitaa-dev.log 2>&1 &
+          echo $! > /tmp/qitaa-dev.pid
+          for i in $(seq 1 50); do
+            if curl -fsS http://127.0.0.1:4173/ -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/qitaa-dev.log
+          exit 1
+      - name: Smoke-check public and authenticated entry routes
+        run: bunx playwright test tests/browser/public.spec.ts --reporter=line
