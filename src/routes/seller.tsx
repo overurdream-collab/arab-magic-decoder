@@ -60,7 +60,7 @@ function SellerPage() {
 }
 
 function SellerGate({ userId }: { userId: string }) {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["my-seller", userId],
     queryFn: async () => {
       const [s, a] = await Promise.all([
@@ -76,6 +76,7 @@ function SellerGate({ userId }: { userId: string }) {
       return { seller: s.data, apps: a.data };
     },
   });
+  if (isError) return <p role="alert" className="text-destructive">تعذّر التحقق من صلاحية التاجر. حاول تسجيل الدخول مجددًا.</p>;
   if (isLoading || !data)
     return <p className="text-muted-foreground">جارٍ التحقق من حساب التاجر…</p>;
   if (data.seller?.is_verified) return <Dashboard seller={data.seller} />;
