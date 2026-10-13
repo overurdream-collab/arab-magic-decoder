@@ -558,13 +558,15 @@ function LogForm({
     notes: "",
   });
   const [busy, setBusy] = useState(false);
+  const [saveError, setSaveError] = useState("");
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     const km = Number(f.km);
     const due = new Date();
     due.setMonth(due.getMonth() + Number(f.months || 0));
-    await supabase.from("vehicle_maintenance_logs").insert({
+    setSaveError("");
+    const { error: logError } = await supabase.from("vehicle_maintenance_logs").insert({
       vehicle_id: vehicleId,
       user_id: userId,
       service_type: f.type,
@@ -575,8 +577,23 @@ function LogForm({
       cost_total: f.cost ? Number(f.cost) : null,
       notes: f.notes || null,
     });
-    if (km > mileage)
-      await supabase.from("customer_vehicles").update({ current_mileage: km }).eq("id", vehicleId);
+    if (logError) {
+      setSaveError("تعذّر حفظ سجل الصيانة. تحقق من صلاحيات الحساب وحاول مرة أخرى.");
+      setBusy(false);
+      return;
+    }
+    if (km > mileage) {
+      const { error: mileageError } = await supabase
+        .from("customer_vehicles")
+        .update({ current_mileage: km })
+        .eq("id", vehicleId)
+        .eq("user_id", userId);
+      if (mileageError) {
+        setSaveError("حُفظت الصيانة، لكن تعذّر تحديث العداد. حدّث عداد السيارة يدويًا.");
+        setBusy(false);
+        return;
+      }
+    }
     setBusy(false);
     onDone();
   }
@@ -644,6 +661,7 @@ function LogForm({
         value={f.visc}
         onChange={(e) => setF({ ...f, visc: e.target.value })}
       />
+      {saveError && <p role="alert" className="col-span-2 text-sm text-destructive">{saveError}</p>}
       <button className={`${btn} col-span-2`} disabled={busy}>
         حفظ السجل
       </button>
