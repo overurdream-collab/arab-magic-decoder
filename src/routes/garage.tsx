@@ -199,7 +199,7 @@ type V = any;
 function VehicleCard({ v, userId, onActive, onChange }: { v: V; userId: string; onActive: () => void; onChange: () => void }) {
   const [km, setKm] = useState(String(v.current_mileage));
   const [logOpen, setLogOpen] = useState(false);
-  const logs = [...v.vehicle_maintenance_logs].sort((a: any, b: any) => b.service_date.localeCompare(a.service_date));
+  const logs = [...v.vehicle_maintenance_logs].sort((a, b) => b.service_date.localeCompare(a.service_date));
   const last = logs[0];
   const s = last ? status(v.current_mileage, last) : null;
 
@@ -254,7 +254,7 @@ function VehicleCard({ v, userId, onActive, onChange }: { v: V; userId: string; 
         <div className="mt-4 border-t pt-3">
           <p className="mb-2 text-sm font-bold">سجل الصيانة</p>
           <ul className="space-y-2 text-sm">
-            {logs.map((l: any) => (
+            {logs.map((l) => (
               <li key={l.id} className="flex justify-between gap-2">
                 <span>{SERVICE[l.service_type] ?? l.service_type}{l.product_details?.oil_brand && ` · ${l.product_details.oil_brand} ${l.product_details.viscosity ?? ""}`}</span>
                 <span className="text-muted-foreground">{l.service_date} · {l.current_mileage.toLocaleString("ar")} كم</span>
