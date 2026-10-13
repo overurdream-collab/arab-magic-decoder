@@ -1,0 +1,37 @@
+name: Qitaa DB Security
+on:
+  push:
+    branches:
+      - feat/qitaa-phase1-seller-admin-review
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  postgres-rls-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ephemeral-test-only
+          POSTGRES_DB: qitaa_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d qitaa_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ephemeral-test-only
+      PGDATABASE: qitaa_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply baseline migrations in disposable database
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/bootstrap.sql
+      - name: Assert marketplace and garage row-level permissions
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/seller_rls.sql
