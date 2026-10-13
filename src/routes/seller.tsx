@@ -5,6 +5,7 @@ import { Store, Search, Plus, Pencil, Clock, XCircle, LogOut, ShieldCheck } from
 import { supabase } from "@/integrations/supabase/client";
 import { AuthBox, useSession } from "@/components/AuthBox";
 import { QUALITY, CONDITION, fmtYER } from "@/lib/catalog";
+import { SELLER_TYPES } from "@/lib/seller-types";
 
 export const Route = createFileRoute("/seller")({
   head: () => ({
@@ -22,10 +23,6 @@ export const Route = createFileRoute("/seller")({
 
 const input = "w-full rounded-lg border border-input bg-background px-3 py-2 text-sm";
 const btn = "rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50";
-export const SELLER_TYPES: Record<string, string> = {
-  new_parts: "قطع غيار جديدة", used_parts: "تشليح / مستعمل", tires: "إطارات وجنوط",
-  batteries: "بطاريات", oils: "زيوت وسوائل", accessories: "إكسسوارات وزينة",
-};
 
 function SellerPage() {
   const { session, ready } = useSession();
@@ -46,7 +43,7 @@ function SellerGate({ userId }: { userId: string }) {
     queryKey: ["my-seller", userId],
     queryFn: async () => {
       const [s, a] = await Promise.all([
-        supabase.from("sellers").select("*").eq("owner_id", userId).maybeSingle(),
+        supabase.from("sellers").select("*").eq("owner_id", userId).limit(1).maybeSingle(),
         supabase.from("seller_applications").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
       ]);
       if (s.error) throw s.error; if (a.error) throw a.error;
@@ -140,7 +137,7 @@ function Dashboard({ seller }: { seller: Seller }) {
       <CatalogPicker onPick={(p) => setEditing({ partId: p.id, partName: p.name_ar, form: emptyOffer(used) })} />
 
       {editing && (
-        <OfferEditor sellerId={seller.id} state={editing} onClose={() => setEditing(null)}
+        <OfferEditor key={editing.id ?? editing.partId} sellerId={seller.id} state={editing} onClose={() => setEditing(null)}
           onSaved={() => { setEditing(null); qc.invalidateQueries({ queryKey: ["my-offers", seller.id] }); }} />
       )}
 
