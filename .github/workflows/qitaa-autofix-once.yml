@@ -1,0 +1,31 @@
+name: Temporary Qitaa source formatter
+on:
+  push:
+    branches:
+      - feat/qitaa-phase1-seller-admin-review
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.repository == 'overurdream-collab/arab-magic-decoder'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Fix source formatting and safe ESLint autofixes
+        run: bunx eslint src --fix
+      - name: Commit source-formatting changes on isolated review branch
+        run: |
+          git add -u src/
+          if ! git diff --cached --quiet; then
+            git config user.name 'Qitaa Format Bot'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'style: normalize source formatting with project ESLint rules'
+            git push origin HEAD:feat/qitaa-phase1-seller-admin-review
+          fi
