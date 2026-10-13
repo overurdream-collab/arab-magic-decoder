@@ -45,7 +45,7 @@ export async function searchParts(a: SearchArgs) {
   let q = supabase
     .from("catalog_parts")
     .select(
-      "id,oem_number,name_ar,name_en,is_featured,category_id,categories(name_ar,icon),seller_offers(price_yer,condition,quality_grade,is_active,sellers(city,name))",
+      "id,oem_number,name_ar,name_en,is_featured,category_id,categories(name_ar,icon),seller_offers(price_yer,condition,quality_grade,is_active,sellers(city,name,is_verified))",
     );
   if (partIds) q = q.in("id", partIds);
   if (a.category) q = q.eq("category_id", a.category);
@@ -55,7 +55,11 @@ export async function searchParts(a: SearchArgs) {
   }
   const { data, error } = await q.limit(60);
   if (error) throw error;
-  return data;
+  // Defense in depth: an unverified shop must not appear in public price comparisons.
+  return data.map((part) => ({
+    ...part,
+    seller_offers: part.seller_offers.filter((offer) => offer.is_active && offer.sellers?.is_verified),
+  }));
 }
 
 export async function fetchPart(id: string) {
@@ -67,5 +71,11 @@ export async function fetchPart(id: string) {
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
-  return data;
+  if (!data) return null;
+  return {
+    ...data,
+    seller_offers: data.seller_offers.filter(
+      (offer) => offer.is_active && offer.sellers?.is_verified,
+    ),
+  };
 }
