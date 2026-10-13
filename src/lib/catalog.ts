@@ -58,7 +58,9 @@ export async function searchParts(a: SearchArgs) {
   // Defense in depth: an unverified shop must not appear in public price comparisons.
   return data.map((part) => ({
     ...part,
-    seller_offers: part.seller_offers.filter((offer) => offer.is_active && offer.sellers?.is_verified),
+    seller_offers: part.seller_offers.filter(
+      (offer) => offer.is_active && offer.sellers?.is_verified,
+    ),
   }));
 }
 

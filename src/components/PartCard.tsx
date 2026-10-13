@@ -26,7 +26,12 @@ export function PartCard({ p, condition }: { p: PartRow; condition?: string }) {
     >
       <div className="mb-3 grid h-24 place-items-center rounded-lg bg-accent text-primary">
         {p.image_url ? (
-          <img loading="lazy" src={p.image_url} alt={p.name_ar} className="h-24 w-full object-contain" />
+          <img
+            loading="lazy"
+            src={p.image_url}
+            alt={p.name_ar}
+            className="h-24 w-full object-contain"
+          />
         ) : (
           <Package className="h-10 w-10" />
         )}

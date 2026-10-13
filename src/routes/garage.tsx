@@ -661,7 +661,11 @@ function LogForm({
         value={f.visc}
         onChange={(e) => setF({ ...f, visc: e.target.value })}
       />
-      {saveError && <p role="alert" className="col-span-2 text-sm text-destructive">{saveError}</p>}
+      {saveError && (
+        <p role="alert" className="col-span-2 text-sm text-destructive">
+          {saveError}
+        </p>
+      )}
       <button className={`${btn} col-span-2`} disabled={busy}>
         حفظ السجل
       </button>

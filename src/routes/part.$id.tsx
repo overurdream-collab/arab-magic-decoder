@@ -17,9 +17,18 @@ export const Route = createFileRoute("/part/$id")({
 
 function PartPage() {
   const { id } = Route.useParams();
-  const { data: p, isLoading, isError } = useQuery({ queryKey: ["part", id], queryFn: () => fetchPart(id) });
+  const {
+    data: p,
+    isLoading,
+    isError,
+  } = useQuery({ queryKey: ["part", id], queryFn: () => fetchPart(id) });
   if (isLoading) return <p className="p-10 text-center text-muted-foreground">جارٍ التحميل…</p>;
-  if (isError) return <p role="alert" className="p-10 text-destructive">تعذر تحميل تفاصيل القطعة.</p>;
+  if (isError)
+    return (
+      <p role="alert" className="p-10 text-destructive">
+        تعذر تحميل تفاصيل القطعة.
+      </p>
+    );
   if (!p)
     return (
       <p className="p-10 text-center">
@@ -39,7 +48,12 @@ function PartPage() {
       <div className="grid gap-8 md:grid-cols-[1fr_1.4fr]">
         <div className="grid h-64 place-items-center overflow-hidden rounded-2xl bg-accent text-primary">
           {p.image_url ? (
-            <img src={p.image_url} alt={p.name_ar} loading="lazy" className="h-full w-full object-contain" />
+            <img
+              src={p.image_url}
+              alt={p.name_ar}
+              loading="lazy"
+              className="h-full w-full object-contain"
+            />
           ) : (
             <Package className="h-24 w-24" />
           )}
@@ -76,7 +90,10 @@ function PartPage() {
             </dl>
           )}
           <h3 className="mt-5 font-bold">السيارات المرشحة لهذه القطعة (بيانات أولية)</h3>
-          <p className="mt-2 text-sm text-muted-foreground">توافق السيارة ودرجة جودة القطعة لم يتم التحقق منهما من مصدر مصنع رسمي. أكّد رقم القطعة والهيكل مع البائع قبل الشراء.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            توافق السيارة ودرجة جودة القطعة لم يتم التحقق منهما من مصدر مصنع رسمي. أكّد رقم القطعة
+            والهيكل مع البائع قبل الشراء.
+          </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {p.part_fitments.map((f, i) => (
               <span
