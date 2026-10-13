@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Shield, Check, X, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthBox, useSession } from "@/components/AuthBox";
-import { SELLER_TYPES } from "./seller";
+import { SELLER_TYPES } from "@/lib/seller-types";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -69,12 +69,19 @@ function Applications() {
     },
   });
   async function act(id: string, approve: boolean) {
-    const note = approve ? null : window.prompt("سبب الرفض (اختياري)") ?? null;
-    const { error } = approve
-      ? await supabase.rpc("approve_seller_application", { _app_id: id })
-      : await supabase.rpc("reject_seller_application", { _app_id: id, _note: note ?? undefined });
-    setMsg(error ? `خطأ: ${error.message}` : approve ? "تمت الموافقة وإنشاء متجر موثّق." : "تم رفض الطلب.");
-    qc.invalidateQueries({ queryKey: ["admin-apps"] });
+    // Each RPC has a different return type. Handle separately to keep TS inference correct.
+    if (approve) {
+      const { error } = await supabase.rpc("approve_seller_application", { _app_id: id });
+      if (error) { setMsg(`خطأ: ${error.message}`); return; }
+      setMsg("تمت الموافقة وإنشاء متجر موثّق.");
+    } else {
+      const note = window.prompt("سبب الرفض (اختياري)");
+      if (note === null) return; // Cancel means no server-side action.
+      const { error } = await supabase.rpc("reject_seller_application", { _app_id: id, _note: note });
+      if (error) { setMsg(`خطأ: ${error.message}`); return; }
+      setMsg("تم رفض الطلب.");
+    }
+    await qc.invalidateQueries({ queryKey: ["admin-apps"] });
   }
   return (
     <div className="space-y-3">
