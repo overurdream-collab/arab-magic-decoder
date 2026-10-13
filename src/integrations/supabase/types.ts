@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -234,6 +234,71 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      seller_applications: {
+        Row: {
+          business_name: string
+          city: string
+          commercial_register: string | null
+          created_at: string
+          district: string | null
+          id: string
+          notes: string | null
+          phone: string
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seller_id: string | null
+          seller_type: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_name: string
+          city: string
+          commercial_register?: string | null
+          created_at?: string
+          district?: string | null
+          id?: string
+          notes?: string | null
+          phone: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_id?: string | null
+          seller_type?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_name?: string
+          city?: string
+          commercial_register?: string | null
+          created_at?: string
+          district?: string | null
+          id?: string
+          notes?: string | null
+          phone?: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_id?: string | null
+          seller_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_applications_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seller_offers: {
         Row: {
@@ -496,12 +561,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_seller_application: {
+        Args: { _app_id: string; _note?: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      reject_seller_application: {
+        Args: { _app_id: string; _note?: string }
+        Returns: undefined
       }
     }
     Enums: {

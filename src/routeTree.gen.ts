@@ -10,13 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as GarageRouteImport } from './routes/garage'
+import { Route as SellerRouteImport } from './routes/seller'
 import { Route as PartIdRouteImport } from './routes/part.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogRoute = CatalogRouteImport.update({
@@ -29,6 +36,11 @@ const GarageRoute = GarageRouteImport.update({
   path: '/garage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SellerRoute = SellerRouteImport.update({
+  id: '/seller',
+  path: '/seller',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PartIdRoute = PartIdRouteImport.update({
   id: '/part/$id',
   path: '/part/$id',
@@ -37,35 +49,50 @@ const PartIdRoute = PartIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/catalog': typeof CatalogRoute
   '/garage': typeof GarageRoute
+  '/seller': typeof SellerRoute
   '/part/$id': typeof PartIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/catalog': typeof CatalogRoute
   '/garage': typeof GarageRoute
+  '/seller': typeof SellerRoute
   '/part/$id': typeof PartIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/catalog': typeof CatalogRoute
   '/garage': typeof GarageRoute
+  '/seller': typeof SellerRoute
   '/part/$id': typeof PartIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/catalog' | '/garage' | '/part/$id'
+  fullPaths: '/' | '/admin' | '/catalog' | '/garage' | '/seller' | '/part/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/catalog' | '/garage' | '/part/$id'
-  id: '__root__' | '/' | '/catalog' | '/garage' | '/part/$id'
+  to: '/' | '/admin' | '/catalog' | '/garage' | '/seller' | '/part/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/catalog'
+    | '/garage'
+    | '/seller'
+    | '/part/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   CatalogRoute: typeof CatalogRoute
   GarageRoute: typeof GarageRoute
+  SellerRoute: typeof SellerRoute
   PartIdRoute: typeof PartIdRoute
 }
 
@@ -76,6 +103,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog': {
@@ -92,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GarageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/seller': {
+      id: '/seller'
+      path: '/seller'
+      fullPath: '/seller'
+      preLoaderRoute: typeof SellerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/part/$id': {
       id: '/part/$id'
       path: '/part/$id'
@@ -104,8 +145,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   CatalogRoute: CatalogRoute,
   GarageRoute: GarageRoute,
+  SellerRoute: SellerRoute,
   PartIdRoute: PartIdRoute,
 }
 export const routeTree = rootRouteImport
