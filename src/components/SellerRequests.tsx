@@ -46,7 +46,7 @@ export function SellerRequests({ sellerId }: { sellerId: string }) {
     const { error } = await supabase.rpc("seller_respond_to_request", {
       _request_id: id,
       _action: action,
-      _note: note,
+      _note: note ?? "",
     });
     setProcessing("");
     if (error) {
