@@ -7,7 +7,11 @@ export type CatalogCsvItem = {
 };
 
 export const CATALOG_HEADERS = [
-  "oem_number", "name_ar", "name_en", "category_slug", "alt_numbers",
+  "oem_number",
+  "name_ar",
+  "name_en",
+  "category_slug",
+  "alt_numbers",
 ] as const;
 
 /** Minimal RFC-4180-compatible parser (quoted delimiters, escaped quotes, newlines). */
@@ -21,17 +25,21 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
   for (let i = 0; i < input.length; i++) {
     const ch = input[i];
     if (quoted) {
-      if (ch === '"' && input[i + 1] === '"') { field += '"'; i++; }
-      else if (ch === '"') quoted = false;
+      if (ch === '"' && input[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (ch === '"') quoted = false;
       else field += ch;
     } else if (ch === '"') {
       if (field.length) throw new Error("تنسيق علامات الاقتباس في CSV غير صالح.");
       quoted = true;
     } else if (ch === ",") {
-      row.push(field.trim()); field = "";
+      row.push(field.trim());
+      field = "";
     } else if (ch === "\n" || ch === "\r") {
       if (ch === "\r" && input[i + 1] === "\n") i++;
-      row.push(field.trim()); field = "";
+      row.push(field.trim());
+      field = "";
       if (row.some((x) => x !== "")) lines.push(row);
       row = [];
     } else field += ch;
@@ -51,10 +59,12 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
     const record = Object.fromEntries(headers.map((h, k) => [h, values[k]]));
     const item = Object.fromEntries(CATALOG_HEADERS.map((h) => [h, record[h]])) as CatalogCsvItem;
     item.oem_number = item.oem_number.toUpperCase();
-    if (!/^[A-Z0-9][A-Z0-9._/ -]{1,79}$/.test(item.oem_number)) throw new Error(`OEM غير صحيح في الصف ${i + 2}.`);
+    if (!/^[A-Z0-9][A-Z0-9._/ -]{1,79}$/.test(item.oem_number))
+      throw new Error(`OEM غير صحيح في الصف ${i + 2}.`);
     if (seen.has(item.oem_number)) throw new Error(`رقم OEM مكرر: ${item.oem_number}.`);
     seen.add(item.oem_number);
-    if (item.name_ar.length < 2 || item.name_en.length < 2 || !item.category_slug) throw new Error(`بيانات ناقصة في الصف ${i + 2}.`);
+    if (item.name_ar.length < 2 || item.name_en.length < 2 || !item.category_slug)
+      throw new Error(`بيانات ناقصة في الصف ${i + 2}.`);
     return item;
   });
 }
