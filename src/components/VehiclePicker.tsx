@@ -30,7 +30,9 @@ export function VehiclePicker() {
     setMake(mk.id);
     setModel("");
     setYear("");
-    setVinErr(`تم التعرف مبدئيًا على الشركة: ${mk.name_ar}. سنة الصنع غير مؤكدة؛ اختر الموديل والسنة يدويًا.`);
+    setVinErr(
+      `تم التعرف مبدئيًا على الشركة: ${mk.name_ar}. سنة الصنع غير مؤكدة؛ اختر الموديل والسنة يدويًا.`,
+    );
   };
 
   return (
