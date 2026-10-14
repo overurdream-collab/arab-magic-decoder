@@ -5,13 +5,10 @@ SELECT public.record_zero_result_search('فحمات فرامل');
 SELECT public.record_zero_result_search('1HGCM82633A004352') AS ignored_vin \gset
 SELECT public.record_zero_result_search('ahmed@example.com') AS ignored_email \gset
 RESET ROLE;
-DO $
-BEGIN
- IF (SELECT COUNT(*) FROM public.search_gap_counts WHERE term='فحمات فرامل' AND hits=2)<>1
- THEN RAISE EXCEPTION 'search gap aggregation wrong'; END IF;
- IF (SELECT COUNT(*) FROM public.search_gap_counts)<>1
- THEN RAISE EXCEPTION 'private identifier was recorded'; END IF;
-END $;
+SELECT 1 / CASE WHEN
+ (SELECT COUNT(*) FROM public.search_gap_counts WHERE term='فحمات فرامل' AND hits=2)=1
+ AND (SELECT COUNT(*) FROM public.search_gap_counts)=1
+ THEN 1 ELSE 0 END AS privacy_aggregate_ok;
 SET ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
 DO $$
