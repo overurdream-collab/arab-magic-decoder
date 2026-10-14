@@ -15,4 +15,4 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - name: Verify offline vehicle staging and negative cases
-        run: bun test tests/vehicle-reference.test.ts
+        run: bun test tests/vehicle-reference.test.ts tests/meterapp-adapter.test.ts
