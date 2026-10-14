@@ -1,0 +1,32 @@
+name: Qitaa HTTP Smoke
+on:
+  push:
+    branches: [feat/qitaa-phase1-seller-admin-review]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  anonymous-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Start Vite app
+        run: |
+          bun run dev --host 127.0.0.1 --port 4173 > /tmp/qitaa-dev.log 2>&1 &
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 http://127.0.0.1:4173/ -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/qitaa-dev.log
+          exit 1
+      - name: Public route availability smoke
+        run: |
+          set -e
+          for route in / /catalog /seller /admin /garage; do
+            curl -fsS --max-time 15 "http://127.0.0.1:4173$route" -o /dev/null
+            echo "PASS $route"
+          done

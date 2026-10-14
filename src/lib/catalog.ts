@@ -3,7 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const fmtYER = (n: number) => `${Math.round(n).toLocaleString("ar-YE")} ر.ي`;
 
 export const QUALITY: Record<string, string> = {
-  oem: "وكالة أصلي", first_grade: "تجاري درجة أولى", aftermarket: "بديل معتمد", used: "تشليح",
+  oem: "وكالة أصلي",
+  first_grade: "تجاري درجة أولى",
+  aftermarket: "بديل معتمد",
+  used: "تشليح",
 };
 export const CONDITION: Record<string, string> = { new: "جديد", used: "تشليح" };
 
@@ -15,12 +18,19 @@ export async function fetchCategories() {
 
 export async function fetchMakes() {
   const { data, error } = await supabase
-    .from("vehicle_makes").select("id,name_ar,name_en,vehicle_models(id,name_ar,name_en,year_start,year_end)").order("name_ar");
+    .from("vehicle_makes")
+    .select("id,name_ar,name_en,vehicle_models(id,name_ar,name_en,year_start,year_end)")
+    .order("name_ar");
   if (error) throw error;
   return data;
 }
 
-export type SearchArgs = { q?: string | undefined; category?: string | undefined; model?: string | undefined; year?: number | undefined };
+export type SearchArgs = {
+  q?: string | undefined;
+  category?: string | undefined;
+  model?: string | undefined;
+  year?: number | undefined;
+};
 
 export async function searchParts(a: SearchArgs) {
   let partIds: string[] | null = null;
@@ -34,7 +44,9 @@ export async function searchParts(a: SearchArgs) {
   }
   let q = supabase
     .from("catalog_parts")
-    .select("id,oem_number,name_ar,name_en,is_featured,category_id,categories(name_ar,icon),seller_offers(price_yer,condition,quality_grade,is_active,sellers(city,name))");
+    .select(
+      "id,oem_number,name_ar,name_en,is_featured,category_id,categories(name_ar,icon),seller_offers(price_yer,condition,quality_grade,is_active,sellers(city,name,is_verified))",
+    );
   if (partIds) q = q.in("id", partIds);
   if (a.category) q = q.eq("category_id", a.category);
   if (a.q) {
@@ -43,14 +55,29 @@ export async function searchParts(a: SearchArgs) {
   }
   const { data, error } = await q.limit(60);
   if (error) throw error;
-  return data;
+  // Defense in depth: an unverified shop must not appear in public price comparisons.
+  return data.map((part) => ({
+    ...part,
+    seller_offers: part.seller_offers.filter(
+      (offer) => offer.is_active && offer.sellers?.is_verified,
+    ),
+  }));
 }
 
 export async function fetchPart(id: string) {
   const { data, error } = await supabase
     .from("catalog_parts")
-    .select("*,categories(name_ar,icon),part_fitments(year_from,year_to,vehicle_models(name_ar,vehicle_makes(name_ar))),seller_offers(*,sellers(*))")
-    .eq("id", id).maybeSingle();
+    .select(
+      "*,categories(name_ar,icon),part_fitments(year_from,year_to,vehicle_models(name_ar,vehicle_makes(name_ar))),seller_offers(*,sellers(*))",
+    )
+    .eq("id", id)
+    .maybeSingle();
   if (error) throw error;
-  return data;
+  if (!data) return null;
+  return {
+    ...data,
+    seller_offers: data.seller_offers.filter(
+      (offer) => offer.is_active && offer.sellers?.is_verified,
+    ),
+  };
 }
