@@ -13,6 +13,13 @@ import { useEffect, type ReactNode } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { THEME_STORAGE_KEY } from "@/components/ThemeToggle";
+
+/**
+ * Runs before first paint so a returning visitor never sees a flash of the
+ * wrong theme. Kept as a plain string: it only touches the DOM, never React.
+ */
+const THEME_INIT_SCRIPT = `(function(){try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var t=localStorage.getItem(k);if(t!=="light"&&t!=="dark"){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}var r=document.documentElement;r.classList.toggle("dark",t==="dark");r.style.colorScheme=t;}catch(e){}})();`;
 
 function NotFoundComponent() {
   return (
@@ -88,6 +95,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "قطع — سوق قطع الغيار اليمني" },
       { property: "og:description", content: "ابحث برقم الهيكل وقارن أسعار التجار." },
       { property: "og:type", content: "website" },
+      { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#101418" },
+      { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#0B0E11" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -96,9 +105,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -114,6 +124,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="ar" dir="rtl">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body>
         {children}

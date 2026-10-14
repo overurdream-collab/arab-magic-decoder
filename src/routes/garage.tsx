@@ -217,10 +217,10 @@ function Garage({ userId }: { userId: string }) {
       {alerts.map(({ v, s, last }) => (
         <div
           key={v.id}
-          className={`flex items-start gap-3 rounded-xl border p-4 ${s.level === "over" ? "border-destructive bg-destructive/10" : "border-primary bg-primary/10"}`}
+          className={`flex items-start gap-3 rounded-xl border p-4 ${s.level === "over" ? "border-destructive bg-destructive/10" : "border-warning bg-warning/10"}`}
         >
           <AlertTriangle
-            className={`mt-0.5 h-5 w-5 ${s.level === "over" ? "text-destructive" : "text-primary"}`}
+            className={`mt-0.5 h-5 w-5 ${s.level === "over" ? "text-destructive" : "text-warning"}`}
           />
           <div>
             <p className="font-bold">
@@ -471,9 +471,9 @@ function VehicleCard({
         <div className="mt-4 rounded-xl bg-muted p-3">
           <div className="flex items-center gap-2 text-sm font-bold">
             {s.level === "good" ? (
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <CheckCircle2 className="h-4 w-4 text-success" />
             ) : s.level === "soon" ? (
-              <Clock className="h-4 w-4 text-primary" />
+              <Clock className="h-4 w-4 text-warning" />
             ) : (
               <AlertTriangle className="h-4 w-4 text-destructive" />
             )}
@@ -482,7 +482,7 @@ function VehicleCard({
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-background">
             <div
-              className={`h-full ${s.level === "good" ? "bg-green-600" : s.level === "soon" ? "bg-primary" : "bg-destructive"}`}
+              className={`h-full ${s.level === "good" ? "bg-success" : s.level === "soon" ? "bg-warning" : "bg-destructive"}`}
               style={{ width: `${s.pct}%` }}
             />
           </div>
