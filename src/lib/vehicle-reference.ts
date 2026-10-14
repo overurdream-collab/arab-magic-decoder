@@ -44,7 +44,8 @@ const safeName = (name: unknown): name is string =>
   name.length >= 1 &&
   name.length <= 100 &&
   name.trim().length >= 1 &&
-  !/[<>\x00-\x1f]/.test(name);
+  !/[<>]/.test(name) &&
+  [...name].every((char) => char.charCodeAt(0) >= 32);
 
 const currentUpperBound = () => new Date().getUTCFullYear() + 2;
 
