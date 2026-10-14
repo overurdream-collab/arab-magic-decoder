@@ -28,8 +28,9 @@ export function VehiclePicker() {
     if (!mk) return setVinErr("الشركة غير متوفرة في الكتالوج بعد");
     setVinErr("");
     setMake(mk.id);
-    setYear(r.year ? String(r.year) : "");
-    setVinErr(`تم التعرف: ${mk.name_ar}${r.year ? " " + r.year : ""} — اختر الموديل لإكمال البحث`);
+    setModel("");
+    setYear("");
+    setVinErr(`تم التعرف مبدئيًا على الشركة: ${mk.name_ar}. سنة الصنع غير مؤكدة؛ اختر الموديل والسنة يدويًا.`);
   };
 
   return (
@@ -106,7 +107,7 @@ export function VehiclePicker() {
         className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-secondary font-bold text-secondary-foreground disabled:opacity-40"
       >
         <Search className="h-4 w-4" />
-        اعرض القطع المتوافقة مع سيارتي
+        اعرض القطع المرشحة لسيارتي
       </button>
     </div>
   );
