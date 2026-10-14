@@ -561,6 +561,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      record_zero_result_search: { Args: { _term: string }; Returns: boolean };
+      admin_search_gap_summary: { Args: Record<string, never>; Returns: Json };
       approve_seller_application: {
         Args: { _app_id: string; _note?: string }
         Returns: string

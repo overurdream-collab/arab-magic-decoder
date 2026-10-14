@@ -22,3 +22,4 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 \i drizzle/migrations/0000_seller_onboarding_admin_rls_hardening.sql
 \i supabase/migrations/20261014000000_seller_read_scope_security.sql
 \i supabase/migrations/20261014020000_catalog_admin_review_import.sql
+\i supabase/migrations/20261014030000_search_gap_analytics.sql

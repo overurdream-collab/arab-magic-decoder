@@ -1,7 +1,7 @@
 name: Qitaa HTTP Smoke
 on:
   push:
-    branches: [feat/qitaa-phase1-seller-admin-review]
+    branches: [feat/qitaa-phase1-seller-admin-review, feat/qitaa-zero-result-analytics]
   pull_request:
     branches: [main]
 permissions:
