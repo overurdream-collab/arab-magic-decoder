@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { CONDITION, QUALITY, fetchCategories, searchParts } from "@/lib/catalog";
 import { PartCard, type PartRow } from "@/components/PartCard";
@@ -42,7 +44,7 @@ function Catalog() {
   const nav = useNavigate({ from: "/catalog" });
   const set = (k: string, v?: string) => nav({ search: (p) => ({ ...p, [k]: v || undefined }) });
   const { data: cats = [] } = useQuery({ queryKey: ["cats"], queryFn: fetchCategories });
-  const { data = [], isLoading } = useQuery({
+  const { data = [], isLoading, isError } = useQuery({
     queryKey: ["search", s.q, s.category, s.model, s.year],
     queryFn: () => searchParts(s),
   });
@@ -64,6 +66,14 @@ function Catalog() {
       ),
     ),
   ];
+  const logged = useRef("");
+  useEffect(() => {
+    if (isLoading || isError || rows.length !== 0 || !s.q?.trim()) return;
+    const key = JSON.stringify([s.q, s.category, s.model, s.year, s.condition, s.quality, s.city]);
+    if (key === logged.current) return;
+    logged.current = key;
+    void supabase.rpc("record_zero_result_search", { _term: s.q.trim() });
+  }, [isLoading, isError, rows.length, s.q, s.category, s.model, s.year, s.condition, s.quality, s.city]);
   const chip = (on: boolean) =>
     `rounded-full border px-3 py-1 text-sm ${on ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`;
 
