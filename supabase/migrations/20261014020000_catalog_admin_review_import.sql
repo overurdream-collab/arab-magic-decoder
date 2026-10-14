@@ -20,7 +20,7 @@ CREATE OR REPLACE FUNCTION public.admin_stage_catalog(
  _items jsonb, _source text DEFAULT 'catalog.csv') RETURNS jsonb
  LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
 AS $$
-DECLARE r jsonb; oem text; label_ar text; label_en text; slug text;
+DECLARE r jsonb; oem text; label_ar text; label_en text; v_slug text;
  cats uuid; existing uuid; previous_at timestamptz;
  preview jsonb := '[]'::jsonb; new_items int:=0; updates int:=0; staged_id uuid;
  seen text[] := ARRAY[]::text[];
@@ -36,24 +36,24 @@ BEGIN
   oem:=upper(btrim(coalesce(r->>'oem_number','')));
   label_ar:=btrim(coalesce(r->>'name_ar',''));
   label_en:=btrim(coalesce(r->>'name_en',''));
-  slug:=lower(btrim(coalesce(r->>'category_slug','')));
+  v_slug:=lower(btrim(coalesce(r->>'category_slug','')));
   IF oem !~ '^[A-Z0-9][A-Z0-9._/ -]{1,79}$'
    OR length(label_ar) NOT BETWEEN 2 AND 160
    OR length(label_en) NOT BETWEEN 2 AND 160
-   OR length(slug) NOT BETWEEN 2 AND 80
+   OR length(v_slug) NOT BETWEEN 2 AND 80
    OR length(coalesce(r->>'alt_numbers','')) > 1000
   THEN RAISE EXCEPTION 'invalid catalog CSV item'; END IF;
   IF oem=ANY(seen) THEN RAISE EXCEPTION 'duplicate OEM in file: %',oem; END IF;
   seen:=array_append(seen,oem);
-  SELECT id INTO cats FROM public.categories WHERE lower(categories.slug)=slug;
-  IF cats IS NULL THEN RAISE EXCEPTION 'unknown category: %',slug; END IF;
+  SELECT id INTO cats FROM public.categories WHERE lower(categories.slug)=v_slug;
+  IF cats IS NULL THEN RAISE EXCEPTION 'unknown category: %',v_slug; END IF;
   existing:=NULL;previous_at:=NULL;
   SELECT id,updated_at INTO existing,previous_at
     FROM public.catalog_parts WHERE upper(oem_number)=oem;
   IF existing IS NULL THEN new_items:=new_items+1; ELSE updates:=updates+1; END IF;
   preview:=preview||jsonb_build_array(jsonb_build_object(
    'oem_number',oem,'name_ar',label_ar,'name_en',label_en,
-   'category_id',cats,'category_slug',slug,'alt_numbers',coalesce(r->>'alt_numbers',''),
+   'category_id',cats,'category_slug',v_slug,'alt_numbers',coalesce(r->>'alt_numbers',''),
    'existing_id',existing,'existing_updated_at',previous_at,
    'action',CASE WHEN existing IS NULL THEN 'insert' ELSE 'update' END));
  END LOOP;
