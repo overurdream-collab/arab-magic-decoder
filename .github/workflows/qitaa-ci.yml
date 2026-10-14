@@ -33,6 +33,6 @@ jobs:
       - name: ESLint
         run: bun run lint
       - name: VIN regression tests
-        run: bun test tests/vin.test.mjs
+        run: bun test tests/vin.test.mjs tests/nhtsa-vin.test.ts
       - name: Production build
         run: bun run build
