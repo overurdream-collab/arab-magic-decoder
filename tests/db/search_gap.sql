@@ -1,0 +1,42 @@
+\set ON_ERROR_STOP on
+SET ROLE anon;
+SELECT public.record_zero_result_search('فحمات فرامل') AS accepted \gset
+DO $$
+BEGIN
+ IF (SELECT COUNT(*) FROM public.search_gap_counts WHERE term='فحمات فرامل')<>1
+ THEN RAISE EXCEPTION 'missing demand row'; END IF;
+END $$;
+SELECT public.record_zero_result_search('فحمات فرامل');
+SELECT public.record_zero_result_search('1HGCM82633A004352') AS ignored_vin \gset
+SELECT public.record_zero_result_search('ahmed@example.com') AS ignored_email \gset
+DO $$
+BEGIN
+ IF (SELECT COUNT(*) FROM public.search_gap_counts WHERE term='فحمات فرامل' AND hits=2)<>1
+ THEN RAISE EXCEPTION 'search gap aggregation wrong'; END IF;
+ IF (SELECT COUNT(*) FROM public.search_gap_counts)<>1
+ THEN RAISE EXCEPTION 'private identifier was recorded'; END IF;
+END $$;
+RESET ROLE;
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+DO $$
+DECLARE denied boolean:=false;
+BEGIN
+ BEGIN
+ PERFORM public.admin_search_gap_summary();
+ EXCEPTION WHEN OTHERS THEN denied:=true;
+ END;
+ IF NOT denied THEN RAISE EXCEPTION 'nonadmin queried private search analytics'; END IF;
+END $$;
+RESET ROLE;
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','33333333-3333-4333-8333-333333333333',false);
+DO $$
+DECLARE r jsonb;
+BEGIN
+ r:=public.admin_search_gap_summary();
+ IF jsonb_array_length(r)<>1 OR (r->0->>'total_hits')::integer<>2
+ THEN RAISE EXCEPTION 'admin summary is incorrect'; END IF;
+END $$;
+RESET ROLE;
+SELECT 'privacy-preserving zero-result analytics tests PASS';
