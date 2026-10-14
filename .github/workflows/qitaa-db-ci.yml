@@ -43,3 +43,6 @@ jobs:
       - name: Assert demand privacy and administrative access
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/search_gap.sql
 
+
+      - name: Assert purchase request reservation and ACL
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_requests.sql
