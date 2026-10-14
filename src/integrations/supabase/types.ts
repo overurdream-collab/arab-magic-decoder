@@ -561,6 +561,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_stage_catalog: { Args: { _items: Json; _source?: string }; Returns: Json };
+      admin_commit_catalog: { Args: { _id: string }; Returns: Json };
       record_zero_result_search: { Args: { _term: string }; Returns: boolean };
       admin_search_gap_summary: { Args: Record<string, never>; Returns: Json };
       approve_seller_application: {
