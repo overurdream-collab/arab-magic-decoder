@@ -6,6 +6,7 @@ on:
       - feat/qitaa-phase1-seller-admin-review
       - feat/qitaa-zero-result-analytics
       - feat/qitaa-zero-result-analytics-rebased
+      - feat/qitaa-purchase-request-lifecycle
   pull_request:
     branches:
       - main
@@ -27,9 +28,9 @@ jobs:
           bun-version: latest
       - name: Install dependencies
         run: bun install --frozen-lockfile
+      - name: Production build and route generation
+        run: bun run build
       - name: TypeScript typecheck
         run: bunx tsc --noEmit
       - name: ESLint
         run: bun run lint
-      - name: Production build
-        run: bun run build
