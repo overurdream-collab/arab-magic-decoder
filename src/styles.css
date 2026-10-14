@@ -2,7 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is([data-theme="dark"], [data-theme="dark"] *));
 
 /*
  * Design system definition — «أحمر صناعي» (industrial red).

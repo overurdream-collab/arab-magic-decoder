@@ -3,32 +3,35 @@ import { useHydrated } from "@tanstack/react-router";
 import { Moon, Sun } from "lucide-react";
 
 export const THEME_STORAGE_KEY = "qitaa-theme";
+export type Theme = "light" | "dark";
 
-function readAppliedTheme(): "light" | "dark" {
-  return typeof document !== "undefined" && document.documentElement.classList.contains("dark")
+/**
+ * Reads the theme the pre-paint script already applied. It uses the
+ * `data-theme` attribute rather than a class because React never renders that
+ * attribute, so setting it early can't cause a hydration mismatch.
+ */
+function readAppliedTheme(): Theme {
+  return typeof document !== "undefined" && document.documentElement.dataset.theme === "dark"
     ? "dark"
     : "light";
 }
 
 /**
- * Light/dark switch. The class on <html> is applied before paint by the inline
- * script in __root.tsx, so this component only reads it back after hydration and
- * writes the user's new choice to localStorage.
+ * Light/dark switch. The choice is written to localStorage and to
+ * <html data-theme>; the stylesheet keys every colour token off that attribute.
  */
 export function ThemeToggle() {
   const hydrated = useHydrated();
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     if (hydrated) setTheme(readAppliedTheme());
   }, [hydrated]);
 
   function toggle() {
-    const next = theme === "dark" ? "light" : "dark";
+    const next: Theme = theme === "dark" ? "light" : "dark";
     setTheme(next);
-    const root = document.documentElement;
-    root.classList.toggle("dark", next === "dark");
-    root.style.colorScheme = next;
+    document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch {
