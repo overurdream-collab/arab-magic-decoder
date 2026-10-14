@@ -555,6 +555,8 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      admin_stage_catalog: { Args: { _items: Json; _source?: string }; Returns: Json };
+      admin_commit_catalog: { Args: { _id: string }; Returns: Json };
       approve_seller_application: {
         Args: { _app_id: string; _note?: string };
         Returns: string;

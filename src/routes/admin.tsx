@@ -5,6 +5,7 @@ import { Shield, Check, X, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthBox, useSession } from "@/components/AuthBox";
 import { SELLER_TYPES } from "@/lib/seller-types";
+import { CatalogImport } from "@/components/CatalogImport";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -88,7 +89,7 @@ function AdminGate({ userId }: { userId: string }) {
       </div>
       {tab === "apps" && <Applications />}
       {tab === "catalog" && <Catalog />}
-      {tab === "import" && <ImportPlan />}
+      {tab === "import" && <CatalogImport />}
     </div>
   );
 }
@@ -272,31 +273,6 @@ function Catalog() {
       <p className="p-3 text-xs text-muted-foreground">
         بيانات التوافق الحالية بيانات تجريبية أولية غير مُتحقق منها من مزود خارجي.
       </p>
-    </div>
-  );
-}
-
-function ImportPlan() {
-  return (
-    <div className="space-y-2 rounded-2xl border bg-card p-6 text-sm leading-7">
-      <p className="text-lg font-bold">استيراد CSV — لم يُنفَّذ بعد (خطة معتمدة)</p>
-      <ol className="list-decimal ps-5">
-        <li>رفع الملف إلى منطقة مؤقتة خاصة بالمسؤول (لا يُكتب مباشرة في الكتالوج).</li>
-        <li>
-          الأعمدة: oem_number, alt_numbers (مفصولة بـ |), name_ar, name_en, category_slug, make_en,
-          model_en, year_from, year_to.
-        </li>
-        <li>
-          التحقق في الخادم: الحقول الإلزامية، طول النصوص، الفئة والموديل موجودان، السنوات منطقية، حد
-          أقصى للصفوف.
-        </li>
-        <li>
-          المطابقة: رقم OEM مطابق تمامًا ← تحديث؛ مطابق لرقم بديل ← مراجعة؛ جديد ← إنشاء مقترح.
-        </li>
-        <li>
-          معاينة الفروقات وموافقة المسؤول قبل الكتابة، ثم تنفيذ داخل معاملة واحدة مع سجل تدقيق.
-        </li>
-      </ol>
     </div>
   );
 }

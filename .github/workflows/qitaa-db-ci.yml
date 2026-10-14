@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feat/qitaa-phase1-seller-admin-review
+      - feat/qitaa-catalog-import-staging
   pull_request:
     branches: [main]
 permissions:
@@ -35,3 +36,5 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/bootstrap.sql
       - name: Assert marketplace and garage row-level permissions
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/seller_rls.sql
+      - name: Assert catalog import approvals and tamper resistance
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/catalog_import.sql
