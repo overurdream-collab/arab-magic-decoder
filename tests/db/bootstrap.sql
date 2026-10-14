@@ -24,3 +24,4 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 \i supabase/migrations/20261014020000_catalog_admin_review_import.sql
 \i supabase/migrations/20261014030000_search_gap_analytics.sql
 \i supabase/migrations/20261014040000_purchase_requests.sql
+\i supabase/migrations/20261014040000_purchase_requests.sql
