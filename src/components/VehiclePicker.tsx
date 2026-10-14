@@ -36,22 +36,30 @@ export function VehiclePicker() {
       const result = await decodeVinOfficial(raw);
       const mk = makes.find((x) => x.name_en.toLowerCase() === result.make.toLowerCase());
       if (!mk) {
-        setVinErr(`تم تحديد ${result.make} ${result.model} بواسطة NHTSA، لكنها غير موجودة في كتالوج قِطَع بعد. اختر سيارتك يدويًا.`);
+        setVinErr(
+          `تم تحديد ${result.make} ${result.model} بواسطة NHTSA، لكنها غير موجودة في كتالوج قِطَع بعد. اختر سيارتك يدويًا.`,
+        );
         return;
       }
       setMake(mk.id);
       const matchedModel = mk.vehicle_models.find(
         (x) => x.name_en.toLowerCase() === result.model.toLowerCase(),
       );
-      if (matchedModel && result.year !== null &&
-          result.year >= matchedModel.year_start && result.year <= matchedModel.year_end) {
+      if (
+        matchedModel &&
+        result.year !== null &&
+        result.year >= matchedModel.year_start &&
+        result.year <= matchedModel.year_end
+      ) {
         setModel(matchedModel.id);
         setYear(String(result.year));
       } else {
         setModel("");
         setYear("");
       }
-      setVinErr(`NHTSA: ${result.make} ${result.model} ${result.year ?? ""}. ${result.note} راجع الموديل والسنة قبل البحث.`);
+      setVinErr(
+        `NHTSA: ${result.make} ${result.model} ${result.year ?? ""}. ${result.note} راجع الموديل والسنة قبل البحث.`,
+      );
     } catch (error) {
       const mk = preliminary.make
         ? makes.find((x) => x.name_en.toLowerCase() === preliminary.make?.toLowerCase())

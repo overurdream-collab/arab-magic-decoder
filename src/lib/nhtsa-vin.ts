@@ -48,8 +48,13 @@ export async function decodeVinOfficial(
   } catch {
     throw new Error("تعذّر قراءة رد خدمة التحقق الرسمية.");
   }
-  if (!payload || typeof payload !== "object" || !("Results" in payload) ||
-    !Array.isArray(payload.Results) || payload.Results.length !== 1) {
+  if (
+    !payload ||
+    typeof payload !== "object" ||
+    !("Results" in payload) ||
+    !Array.isArray(payload.Results) ||
+    payload.Results.length !== 1
+  ) {
     throw new Error("رد خدمة التحقق الرسمية غير مكتمل.");
   }
   const row = payload.Results[0] as VpicEntry;
@@ -58,7 +63,15 @@ export async function decodeVinOfficial(
   const yearText = textValue(row, "ModelYear");
   const year = /^\d{4}$/.test(yearText) ? Number(yearText) : null;
   const errorCode = textValue(row, "ErrorCode");
-  if (!make || !model || (errorCode && !errorCode.split(",").map((x) => x.trim()).includes("0"))) {
+  if (
+    !make ||
+    !model ||
+    (errorCode &&
+      !errorCode
+        .split(",")
+        .map((x) => x.trim())
+        .includes("0"))
+  ) {
     throw new Error("لم تتمكن قاعدة NHTSA من تحديد الماركة والموديل بشكل موثوق.");
   }
   if (year !== null && (year < 1886 || year > new Date().getUTCFullYear() + 2)) {
@@ -71,8 +84,9 @@ export async function decodeVinOfficial(
     year,
     manufacturer: textValue(row, "Manufacturer") || null,
     source: "NHTSA vPIC",
-    note: parsed.checkDigitMatches === false
-      ? "تحذير: خانة التحقق لا تطابق الحساب القياسي. تحقق من الرقم قبل الشراء."
-      : "تحديد السيارة من بيانات السوق الأمريكي فقط؛ لا يثبت توافق قطع الغيار.",
+    note:
+      parsed.checkDigitMatches === false
+        ? "تحذير: خانة التحقق لا تطابق الحساب القياسي. تحقق من الرقم قبل الشراء."
+        : "تحديد السيارة من بيانات السوق الأمريكي فقط؛ لا يثبت توافق قطع الغيار.",
   };
 }

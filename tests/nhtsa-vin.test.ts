@@ -10,12 +10,20 @@ const fake = (data: unknown, ok = true) =>
 
 describe("NHTSA VIN decoding, offline mocked responses", () => {
   it("reads make/model/year from a valid official response", async () => {
-    const result = await decodeVinOfficial(sample, fake({
-      Results: [{
-        Make: "HONDA", Model: "Accord", ModelYear: "2003",
-        ErrorCode: "0", Manufacturer: "HONDA MOTOR CO.",
-      }],
-    }));
+    const result = await decodeVinOfficial(
+      sample,
+      fake({
+        Results: [
+          {
+            Make: "HONDA",
+            Model: "Accord",
+            ModelYear: "2003",
+            ErrorCode: "0",
+            Manufacturer: "HONDA MOTOR CO.",
+          },
+        ],
+      }),
+    );
     expect(result.make).toBe("HONDA");
     expect(result.model).toBe("Accord");
     expect(result.year).toBe(2003);
@@ -25,14 +33,24 @@ describe("NHTSA VIN decoding, offline mocked responses", () => {
     await expect(decodeVinOfficial("abc", fake({ Results: [] }))).rejects.toThrow();
   });
   it("rejects a response without a verified model", async () => {
-    await expect(decodeVinOfficial(sample, fake({
-      Results: [{ Make: "HONDA", Model: "", ErrorCode: "1" }],
-    }))).rejects.toThrow();
+    await expect(
+      decodeVinOfficial(
+        sample,
+        fake({
+          Results: [{ Make: "HONDA", Model: "", ErrorCode: "1" }],
+        }),
+      ),
+    ).rejects.toThrow();
   });
   it("rejects upstream error codes", async () => {
-    await expect(decodeVinOfficial(sample, fake({
-      Results: [{ Make: "HONDA", Model: "Accord", ErrorCode: "1" }],
-    }))).rejects.toThrow();
+    await expect(
+      decodeVinOfficial(
+        sample,
+        fake({
+          Results: [{ Make: "HONDA", Model: "Accord", ErrorCode: "1" }],
+        }),
+      ),
+    ).rejects.toThrow();
   });
   it("handles failed upstream request", async () => {
     await expect(decodeVinOfficial(sample, fake({}, false))).rejects.toThrow();
