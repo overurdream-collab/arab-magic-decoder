@@ -43,7 +43,7 @@ function Home() {
             <h1 className="text-4xl font-black leading-tight md:text-5xl">
               القطعة الصحيحة
               <br />
-              <span className="text-primary">لسيارتك من أول مرة</span>
+              <span className="text-primary-bright">لسيارتك من أول مرة</span>
             </h1>
             <p className="mt-4 opacity-80">
               أدخل رقم الهيكل أو اختر سيارتك لمشاهدة القطع المرشحة ومقارنة الأسعار. تحقق من رقم

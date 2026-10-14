@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      catalog_import_batches: {
+        Row: {
+          applied_at: string | null
+          applied_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          payload: Json
+          preview: Json
+          source_name: string
+          status: string
+        }
+        Insert: {
+          applied_at?: string | null
+          applied_by?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          payload: Json
+          preview: Json
+          source_name: string
+          status?: string
+        }
+        Update: {
+          applied_at?: string | null
+          applied_by?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          payload?: Json
+          preview?: Json
+          source_name?: string
+          status?: string
+        }
+        Relationships: []
+      }
       catalog_parts: {
         Row: {
           alt_numbers: string[]
@@ -561,6 +597,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_commit_catalog: { Args: { _id: string }; Returns: Json }
+      admin_stage_catalog: {
+        Args: { _items: Json; _source?: string }
+        Returns: Json
+      }
       approve_seller_application: {
         Args: { _app_id: string; _note?: string }
         Returns: string
