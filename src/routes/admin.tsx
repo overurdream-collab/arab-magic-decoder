@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthBox, useSession } from "@/components/AuthBox";
 import { SELLER_TYPES } from "@/lib/seller-types";
 import { CatalogImport } from "@/components/CatalogImport";
+import { SearchGapAnalytics } from "@/components/SearchGapAnalytics";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -64,7 +65,7 @@ function AdminGate({ userId }: { userId: string }) {
       return !!data;
     },
   });
-  const [tab, setTab] = useState<"apps" | "catalog" | "import">("apps");
+  const [tab, setTab] = useState<"apps" | "catalog" | "import" | "analytics">("apps");
   if (isLoading) return <p className="text-muted-foreground">جارٍ التحقق من الصلاحية…</p>;
   if (!isAdmin)
     return (
@@ -86,10 +87,12 @@ function AdminGate({ userId }: { userId: string }) {
         {t("apps", "طلبات التجار")}
         {t("catalog", "الكتالوج والتوافق")}
         {t("import", "استيراد CSV")}
+        {t("analytics", "الطلب غير المخدوم")}
       </div>
       {tab === "apps" && <Applications />}
       {tab === "catalog" && <Catalog />}
       {tab === "import" && <CatalogImport />}
+      {tab === "analytics" && <SearchGapAnalytics />}
     </div>
   );
 }

@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - feat/qitaa-phase1-seller-admin-review
+      - feat/qitaa-zero-result-analytics
+      - feat/qitaa-zero-result-analytics-rebased
   pull_request:
     branches:
       - main
