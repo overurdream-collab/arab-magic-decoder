@@ -40,3 +40,21 @@ END $$;
 
 REVOKE ALL ON FUNCTION public.record_zero_result_search(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.record_zero_result_search(text) TO anon,authenticated;
+
+CREATE OR REPLACE FUNCTION public.admin_search_gap_summary()
+RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = ''
+AS $$
+DECLARE result jsonb;
+BEGIN
+ IF NOT public.has_role(auth.uid(),'admin') THEN RAISE EXCEPTION 'forbidden'; END IF;
+ SELECT coalesce(jsonb_agg(to_jsonb(x)),'[]'::jsonb) INTO result
+ FROM (
+  SELECT term, sum(hits)::integer AS total_hits, max(day) AS last_day
+  FROM public.search_gap_counts
+  WHERE day >= CURRENT_DATE-30
+  GROUP BY term ORDER BY total_hits DESC,term LIMIT 100
+ ) x;
+ RETURN result;
+END $$;
+REVOKE ALL ON FUNCTION public.admin_search_gap_summary() FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.admin_search_gap_summary() TO authenticated;
