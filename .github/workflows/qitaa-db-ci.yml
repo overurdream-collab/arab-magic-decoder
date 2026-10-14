@@ -5,6 +5,7 @@ on:
       - feat/qitaa-phase1-seller-admin-review
       - feat/qitaa-catalog-import-staging
       - feat/qitaa-zero-result-analytics
+      - feat/qitaa-zero-result-analytics-rebased
   pull_request:
     branches: [main]
 permissions:
