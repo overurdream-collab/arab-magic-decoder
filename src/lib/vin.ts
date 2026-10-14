@@ -33,7 +33,7 @@ export type VinResult = {
   vin: string;
   error?: string;
   make?: string;
-  year?: number;
+  year?: number | undefined;
   yearCandidates?: number[];
   checkDigitMatches?: boolean;
   confidence?: "preliminary";
@@ -43,7 +43,7 @@ export function vinCheckDigitMatches(vin: string): boolean {
   if (vin.length !== 17 || /[^A-HJ-NPR-Z0-9]/.test(vin)) return false;
   const total = [...vin].reduce((sum, char, index) => {
     const value = /[0-9]/.test(char) ? Number(char) : TRANSLITERATION[char];
-    return sum + (value ?? 0) * CHECK_WEIGHTS[index];
+    return sum + (value ?? 0) * (CHECK_WEIGHTS[index] ?? 0);
   }, 0);
   const expected = total % 11 === 10 ? "X" : String(total % 11);
   return vin[8] === expected;
