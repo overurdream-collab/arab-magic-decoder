@@ -100,7 +100,7 @@ export function VehiclePicker() {
           </button>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          عند الضغط على «فك»، يُرسل رقم الهيكل إلى خدمة NHTSA الأمريكية للتحقق. لا يُحفظ الرقم في قِطَع.
+          بالضغط على «فك»، يُرسل رقم الهيكل إلى NHTSA الأمريكية للتحقق، ولا نحفظه.
         </p>
         {vinErr && <p className="mt-1 text-xs text-muted-foreground">{vinErr}</p>}
       </div>
