@@ -17,7 +17,7 @@ const listeners = new Set<() => void>();
  */
 export function getTheme(): Theme {
   if (typeof document === "undefined") return "light";
-  const applied = document.documentElement.dataset.theme;
+  const applied = document.documentElement.dataset["theme"];
   if (applied === "dark" || applied === "light") return applied;
   let stored: string | null = null;
   try {
@@ -38,7 +38,7 @@ export function getServerTheme(): Theme {
 }
 
 export function setTheme(next: Theme) {
-  document.documentElement.dataset.theme = next;
+  document.documentElement.dataset["theme"] = next;
   try {
     localStorage.setItem(THEME_STORAGE_KEY, next);
   } catch {
