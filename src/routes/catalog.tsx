@@ -44,7 +44,11 @@ function Catalog() {
   const nav = useNavigate({ from: "/catalog" });
   const set = (k: string, v?: string) => nav({ search: (p) => ({ ...p, [k]: v || undefined }) });
   const { data: cats = [] } = useQuery({ queryKey: ["cats"], queryFn: fetchCategories });
-  const { data = [], isLoading, isError } = useQuery({
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["search", s.q, s.category, s.model, s.year],
     queryFn: () => searchParts(s),
   });
@@ -73,7 +77,18 @@ function Catalog() {
     if (key === logged.current) return;
     logged.current = key;
     void supabase.rpc("record_zero_result_search", { _term: s.q.trim() });
-  }, [isLoading, isError, rows.length, s.q, s.category, s.model, s.year, s.condition, s.quality, s.city]);
+  }, [
+    isLoading,
+    isError,
+    rows.length,
+    s.q,
+    s.category,
+    s.model,
+    s.year,
+    s.condition,
+    s.quality,
+    s.city,
+  ]);
   const chip = (on: boolean) =>
     `rounded-full border px-3 py-1 text-sm ${on ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`;
 
