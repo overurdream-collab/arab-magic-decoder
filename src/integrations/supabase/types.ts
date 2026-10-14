@@ -597,6 +597,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_purchase_request: { Args: { _offer_id: string; _qty?: number }; Returns: string }
+      seller_respond_to_request: { Args: { _request_id: string; _action: string; _note?: string }; Returns: string }
+      buyer_cancel_request: { Args: { _request_id: string }; Returns: boolean }
+      list_my_purchase_requests: { Args: Record<string, never>; Returns: Json }
+      list_seller_purchase_requests: { Args: Record<string, never>; Returns: Json }
       record_zero_result_search: { Args: { _term: string }; Returns: boolean };
       admin_search_gap_summary: { Args: Record<string, never>; Returns: Json };
       admin_commit_catalog: { Args: { _id: string }; Returns: Json }
