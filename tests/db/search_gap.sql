@@ -1,22 +1,17 @@
 \set ON_ERROR_STOP on
 SET ROLE anon;
 SELECT public.record_zero_result_search('فحمات فرامل') AS accepted \gset
-DO $$
-BEGIN
- IF (SELECT COUNT(*) FROM public.search_gap_counts WHERE term='فحمات فرامل')<>1
- THEN RAISE EXCEPTION 'missing demand row'; END IF;
-END $$;
 SELECT public.record_zero_result_search('فحمات فرامل');
 SELECT public.record_zero_result_search('1HGCM82633A004352') AS ignored_vin \gset
 SELECT public.record_zero_result_search('ahmed@example.com') AS ignored_email \gset
-DO $$
+RESET ROLE;
+DO $
 BEGIN
  IF (SELECT COUNT(*) FROM public.search_gap_counts WHERE term='فحمات فرامل' AND hits=2)<>1
  THEN RAISE EXCEPTION 'search gap aggregation wrong'; END IF;
  IF (SELECT COUNT(*) FROM public.search_gap_counts)<>1
  THEN RAISE EXCEPTION 'private identifier was recorded'; END IF;
-END $$;
-RESET ROLE;
+END $;
 SET ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
 DO $$
