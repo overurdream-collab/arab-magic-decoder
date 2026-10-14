@@ -1,0 +1,25 @@
+name: Temporary Generated Types Format
+on:
+  push:
+    branches: [feat/qitaa-zero-result-analytics-rebased]
+permissions:
+  contents: write
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: true }
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx eslint src --fix
+      - name: Save formatting only on review branch
+        run: |
+          git add -u src/
+          if ! git diff --cached --quiet; then
+            git config user.name 'Qitaa CI Formatter'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'style: normalize Lovable generated types and analytics UI'
+            git push origin HEAD:feat/qitaa-zero-result-analytics-rebased
+          fi
