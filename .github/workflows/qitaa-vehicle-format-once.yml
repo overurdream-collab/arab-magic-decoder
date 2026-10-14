@@ -1,0 +1,26 @@
+name: Qitaa Vehicle One-Time Formatter
+on:
+  push:
+    branches: [feat/qitaa-vehicle-reference-staging]
+permissions:
+  contents: write
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx prettier --write src/lib/vehicle-reference.ts src/lib/meterapp-adapter.ts tests/vehicle-reference.test.ts tests/meterapp-adapter.test.ts
+      - name: Commit formatted sources to feature branch
+        run: |
+          git add src/lib/vehicle-reference.ts src/lib/meterapp-adapter.ts tests/vehicle-reference.test.ts tests/meterapp-adapter.test.ts
+          if ! git diff --cached --quiet; then
+            git config user.name 'Qitaa CI'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'style: format vehicle preview and adapter tests'
+            git push origin HEAD:feat/qitaa-vehicle-reference-staging
+          fi
