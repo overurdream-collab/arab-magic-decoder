@@ -92,3 +92,42 @@ REVOKE ALL ON FUNCTION public.buyer_cancel_request(uuid) FROM PUBLIC,anon;
 GRANT EXECUTE ON FUNCTION public.create_purchase_request(uuid,integer) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.seller_respond_to_request(uuid,text,text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.buyer_cancel_request(uuid) TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.list_my_purchase_requests()
+RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = ''
+AS $$
+DECLARE items jsonb;
+BEGIN
+ IF auth.uid() IS NULL THEN RAISE EXCEPTION 'authentication required'; END IF;
+ SELECT coalesce(jsonb_agg(to_jsonb(x)),'[]'::jsonb) INTO items FROM (
+  SELECT r.id, r.qty, r.price_yer, r.status, r.created_at,
+   r.review_note, p.name_ar AS part_name, s.name AS seller_name
+  FROM public.purchase_requests r
+  JOIN public.catalog_parts p ON p.id=r.part_id
+  JOIN public.sellers s ON s.id=r.seller_id
+  WHERE r.buyer_id=auth.uid()
+  ORDER BY r.created_at DESC LIMIT 100
+ ) x;
+ RETURN items;
+END $$;
+
+CREATE OR REPLACE FUNCTION public.list_seller_purchase_requests()
+RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = ''
+AS $$
+DECLARE items jsonb;
+BEGIN
+ IF auth.uid() IS NULL THEN RAISE EXCEPTION 'authentication required'; END IF;
+ SELECT coalesce(jsonb_agg(to_jsonb(x)),'[]'::jsonb) INTO items FROM (
+  SELECT r.id,r.qty,r.price_yer,r.status,r.created_at,p.name_ar AS part_name
+  FROM public.purchase_requests r
+  JOIN public.sellers s ON s.id=r.seller_id
+  JOIN public.catalog_parts p ON p.id=r.part_id
+  WHERE s.owner_id=auth.uid() AND s.is_verified
+  ORDER BY r.created_at DESC LIMIT 100
+ ) x;
+ RETURN items;
+END $$;
+REVOKE ALL ON FUNCTION public.list_my_purchase_requests() FROM PUBLIC,anon;
+REVOKE ALL ON FUNCTION public.list_seller_purchase_requests() FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.list_my_purchase_requests() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.list_seller_purchase_requests() TO authenticated;
