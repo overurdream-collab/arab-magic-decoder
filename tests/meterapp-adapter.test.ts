@@ -1,19 +1,26 @@
 import { describe, expect, it } from "bun:test";
-import {
-  previewMeterVehicleCatalog,
-  type MeterCatalog,
-} from "../src/lib/meterapp-adapter";
+import { previewMeterVehicleCatalog, type MeterCatalog } from "../src/lib/meterapp-adapter";
 
 const catalog: MeterCatalog = {
-  getDataSources: () => [{
-    sourceId: "official", sourceName: "Fixture register",
-    sourceUrl: "https://example.org/data", license: "Test-only",
-    yearBasis: "model-year",
-  }],
-  getModels: () => [{
-    makeId: 1, modelId: 2, makeName: "Toyota",
-    modelName: "Corolla", vehicleTypeId: 2, sourceIds: ["official"],
-  }],
+  getDataSources: () => [
+    {
+      sourceId: "official",
+      sourceName: "Fixture register",
+      sourceUrl: "https://example.org/data",
+      license: "Test-only",
+      yearBasis: "model-year",
+    },
+  ],
+  getModels: () => [
+    {
+      makeId: 1,
+      modelId: 2,
+      makeName: "Toyota",
+      modelName: "Corolla",
+      vehicleTypeId: 2,
+      sourceIds: ["official"],
+    },
+  ],
   getAvailableYears: () => [2020, 2022],
 };
 
@@ -27,10 +34,12 @@ describe("MeterApp source-gated read-only adapter", () => {
   it("does not conflate catalog year with vehicle model year", () => {
     const unsafe: MeterCatalog = {
       ...catalog,
-      getDataSources: () => [{
-        ...catalog.getDataSources()[0]!,
-        yearBasis: "catalog-year",
-      }],
+      getDataSources: () => [
+        {
+          ...catalog.getDataSources()[0]!,
+          yearBasis: "catalog-year",
+        },
+      ],
     };
     expect(() => previewMeterVehicleCatalog(unsafe, ["official"], [])).toThrow();
   });

@@ -27,7 +27,10 @@ export type MeterCatalog = {
   getDataSources(): MeterSource[];
   getModels(options: { vehicleTypeId: number; sourceId: string }): MeterVehicleModel[];
   getAvailableYears(options: {
-    makeId: number; modelId: number; vehicleTypeId: number; sourceId: string;
+    makeId: number;
+    modelId: number;
+    vehicleTypeId: number;
+    sourceId: string;
   }): number[];
 };
 
@@ -63,8 +66,11 @@ export function previewMeterVehicleCatalog(
       });
       for (const year of years) {
         rows.push({
-          make: model.makeName, model: model.modelName,
-          year, sourceId, vehicleTypeId: 2,
+          make: model.makeName,
+          model: model.modelName,
+          year,
+          sourceId,
+          vehicleTypeId: 2,
         });
         if (rows.length > (options.maxRows ?? 50000))
           throw new Error("Source data exceeds preview limit");

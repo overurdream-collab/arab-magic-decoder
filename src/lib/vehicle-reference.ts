@@ -64,23 +64,41 @@ export function previewVehicleReferences(
     existingModels.set(key, [...(existingModels.get(key) ?? []), row]);
   }
 
-  const groups = new Map<string, {
-    make: string; model: string; years: Set<number>; sources: Set<string>; names: Set<string>;
-  }>();
+  const groups = new Map<
+    string,
+    {
+      make: string;
+      model: string;
+      years: Set<number>;
+      sources: Set<string>;
+      names: Set<string>;
+    }
+  >();
   let rejected = 0;
   for (const row of input) {
-    if (!row || !safeName(row.make) || !safeName(row.model) ||
-      !safeName(row.sourceId) || !Number.isInteger(row.year) ||
-      row.year < 1886 || row.year > currentUpperBound() ||
-      !Number.isInteger(row.vehicleTypeId) || row.vehicleTypeId < 1 ||
-      row.vehicleTypeId > 20 || (options.passengerOnly && row.vehicleTypeId !== 2)) {
+    if (
+      !row ||
+      !safeName(row.make) ||
+      !safeName(row.model) ||
+      !safeName(row.sourceId) ||
+      !Number.isInteger(row.year) ||
+      row.year < 1886 ||
+      row.year > currentUpperBound() ||
+      !Number.isInteger(row.vehicleTypeId) ||
+      row.vehicleTypeId < 1 ||
+      row.vehicleTypeId > 20 ||
+      (options.passengerOnly && row.vehicleTypeId !== 2)
+    ) {
       rejected++;
       continue;
     }
     const key = canonical(row.make) + "|" + canonical(row.model);
     const group = groups.get(key) ?? {
-      make: row.make.trim(), model: row.model.trim(),
-      years: new Set<number>(), sources: new Set<string>(), names: new Set<string>(),
+      make: row.make.trim(),
+      model: row.model.trim(),
+      years: new Set<number>(),
+      sources: new Set<string>(),
+      names: new Set<string>(),
     };
     group.years.add(row.year);
     group.sources.add(row.sourceId.trim());
@@ -93,27 +111,46 @@ export function previewVehicleReferences(
     const years = [...group.years].sort((a, b) => a - b);
     const rows = existingModels.get(key) ?? [];
     const matchingYear = years.some((year) =>
-      rows.some((r) => year >= r.yearStart && year <= r.yearEnd));
+      rows.some((r) => year >= r.yearStart && year <= r.yearEnd),
+    );
     const status: VehicleCandidate["status"] =
-      group.names.size > 1 ? "review" :
-      rows.length > 1 ? "review" :
-      rows.length === 1 && !matchingYear ? "review" :
-      rows.length === 1 ? "existing" :
-      existingMakes.has(canonical(group.make)) ? "new_model" : "new_make";
-    const reason = group.names.size > 1 ? "conflicting source spellings" :
-      rows.length > 1 ? "multiple existing records" :
-      rows.length === 1 && !matchingYear ? "year range outside existing record" :
-      rows.length === 1 ? "existing model (not a verified generation match)" :
-      "new identity needs human review before database insert";
+      group.names.size > 1
+        ? "review"
+        : rows.length > 1
+          ? "review"
+          : rows.length === 1 && !matchingYear
+            ? "review"
+            : rows.length === 1
+              ? "existing"
+              : existingMakes.has(canonical(group.make))
+                ? "new_model"
+                : "new_make";
+    const reason =
+      group.names.size > 1
+        ? "conflicting source spellings"
+        : rows.length > 1
+          ? "multiple existing records"
+          : rows.length === 1 && !matchingYear
+            ? "year range outside existing record"
+            : rows.length === 1
+              ? "existing model (not a verified generation match)"
+              : "new identity needs human review before database insert";
     candidates.push({
-      make: group.make, model: group.model, years,
-      sourceIds: [...group.sources].sort(), status, reason,
+      make: group.make,
+      model: group.model,
+      years,
+      sourceIds: [...group.sources].sort(),
+      status,
+      reason,
     });
   }
-  candidates.sort((a, b) =>
-    a.make.localeCompare(b.make, "en") || a.model.localeCompare(b.model, "en"));
+  candidates.sort(
+    (a, b) => a.make.localeCompare(b.make, "en") || a.model.localeCompare(b.model, "en"),
+  );
   return {
-    candidates, rejected, inputCount: input.length,
+    candidates,
+    rejected,
+    inputCount: input.length,
     warnings: [
       "PREVIEW ONLY: no database writes; verify every source's redistribution rights.",
       "Model-year catalog entries do not prove engine, trim, generation, OEM or part fitment.",
