@@ -32,7 +32,10 @@ function PartPage() {
       setRequestMessage("سجّل الدخول أولًا من صفحة «طلباتي»، ثم عد لاختيار العرض.");
       return;
     }
-    const { error } = await supabase.rpc("create_purchase_request", { _offer_id: offerId, _qty: 1 });
+    const { error } = await supabase.rpc("create_purchase_request", {
+      _offer_id: offerId,
+      _qty: 1,
+    });
     setRequestBusy("");
     if (error) {
       setRequestMessage("تعذر إرسال الطلب: " + error.message);
@@ -132,8 +135,14 @@ function PartPage() {
       </div>
 
       <h2 className="mb-3 mt-10 text-2xl font-black">مقارنة أسعار التجار ({offers.length})</h2>
-      {requestMessage && <p role="alert" className="mb-3 text-sm text-destructive">{requestMessage}</p>}
-      <p className="mb-4 text-sm text-muted-foreground">الطلب طلب توفر من التاجر، وليس عملية دفع أو شراء إلكتروني مؤكدة.</p>
+      {requestMessage && (
+        <p role="alert" className="mb-3 text-sm text-destructive">
+          {requestMessage}
+        </p>
+      )}
+      <p className="mb-4 text-sm text-muted-foreground">
+        الطلب طلب توفر من التاجر، وليس عملية دفع أو شراء إلكتروني مؤكدة.
+      </p>
       <div className="space-y-3">
         {offers.map((o, i) => (
           <div
@@ -176,7 +185,11 @@ function PartPage() {
               disabled={!!requestBusy || o.stock_qty < 1}
               onClick={() => requestOffer(o.id)}
             >
-              {o.stock_qty < 1 ? "غير متوفر" : requestBusy === o.id ? "جارٍ الإرسال…" : "أرسل طلب توفر"}
+              {o.stock_qty < 1
+                ? "غير متوفر"
+                : requestBusy === o.id
+                  ? "جارٍ الإرسال…"
+                  : "أرسل طلب توفر"}
             </button>
           </div>
         ))}

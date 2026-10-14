@@ -35,10 +35,14 @@ function MyOrders() {
     <main className="mx-auto max-w-5xl space-y-5 px-4 py-8">
       <h1 className="text-3xl font-black">طلباتي</h1>
       <p className="text-sm text-muted-foreground">
-        هذه طلبات مباشرة إلى التجار وليست عمليات دفع إلكتروني. توفر القطعة والسعر
-        النهائي والتسليم يخضع لتأكيد التاجر. لا توجد بوابة مدفوعات مفعلة.
+        هذه طلبات مباشرة إلى التجار وليست عمليات دفع إلكتروني. توفر القطعة والسعر النهائي والتسليم
+        يخضع لتأكيد التاجر. لا توجد بوابة مدفوعات مفعلة.
       </p>
-      {session ? <RequestList userId={session.user.id} /> : <AuthBox title="سجّل الدخول لمتابعة طلباتك" redirectPath="/orders" />}
+      {session ? (
+        <RequestList userId={session.user.id} />
+      ) : (
+        <AuthBox title="سجّل الدخول لمتابعة طلباتك" redirectPath="/orders" />
+      )}
     </main>
   );
 }
@@ -47,7 +51,11 @@ function RequestList({ userId }: { userId: string }) {
   const qc = useQueryClient();
   const [pending, setPending] = useState("");
   const [error, setError] = useState("");
-  const { data = [], isLoading, isError } = useQuery({
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["my-requests", userId],
     queryFn: async () => {
       const { data, error } = await supabase.rpc("list_my_purchase_requests");
@@ -65,23 +73,52 @@ function RequestList({ userId }: { userId: string }) {
     else await qc.invalidateQueries({ queryKey: ["my-requests", userId] });
   }
   if (isLoading) return <p>جارٍ تحميل طلباتك…</p>;
-  if (isError) return <p role="alert" className="text-destructive">تعذر تحميل الطلبات. تحقق من اتصال الخدمة.</p>;
+  if (isError)
+    return (
+      <p role="alert" className="text-destructive">
+        تعذر تحميل الطلبات. تحقق من اتصال الخدمة.
+      </p>
+    );
   return (
     <div className="space-y-3">
-      {error && <p role="alert" className="text-destructive">{error}</p>}
+      {error && (
+        <p role="alert" className="text-destructive">
+          {error}
+        </p>
+      )}
       {data.map((req) => (
         <article key={req.id} className="space-y-2 rounded-xl border bg-card p-5">
-          <h2 className="font-bold">{req.part_name} — {req.seller_name}</h2>
-          <p className="text-sm">الكمية: {req.qty} — المبلغ المعروض وقت الطلب: {fmtYER(Number(req.price_yer) * req.qty)}</p>
-          <p className="text-sm">الحالة: <b>{STATUS[req.status] ?? req.status}</b></p>
-          {req.review_note && <p className="text-sm text-muted-foreground">ملاحظة: {req.review_note}</p>}
-          <p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleString("ar-YE")}</p>
+          <h2 className="font-bold">
+            {req.part_name} — {req.seller_name}
+          </h2>
+          <p className="text-sm">
+            الكمية: {req.qty} — المبلغ المعروض وقت الطلب: {fmtYER(Number(req.price_yer) * req.qty)}
+          </p>
+          <p className="text-sm">
+            الحالة: <b>{STATUS[req.status] ?? req.status}</b>
+          </p>
+          {req.review_note && (
+            <p className="text-sm text-muted-foreground">ملاحظة: {req.review_note}</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            {new Date(req.created_at).toLocaleString("ar-YE")}
+          </p>
           {["requested", "accepted"].includes(req.status) && (
-            <button className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50" disabled={!!pending} onClick={() => cancel(req.id)}>إلغاء الطلب</button>
+            <button
+              className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
+              disabled={!!pending}
+              onClick={() => cancel(req.id)}
+            >
+              إلغاء الطلب
+            </button>
           )}
         </article>
       ))}
-      {data.length === 0 && <p className="rounded-lg border p-5 text-muted-foreground">لا توجد طلبات حتى الآن. اختر عرض قطعة من الكتالوج لبدء طلبك.</p>}
+      {data.length === 0 && (
+        <p className="rounded-lg border p-5 text-muted-foreground">
+          لا توجد طلبات حتى الآن. اختر عرض قطعة من الكتالوج لبدء طلبك.
+        </p>
+      )}
     </div>
   );
 }

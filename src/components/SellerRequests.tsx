@@ -24,7 +24,11 @@ export function SellerRequests({ sellerId }: { sellerId: string }) {
   const qc = useQueryClient();
   const [processing, setProcessing] = useState("");
   const [message, setMessage] = useState("");
-  const { data = [], isLoading, isError } = useQuery({
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["seller-requests", sellerId],
     queryFn: async () => {
       const { data, error } = await supabase.rpc("list_seller_purchase_requests");
@@ -61,12 +65,20 @@ export function SellerRequests({ sellerId }: { sellerId: string }) {
     <section className="space-y-3 rounded-2xl border bg-card p-5">
       <h2 className="text-xl font-black">طلبات العملاء</h2>
       <p className="text-sm text-muted-foreground">
-        عند الموافقة تُحجز الكمية في المخزون. يجب تأكيد التوافر والسعر والتوافق قبل تجهيز القطعة.
-        لا يستلم النظام مدفوعات في هذه المرحلة.
+        عند الموافقة تُحجز الكمية في المخزون. يجب تأكيد التوافر والسعر والتوافق قبل تجهيز القطعة. لا
+        يستلم النظام مدفوعات في هذه المرحلة.
       </p>
-      {message && <p role="alert" className="text-destructive">{message}</p>}
+      {message && (
+        <p role="alert" className="text-destructive">
+          {message}
+        </p>
+      )}
       {isLoading && <p>جارٍ تحميل الطلبات…</p>}
-      {isError && <p role="alert" className="text-destructive">تعذر تحميل طلبات المتجر.</p>}
+      {isError && (
+        <p role="alert" className="text-destructive">
+          تعذر تحميل طلبات المتجر.
+        </p>
+      )}
       {data.map((request) => (
         <div key={request.id} className="flex flex-wrap items-center gap-3 rounded-xl border p-4">
           <div className="min-w-48 flex-1">
@@ -80,16 +92,36 @@ export function SellerRequests({ sellerId }: { sellerId: string }) {
           </span>
           {request.status === "requested" && (
             <>
-              <button className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50" disabled={!!processing} onClick={() => respond(request.id, "accept")}>تأكيد التوفر</button>
-              <button className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50" disabled={!!processing} onClick={() => respond(request.id, "reject")}>رفض</button>
+              <button
+                className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
+                disabled={!!processing}
+                onClick={() => respond(request.id, "accept")}
+              >
+                تأكيد التوفر
+              </button>
+              <button
+                className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
+                disabled={!!processing}
+                onClick={() => respond(request.id, "reject")}
+              >
+                رفض
+              </button>
             </>
           )}
           {request.status === "accepted" && (
-            <button className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50" disabled={!!processing} onClick={() => respond(request.id, "fulfill")}>تم التجهيز/التسليم</button>
+            <button
+              className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
+              disabled={!!processing}
+              onClick={() => respond(request.id, "fulfill")}
+            >
+              تم التجهيز/التسليم
+            </button>
           )}
         </div>
       ))}
-      {data.length === 0 && !isLoading && !isError && <p className="text-muted-foreground">لا توجد طلبات من العملاء حتى الآن.</p>}
+      {data.length === 0 && !isLoading && !isError && (
+        <p className="text-muted-foreground">لا توجد طلبات من العملاء حتى الآن.</p>
+      )}
     </section>
   );
 }
