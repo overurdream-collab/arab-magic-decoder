@@ -75,6 +75,7 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.625rem;
   --background: oklch(0.976 0.003 106.4); /* #F7F7F5 warm off-white */
   --foreground: oklch(0.189 0.01 248.4); /* #101418 charcoal */
@@ -115,7 +116,8 @@
   --sidebar-ring: oklch(0.539 0.194 26.7);
 }
 
-.dark {
+[data-theme="dark"] {
+  color-scheme: dark;
   --background: oklch(0.162 0.008 248.3); /* #0B0E11 */
   --foreground: oklch(0.976 0.003 106.4);
   --card: oklch(0.22 0.012 254.1); /* #171B20 */
