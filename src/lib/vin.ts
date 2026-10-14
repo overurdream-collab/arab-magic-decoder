@@ -22,9 +22,29 @@ const WMI: Record<string, string> = {
 // enough to distinguish 1999 from 2029 or 2000 from 2030.
 const YEAR_CODES = "ABCDEFGHJKLMNPRSTVWXY123456789";
 const TRANSLITERATION: Record<string, number> = {
-  A: 1, B: 2, C: 3, D: 4, E: 5, F: 6, G: 7, H: 8,
-  J: 1, K: 2, L: 3, M: 4, N: 5, P: 7, R: 9,
-  S: 2, T: 3, U: 4, V: 5, W: 6, X: 7, Y: 8, Z: 9,
+  A: 1,
+  B: 2,
+  C: 3,
+  D: 4,
+  E: 5,
+  F: 6,
+  G: 7,
+  H: 8,
+  J: 1,
+  K: 2,
+  L: 3,
+  M: 4,
+  N: 5,
+  P: 7,
+  R: 9,
+  S: 2,
+  T: 3,
+  U: 4,
+  V: 5,
+  W: 6,
+  X: 7,
+  Y: 8,
+  Z: 9,
 };
 const CHECK_WEIGHTS = [8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2] as const;
 
@@ -58,11 +78,12 @@ export function decodeVin(raw: string): VinResult {
 
   const make = WMI[vin.slice(0, 3)] ?? WMI[vin.slice(0, 2)];
   const index = YEAR_CODES.indexOf(vin[9] ?? "");
-  const yearCandidates = index < 0
-    ? []
-    : [1980 + index, 2010 + index, 2040 + index].filter(
-        (year) => year <= new Date().getFullYear() + 1,
-      );
+  const yearCandidates =
+    index < 0
+      ? []
+      : [1980 + index, 2010 + index, 2040 + index].filter(
+          (year) => year <= new Date().getFullYear() + 1,
+        );
 
   if (!make) {
     return {
