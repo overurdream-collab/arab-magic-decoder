@@ -8,18 +8,12 @@ import {
   type ErrorComponentProps,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 
 import { SiteHeader } from "@/components/SiteHeader";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { THEME_STORAGE_KEY } from "@/components/ThemeToggle";
-
-/**
- * Runs before first paint so a returning visitor never sees a flash of the
- * wrong theme. Kept as a plain string: it only touches the DOM, never React.
- */
-const THEME_INIT_SCRIPT = `(function(){try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var t=localStorage.getItem(k);if(t!=="light"&&t!=="dark"){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.dataset.theme=t;}catch(e){}})();`;
+import { THEME_INIT_SCRIPT, getServerTheme, getTheme, subscribeTheme } from "@/lib/theme-store";
 
 function NotFoundComponent() {
   return (
@@ -120,8 +114,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Renders data-theme with the same value the pre-paint script applied, so the
+  // first render matches the DOM instead of fighting it.
+  const theme = useSyncExternalStore(subscribeTheme, getTheme, getServerTheme);
+
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl" data-theme={theme}>
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
