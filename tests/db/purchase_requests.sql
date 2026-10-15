@@ -1,7 +1,7 @@
 \set ON_ERROR_STOP on
 -- Simulated registered customer requests a product from an admin-approved seller.
 -- Privilege boundary: clients may read their own requests through RLS but cannot mutate rows.
-DO $
+DO $request_acl$
 BEGIN
  IF NOT has_table_privilege('authenticated','public.purchase_requests','SELECT') THEN
    RAISE EXCEPTION 'SECURITY FAILURE: signed-in users cannot read scoped requests';
@@ -19,7 +19,7 @@ BEGIN
  OR has_function_privilege('anon','public.buyer_cancel_request(uuid)','EXECUTE') THEN
    RAISE EXCEPTION 'SECURITY FAILURE: anonymous user can call purchase request RPC';
  END IF;
-END $;
+END $request_acl$;
 
 SET ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222',false);
