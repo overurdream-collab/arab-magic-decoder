@@ -271,6 +271,103 @@ export type Database = {
         }
         Relationships: []
       }
+      purchase_requests: {
+        Row: {
+          accepted_at: string | null
+          buyer_id: string
+          closed_at: string | null
+          created_at: string
+          id: string
+          offer_id: string
+          part_id: string
+          price_yer: number
+          qty: number
+          review_note: string | null
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          buyer_id: string
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          offer_id: string
+          part_id: string
+          price_yer: number
+          qty: number
+          review_note?: string | null
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          buyer_id?: string
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          offer_id?: string
+          part_id?: string
+          price_yer?: number
+          qty?: number
+          review_note?: string | null
+          seller_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_requests_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "seller_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_requests_part_id_fkey"
+            columns: ["part_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_parts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_requests_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      search_gap_counts: {
+        Row: {
+          created_at: string
+          day: string
+          hits: number
+          id: string
+          last_seen_at: string
+          term: string
+        }
+        Insert: {
+          created_at?: string
+          day?: string
+          hits?: number
+          id?: string
+          last_seen_at?: string
+          term: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          hits?: number
+          id?: string
+          last_seen_at?: string
+          term?: string
+        }
+        Relationships: []
+      }
       seller_applications: {
         Row: {
           business_name: string
@@ -598,12 +695,18 @@ export type Database = {
     }
     Functions: {
       admin_commit_catalog: { Args: { _id: string }; Returns: Json }
+      admin_search_gap_summary: { Args: never; Returns: Json }
       admin_stage_catalog: {
         Args: { _items: Json; _source?: string }
         Returns: Json
       }
       approve_seller_application: {
         Args: { _app_id: string; _note?: string }
+        Returns: string
+      }
+      buyer_cancel_request: { Args: { _request_id: string }; Returns: boolean }
+      create_purchase_request: {
+        Args: { _offer_id: string; _qty?: number }
         Returns: string
       }
       has_role: {
@@ -614,9 +717,16 @@ export type Database = {
         Returns: boolean
       }
       is_current_user_admin: { Args: never; Returns: boolean }
+      list_my_purchase_requests: { Args: never; Returns: Json }
+      list_seller_purchase_requests: { Args: never; Returns: Json }
+      record_zero_result_search: { Args: { _term: string }; Returns: boolean }
       reject_seller_application: {
         Args: { _app_id: string; _note?: string }
         Returns: undefined
+      }
+      seller_respond_to_request: {
+        Args: { _action: string; _note?: string; _request_id: string }
+        Returns: string
       }
     }
     Enums: {
