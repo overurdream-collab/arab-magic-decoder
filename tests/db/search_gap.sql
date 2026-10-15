@@ -1,4 +1,21 @@
 \set ON_ERROR_STOP on
+-- Aggregate demand data must not permit direct client mutation or anonymous reads.
+DO $gap_acl$
+BEGIN
+ IF has_table_privilege('anon','public.search_gap_counts','SELECT') OR
+    has_table_privilege('anon','public.search_gap_counts','INSERT') OR
+    has_table_privilege('authenticated','public.search_gap_counts','INSERT') OR
+    has_table_privilege('authenticated','public.search_gap_counts','UPDATE') OR
+    has_table_privilege('authenticated','public.search_gap_counts','DELETE') THEN
+   RAISE EXCEPTION 'SECURITY FAILURE: direct analytics table access must be RPC-only';
+ END IF;
+ IF NOT has_function_privilege('anon','public.record_zero_result_search(text)','EXECUTE') THEN
+   RAISE EXCEPTION 'SECURITY FAILURE: anonymous demand reporting RPC is unavailable';
+ END IF;
+ IF has_function_privilege('anon','public.admin_search_gap_summary()','EXECUTE') THEN
+   RAISE EXCEPTION 'SECURITY FAILURE: anonymous admin analytics RPC is callable';
+ END IF;
+END $gap_acl$;
 SET ROLE anon;
 SELECT public.record_zero_result_search('فحمات فرامل') AS accepted \gset
 SELECT public.record_zero_result_search('فحمات فرامل');
