@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthBox, useSession } from "@/components/AuthBox";
 import { QUALITY, CONDITION, fmtYER } from "@/lib/catalog";
 import { SELLER_TYPES } from "@/lib/seller-types";
+import { SellerRequests } from "@/components/SellerRequests";
 
 export const Route = createFileRoute("/seller")({
   head: () => ({
@@ -274,6 +275,8 @@ function Dashboard({ seller }: { seller: Seller }) {
         <span className="text-sm text-muted-foreground">{seller.city}</span>
         <span className="ms-auto text-sm">عدد العروض: {offers.data?.length ?? "…"}</span>
       </div>
+
+      <SellerRequests sellerId={seller.id} />
 
       <CatalogPicker
         onPick={(p) => setEditing({ partId: p.id, partName: p.name_ar, form: emptyOffer(used) })}
