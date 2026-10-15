@@ -27,7 +27,18 @@ SELECT public.create_purchase_request(
  (SELECT o.id FROM public.seller_offers o JOIN public.sellers s ON s.id=o.seller_id
   WHERE s.owner_id='11111111-1111-4111-8111-111111111111' LIMIT 1),2
 ) AS req_id \gset
-DO $$
+DO $duplicate_guard$
+DECLARE blocked boolean:=false;
+BEGIN
+ BEGIN
+  PERFORM public.create_purchase_request(
+   (SELECT offer_id FROM public.purchase_requests WHERE buyer_id=auth.uid() AND status='requested' LIMIT 1),1
+  );
+ EXCEPTION WHEN unique_violation THEN blocked:=true;
+ END;
+ IF NOT blocked THEN RAISE EXCEPTION 'SECURITY FAILURE: duplicate open request was accepted'; END IF;
+END $duplicate_guard$;
+DO $buyer_guard$
 DECLARE denied boolean:=false;
 BEGIN
  BEGIN
@@ -35,7 +46,7 @@ BEGIN
  EXCEPTION WHEN OTHERS THEN denied:=true;
  END;
  IF NOT denied THEN RAISE EXCEPTION 'SECURITY FAILURE: buyer accepted order as seller'; END IF;
-END $$;
+END $buyer_guard$;
 RESET ROLE;
 
 SET ROLE authenticated;
@@ -77,3 +88,18 @@ BEGIN
 END $$;
 RESET ROLE;
 SELECT 'request acceptance, seller ownership, stock reservation and cancellation PASS';
+
+-- Completed cancellation should release the single-open-request guard.
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222',false);
+SELECT public.create_purchase_request(
+ (SELECT offer_id FROM public.purchase_requests WHERE buyer_id=auth.uid() AND status='cancelled' LIMIT 1),1
+);
+DO $reorder_guard$
+BEGIN
+ IF (SELECT count(*) FROM public.purchase_requests WHERE buyer_id=auth.uid() AND status='requested')<>1 THEN
+  RAISE EXCEPTION 'Cancellation did not allow subsequent request';
+ END IF;
+END $reorder_guard$;
+RESET ROLE;
+SELECT 'duplicate open request protection and re-order after cancellation PASS';
