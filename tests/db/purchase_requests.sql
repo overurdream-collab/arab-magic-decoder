@@ -38,7 +38,7 @@ BEGIN
  END;
  IF NOT blocked THEN RAISE EXCEPTION 'SECURITY FAILURE: duplicate open request was accepted'; END IF;
 END $duplicate_guard$;
-DO $
+DO $buyer_guard$
 DECLARE denied boolean:=false;
 BEGIN
  BEGIN
@@ -46,7 +46,7 @@ BEGIN
  EXCEPTION WHEN OTHERS THEN denied:=true;
  END;
  IF NOT denied THEN RAISE EXCEPTION 'SECURITY FAILURE: buyer accepted order as seller'; END IF;
-END $$;
+END $buyer_guard$;
 RESET ROLE;
 
 SET ROLE authenticated;
