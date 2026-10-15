@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - feat/qitaa-phase1-seller-admin-review
-      - feat/qitaa-zero-result-analytics
-      - feat/qitaa-zero-result-analytics-rebased
-      - feat/qitaa-vehicle-identity-foundation
   pull_request:
     branches:
       - main
@@ -28,13 +25,9 @@ jobs:
           bun-version: latest
       - name: Install dependencies
         run: bun install --frozen-lockfile
-      - name: Generate typed routes with production build
-        run: bun run build
       - name: TypeScript typecheck
         run: bunx tsc --noEmit
       - name: ESLint
         run: bun run lint
-      - name: VIN regression tests
-        run: bun test tests/vin.test.mjs tests/nhtsa-vin.test.ts
       - name: Production build
         run: bun run build

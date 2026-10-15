@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ScanLine, Search } from "lucide-react";
 import { fetchMakes } from "@/lib/catalog";
 import { decodeVin } from "@/lib/vin";
-import { decodeVinOfficial } from "@/lib/nhtsa-vin";
 
 const sel = "h-11 w-full rounded-lg border bg-background px-3 text-sm text-foreground";
 
@@ -13,7 +12,6 @@ export function VehiclePicker() {
   const { data: makes = [] } = useQuery({ queryKey: ["makes"], queryFn: fetchMakes });
   const [vin, setVin] = useState("");
   const [vinErr, setVinErr] = useState("");
-  const [vinBusy, setVinBusy] = useState(false);
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
@@ -23,58 +21,15 @@ export function VehiclePicker() {
     ? Array.from({ length: m.year_end - m.year_start + 1 }, (_, i) => m.year_end - i)
     : [];
 
-  const onVin = async () => {
-    const raw = vin.trim().toUpperCase();
-    const preliminary = decodeVin(raw);
-    if (raw.length !== 17 || /[^A-HJ-NPR-Z0-9]/.test(raw)) {
-      setVinErr(preliminary.error ?? "رقم الهيكل غير صالح.");
-      return;
-    }
-    setVinBusy(true);
+  const onVin = () => {
+    const r = decodeVin(vin);
+    if (!r.valid) return setVinErr(r.error!);
+    const mk = makes.find((x) => x.name_en.toLowerCase() === r.make!.toLowerCase());
+    if (!mk) return setVinErr("الشركة غير متوفرة في الكتالوج بعد");
     setVinErr("");
-    try {
-      const result = await decodeVinOfficial(raw);
-      const mk = makes.find((x) => x.name_en.toLowerCase() === result.make.toLowerCase());
-      if (!mk) {
-        setVinErr(
-          `تم تحديد ${result.make} ${result.model} بواسطة NHTSA، لكنها غير موجودة في كتالوج قِطَع بعد. اختر سيارتك يدويًا.`,
-        );
-        return;
-      }
-      setMake(mk.id);
-      const matchedModel = mk.vehicle_models.find(
-        (x) => x.name_en.toLowerCase() === result.model.toLowerCase(),
-      );
-      if (
-        matchedModel &&
-        result.year !== null &&
-        result.year >= matchedModel.year_start &&
-        result.year <= matchedModel.year_end
-      ) {
-        setModel(matchedModel.id);
-        setYear(String(result.year));
-      } else {
-        setModel("");
-        setYear("");
-      }
-      setVinErr(
-        `NHTSA: ${result.make} ${result.model} ${result.year ?? ""}. ${result.note} راجع الموديل والسنة قبل البحث.`,
-      );
-    } catch (error) {
-      const mk = preliminary.make
-        ? makes.find((x) => x.name_en.toLowerCase() === preliminary.make?.toLowerCase())
-        : undefined;
-      if (mk) {
-        setMake(mk.id);
-        setModel("");
-        setYear("");
-      }
-      setVinErr(
-        `${error instanceof Error ? error.message : "تعذر التحقق من رقم الهيكل."} ${mk ? "تم التعرف مبدئيًا على الشركة فقط؛ اختر الموديل والسنة يدويًا." : ""}`,
-      );
-    } finally {
-      setVinBusy(false);
-    }
+    setMake(mk.id);
+    setYear(r.year ? String(r.year) : "");
+    setVinErr(`تم التعرف: ${mk.name_ar}${r.year ? " " + r.year : ""} — اختر الموديل لإكمال البحث`);
   };
 
   return (
@@ -92,16 +47,12 @@ export function VehiclePicker() {
           />
           <button
             onClick={onVin}
-            disabled={vinBusy}
             className="flex shrink-0 items-center gap-1 rounded-lg bg-primary px-4 font-bold text-primary-foreground"
           >
             <ScanLine className="h-4 w-4" />
-            {vinBusy ? "جارٍ التحقق…" : "فك"}
+            فك
           </button>
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">
-          بالضغط على «فك»، يُرسل رقم الهيكل إلى NHTSA الأمريكية للتحقق، ولا نحفظه.
-        </p>
         {vinErr && <p className="mt-1 text-xs text-muted-foreground">{vinErr}</p>}
       </div>
       <div className="grid grid-cols-3 gap-2">
@@ -155,7 +106,7 @@ export function VehiclePicker() {
         className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-secondary font-bold text-secondary-foreground disabled:opacity-40"
       >
         <Search className="h-4 w-4" />
-        اعرض القطع المرشحة لسيارتي
+        اعرض القطع المتوافقة مع سيارتي
       </button>
     </div>
   );

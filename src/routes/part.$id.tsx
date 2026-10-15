@@ -1,6 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { BadgeCheck, MapPin, Package, Star, Truck } from "lucide-react";
 import { CONDITION, QUALITY, fetchPart, fmtYER } from "@/lib/catalog";
@@ -19,30 +17,6 @@ export const Route = createFileRoute("/part/$id")({
 
 function PartPage() {
   const { id } = Route.useParams();
-  const navigate = useNavigate();
-  const [requestBusy, setRequestBusy] = useState("");
-  const [requestMessage, setRequestMessage] = useState("");
-
-  async function requestOffer(offerId: string) {
-    setRequestBusy(offerId);
-    setRequestMessage("");
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) {
-      setRequestBusy("");
-      setRequestMessage("سجّل الدخول أولًا من صفحة «طلباتي»، ثم عد لاختيار العرض.");
-      return;
-    }
-    const { error } = await supabase.rpc("create_purchase_request", {
-      _offer_id: offerId,
-      _qty: 1,
-    });
-    setRequestBusy("");
-    if (error) {
-      setRequestMessage("تعذر إرسال الطلب: " + error.message);
-      return;
-    }
-    await navigate({ to: "/orders" });
-  }
   const {
     data: p,
     isLoading,
@@ -135,14 +109,6 @@ function PartPage() {
       </div>
 
       <h2 className="mb-3 mt-10 text-2xl font-black">مقارنة أسعار التجار ({offers.length})</h2>
-      {requestMessage && (
-        <p role="alert" className="mb-3 text-sm text-destructive">
-          {requestMessage}
-        </p>
-      )}
-      <p className="mb-4 text-sm text-muted-foreground">
-        الطلب طلب توفر من التاجر، وليس عملية دفع أو شراء إلكتروني مؤكدة.
-      </p>
       <div className="space-y-3">
         {offers.map((o, i) => (
           <div
@@ -180,17 +146,6 @@ function PartPage() {
             </span>
             <b className="text-lg text-primary">{fmtYER(Number(o.price_yer))}</b>
             {i === 0 && <span className="text-xs font-bold text-primary">الأرخص</span>}
-            <button
-              className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
-              disabled={!!requestBusy || o.stock_qty < 1}
-              onClick={() => requestOffer(o.id)}
-            >
-              {o.stock_qty < 1
-                ? "غير متوفر"
-                : requestBusy === o.id
-                  ? "جارٍ الإرسال…"
-                  : "أرسل طلب توفر"}
-            </button>
           </div>
         ))}
       </div>
