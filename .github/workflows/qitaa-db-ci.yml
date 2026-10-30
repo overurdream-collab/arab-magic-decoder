@@ -4,6 +4,8 @@ on:
     branches:
       - feat/qitaa-phase1-seller-admin-review
       - feat/qitaa-catalog-import-staging
+      - feat/qitaa-zero-result-analytics
+      - feat/qitaa-zero-result-analytics-rebased
   pull_request:
     branches: [main]
 permissions:
@@ -38,3 +40,9 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/seller_rls.sql
       - name: Assert catalog import approvals and tamper resistance
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/catalog_import.sql
+      - name: Assert demand privacy and administrative access
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/search_gap.sql
+
+
+      - name: Assert purchase request reservation and ACL
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_requests.sql
