@@ -27,6 +27,9 @@ export function SiteHeader() {
             <Link to="/garage" activeProps={{ className: "text-primary-bright" }}>
               سياراتي
             </Link>
+            <Link to="/orders" activeProps={{ className: "text-primary-bright" }}>
+              طلباتي
+            </Link>
             <Link to="/seller" activeProps={{ className: "text-primary-bright" }}>
               للتجار
             </Link>
