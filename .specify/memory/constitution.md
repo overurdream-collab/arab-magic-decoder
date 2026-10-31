@@ -1,14 +1,3 @@
-<!--
-Sync Impact Report
-- Version change: (none — placeholder template) → 1.0.0 (initial ratified constitution)
-- Modified principles: none (no prior principles existed)
-- Added sections: Core Principles I–XIII; Source of Truth and Technology Baseline;
-  Quality Gates and Review Process; Governance
-- Removed sections: none
-- Follow-up TODOs: TODO(RATIFICATION_DATE) — original adoption date unknown; replace with
-  the actual date the project owner formally ratifies this constitution.
--->
-
 # Qitaa (AutoParts Yemen) Constitution
 
 ## Core Principles
@@ -33,8 +22,9 @@ approval rather than implemented opportunistically.
 
 The live repository — actual code, schema, migrations, branches, tests, and CI — is the only
 source of truth. Every capability MUST be inspected before being described and MUST be
-classified as implemented, partial, mocked, or not implemented. No one MUST fabricate
-capabilities, evidence, test results, data, credentials, integrations, or completion claims.
+classified as implemented, partial, mocked, or not implemented. Contributors and agents
+MUST NOT fabricate capabilities, evidence, test results, data, credentials, integrations, or
+completion claims.
 Rationale: the target-documents describe capabilities that do not exist; only verified reality
 may be reported.
 
