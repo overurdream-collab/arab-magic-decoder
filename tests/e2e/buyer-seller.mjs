@@ -43,12 +43,8 @@ try {
 
   await buyerPage.reload();
   await buyerPage.getByText("وافق التاجر وحجز الكمية").waitFor({ timeout: 15000 });
-  await buyerPage.getByRole("button", { name: "إلغاء الطلب" }).click();
   buyerPage.once("dialog", dialog => dialog.accept());
-  // The confirmation handler is registered before the next click below.
-  await buyerPage.getByRole("button", { name: "إلغاء الطلب" }).click().catch(async () => {
-    // First click may have opened the native confirmation dialog.
-  });
+  await buyerPage.getByRole("button", { name: "إلغاء الطلب" }).click();
   await buyerPage.getByText("أُلغي الطلب").waitFor({ timeout: 15000 });
   report.push("PASS buyer cancels accepted request");
 
