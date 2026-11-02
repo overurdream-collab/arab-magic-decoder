@@ -33,7 +33,7 @@ GRANT ALL ON public.seller_applications TO service_role;
 
 CREATE POLICY "applicant reads own" ON public.seller_applications
   FOR SELECT TO authenticated
-  USING (user_id = (SELECT auth.uid()) OR (SELECT public.is_current_user_admin()));
+  USING (user_id = (SELECT auth.uid()) OR (SELECT public.has_role(auth.uid(),'admin'::public.app_role)));
 CREATE POLICY "applicant submits own pending application" ON public.seller_applications
   FOR INSERT TO authenticated
   WITH CHECK (user_id = (SELECT auth.uid()) AND status = 'pending'
@@ -49,7 +49,7 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
 AS $$
 DECLARE app public.seller_applications; new_seller_id uuid;
 BEGIN
-  IF auth.uid() IS NULL OR NOT public.is_current_user_admin() THEN
+  IF auth.uid() IS NULL OR NOT public.has_role(auth.uid(),'admin'::public.app_role) THEN
     RAISE EXCEPTION 'forbidden';
   END IF;
   SELECT * INTO app FROM public.seller_applications WHERE id = _app_id FOR UPDATE;
@@ -74,7 +74,7 @@ RETURNS boolean
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
 AS $$
 BEGIN
-  IF auth.uid() IS NULL OR NOT public.is_current_user_admin() THEN
+  IF auth.uid() IS NULL OR NOT public.has_role(auth.uid(),'admin'::public.app_role) THEN
     RAISE EXCEPTION 'forbidden';
   END IF;
   UPDATE public.seller_applications
