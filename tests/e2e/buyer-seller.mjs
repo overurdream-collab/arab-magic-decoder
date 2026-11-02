@@ -18,9 +18,10 @@ async function login(page, credentials, path) {
 const browser = await chromium.launch({ headless: true });
 const diagnostics = [];
 const report = [];
+let buyerPage;
 try {
   const buyerContext = await browser.newContext();
-  const buyerPage = await buyerContext.newPage();
+  buyerPage = await buyerContext.newPage();
   buyerPage.on("pageerror", e => diagnostics.push("PAGEERROR " + e.message));
   buyerPage.on("response", r => { if (r.status() >= 400) diagnostics.push(`HTTP ${r.status()} ${r.url()}`); });
   buyerPage.on("console", m => { if (m.type() === "error") diagnostics.push("CONSOLE " + m.text()); });
@@ -31,7 +32,10 @@ try {
   console.log("PART_PAGE_TEXT", (await buyerPage.locator("body").innerText()).slice(0,5000));
   console.log("BROWSER_DIAGNOSTICS", diagnostics.join("\\n"));
   await buyerPage.getByRole("button", { name: "أرسل طلب توفر" }).click();
-  await buyerPage.waitForURL("**/orders", { timeout: 15000 });
+  await buyerPage.waitForTimeout(1500);
+  console.log("AFTER_REQUEST_URL", buyerPage.url());
+  console.log("AFTER_REQUEST_TEXT", (await buyerPage.locator("body").innerText()).slice(0,4000));
+  if (!buyerPage.url().endsWith("/orders")) throw new Error("Purchase request did not navigate to /orders");
   await buyerPage.getByText("بانتظار موافقة التاجر").waitFor({ timeout: 15000 });
   report.push("PASS buyer creates purchase request through part page");
 
