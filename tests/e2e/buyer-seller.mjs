@@ -13,6 +13,8 @@ async function login(page, credentials, path) {
   await page.getByPlaceholder("كلمة المرور").fill(credentials.password);
   await page.getByRole("button", { name: "دخول" }).click();
   await page.getByText(/جارٍ التحميل|جارٍ التحقق/).first().waitFor({ state: "hidden", timeout: 15000 }).catch(() => {});
+  if (path === "/orders") await page.getByText("لا توجد طلبات حتى الآن").waitFor({ timeout: 10000 });
+  if (path === "/seller") await page.getByText("طلبات العملاء").waitFor({ timeout: 10000 });
 }
 
 const browser = await chromium.launch({ headless: true });
