@@ -16,12 +16,19 @@ async function login(page, credentials, path) {
 }
 
 const browser = await chromium.launch({ headless: true });
+const diagnostics = [];
 const report = [];
 try {
   const buyerContext = await browser.newContext();
   const buyerPage = await buyerContext.newPage();
+  buyerPage.on("pageerror", e => diagnostics.push("PAGEERROR " + e.message));
+  buyerPage.on("console", m => { if (m.type() === "error") diagnostics.push("CONSOLE " + m.text()); });
   await login(buyerPage, buyer, "/orders");
   await buyerPage.goto(`${base}/part/${partId}`);
+  await buyerPage.waitForTimeout(1500);
+  console.log("PART_PAGE_URL", buyerPage.url());
+  console.log("PART_PAGE_TEXT", (await buyerPage.locator("body").innerText()).slice(0,5000));
+  console.log("BROWSER_DIAGNOSTICS", diagnostics.join("\\n"));
   await buyerPage.getByRole("button", { name: "أرسل طلب توفر" }).click();
   await buyerPage.waitForURL("**/orders", { timeout: 15000 });
   await buyerPage.getByText("بانتظار موافقة التاجر").waitFor({ timeout: 15000 });
