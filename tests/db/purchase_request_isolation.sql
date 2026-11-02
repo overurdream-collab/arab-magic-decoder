@@ -10,7 +10,7 @@ DECLARE suffix text; own_id uuid; other_id uuid; before_row jsonb;
 BEGIN
  FOREACH suffix IN ARRAY ARRAY['1','2'] LOOP
   PERFORM set_config('request.jwt.claim.sub','91000000-0000-4000-8000-00000000000'||suffix,false);
-  PERFORM pg_temp.check_session(auth.uid());
+  PERFORM pg_temp.check_session(('91000000-0000-4000-8000-00000000000'||suffix)::uuid);
   own_id := current_setting('qitaa.test.request_'||CASE suffix WHEN '1' THEN 'a' ELSE 'b' END)::uuid;
   other_id := current_setting('qitaa.test.request_'||CASE suffix WHEN '1' THEN 'b' ELSE 'a' END)::uuid;
   PERFORM pg_temp.check_true((SELECT count(*)=1 AND bool_and(id=own_id) FROM public.purchase_requests)
@@ -63,6 +63,8 @@ BEGIN
  PERFORM pg_temp.check_true(changed=1 AND (SELECT stock_qty=8 FROM public.seller_offers WHERE id='95000000-0000-4000-8000-000000000002'),'S4 verified owner can edit its own stock');
  UPDATE public.seller_offers SET stock_qty=7 WHERE id='95000000-0000-4000-8000-000000000002';
 END $$;
+SELECT pg_temp.expect_denial('UPDATE public.seller_offers SET stock_qty=-1 WHERE id=''95000000-0000-4000-8000-000000000002''','23514','new row for relation "seller_offers" violates check constraint "seller_offers_stock_nonneg"');
+SELECT pg_temp.check_true((SELECT stock_qty=7 FROM public.seller_offers WHERE id='95000000-0000-4000-8000-000000000002'),'negative stock denied for legitimate owner, stock remains 7');
 SELECT pg_temp.check_true((SELECT status='requested' AND qty=1 AND accepted_at IS NULL AND closed_at IS NULL FROM public.purchase_requests WHERE id=current_setting('qitaa.test.request_b')::uuid),'B4/S5 buyer B request survived every cross-account denial');
 SELECT pg_temp.check_true(public.seller_respond_to_request(current_setting('qitaa.test.request_b')::uuid,'reject')='reject','S6 seller B can reject its own request');
 SELECT pg_temp.check_true((SELECT status='rejected' FROM public.purchase_requests WHERE id=current_setting('qitaa.test.request_b')::uuid)
