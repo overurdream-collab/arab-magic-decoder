@@ -54,11 +54,6 @@ jobs:
           psql "$DB_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO public.user_roles(user_id,role) VALUES ('$SELLER_ID','seller');"
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f tests/e2e/seed.sql
       - name: Build and start app against local Supabase
-        env:
-          VITE_SUPABASE_URL: http://127.0.0.1:54321
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ env.SUPABASE_ANON_KEY }}
-          SUPABASE_URL: http://127.0.0.1:54321
-          SUPABASE_PUBLISHABLE_KEY: ${{ env.SUPABASE_ANON_KEY }}
         run: |
           source /tmp/supabase.env
           export VITE_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY"
