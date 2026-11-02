@@ -22,6 +22,7 @@ try {
   const buyerContext = await browser.newContext();
   const buyerPage = await buyerContext.newPage();
   buyerPage.on("pageerror", e => diagnostics.push("PAGEERROR " + e.message));
+  buyerPage.on("response", r => { if (r.status() >= 400) diagnostics.push(`HTTP ${r.status()} ${r.url()}`); });
   buyerPage.on("console", m => { if (m.type() === "error") diagnostics.push("CONSOLE " + m.text()); });
   await login(buyerPage, buyer, "/orders");
   await buyerPage.goto(`${base}/part/${partId}`);
