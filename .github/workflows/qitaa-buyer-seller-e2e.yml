@@ -52,7 +52,8 @@ jobs:
           done
           SELLER_ID=$(python3 -c 'import json;print(json.load(open("/tmp/auth-seller.json"))["id"])')
           psql "$DB_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO public.user_roles(user_id,role) VALUES ('$SELLER_ID','seller');"
-          psql "$DB_URL" -v ON_ERROR_STOP=1 -v seller_id="$SELLER_ID" -f tests/e2e/seed.sql
+          sed "s/__SELLER_ID__/$SELLER_ID/g" tests/e2e/seed.sql > /tmp/qitaa-seed.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f /tmp/qitaa-seed.sql
       - name: Build and start app against local Supabase
         run: |
           source /tmp/supabase.env
