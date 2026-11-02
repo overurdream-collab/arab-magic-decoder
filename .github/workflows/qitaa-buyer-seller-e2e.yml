@@ -1,0 +1,92 @@
+name: Qitaa Buyer-Seller Browser E2E
+
+on:
+  push:
+    branches: [main, test/qitaa-buyer-seller-e2e]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  buyer-seller-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      E2E_BUYER_EMAIL: buyer.e2e@qitaa.test
+      E2E_BUYER_PASSWORD: Qitaa-E2E-Buyer-2026!
+      E2E_SELLER_EMAIL: seller.e2e@qitaa.test
+      E2E_SELLER_PASSWORD: Qitaa-E2E-Seller-2026!
+      E2E_OUTSIDER_EMAIL: outsider.e2e@qitaa.test
+      E2E_OUTSIDER_PASSWORD: Qitaa-E2E-Outsider-2026!
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start isolated local Supabase
+        run: |
+          supabase start
+          supabase db reset
+          supabase status -o env > /tmp/supabase.env
+          cat /tmp/supabase.env | sed -E 's/(KEY|TOKEN)=.*/\1=[REDACTED]/'
+      - name: Install app and browser dependencies
+        run: |
+          bun install --frozen-lockfile
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Create disposable Auth users and seed catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          source /tmp/supabase.env
+          for spec in "buyer:$E2E_BUYER_EMAIL:$E2E_BUYER_PASSWORD" "seller:$E2E_SELLER_EMAIL:$E2E_SELLER_PASSWORD" "outsider:$E2E_OUTSIDER_EMAIL:$E2E_OUTSIDER_PASSWORD"; do
+            IFS=: read -r role email password <<< "$spec"
+            curl --fail-with-body -sS "$API_URL/auth/v1/admin/users" \
+              -H "apikey: $SERVICE_ROLE_KEY" -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"email\":\"$email\",\"password\":\"$password\",\"email_confirm\":true,\"user_metadata\":{\"full_name\":\"E2E $role\"}}" > "/tmp/auth-$role.json"
+          done
+          SELLER_ID=$(python3 -c 'import json;print(json.load(open("/tmp/auth-seller.json"))["id"])')
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO public.user_roles(user_id,role) VALUES ('$SELLER_ID','seller');"
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f tests/e2e/seed.sql
+      - name: Build and start app against local Supabase
+        env:
+          VITE_SUPABASE_URL: http://127.0.0.1:54321
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ env.SUPABASE_ANON_KEY }}
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_PUBLISHABLE_KEY: ${{ env.SUPABASE_ANON_KEY }}
+        run: |
+          source /tmp/supabase.env
+          export VITE_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY"
+          export SUPABASE_PUBLISHABLE_KEY="$ANON_KEY"
+          bun run dev --host 127.0.0.1 --port 4173 > /tmp/qitaa-app.log 2>&1 &
+          echo $! > /tmp/qitaa-app.pid
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4173/ -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/qitaa-app.log
+          exit 1
+      - name: Run buyer-seller browser journey
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: node tests/e2e/buyer-seller.mjs
+      - name: Verify final database state and stock restoration
+        run: |
+          source /tmp/supabase.env
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -Atc "SELECT status || '|' || (SELECT stock_qty FROM public.seller_offers WHERE id='95000000-0000-4000-8000-000000000001') FROM public.purchase_requests WHERE id=(SELECT id FROM public.purchase_requests WHERE buyer_id=(SELECT id FROM auth.users WHERE email='$E2E_BUYER_EMAIL') ORDER BY created_at DESC LIMIT 1);" | tee e2e-db-result.txt
+          grep -Fx 'cancelled|5' e2e-db-result.txt
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qitaa-buyer-seller-e2e-evidence
+          path: |
+            e2e-db-result.txt
+            /tmp/qitaa-app.log
+            /tmp/auth-*.json
+          if-no-files-found: warn
