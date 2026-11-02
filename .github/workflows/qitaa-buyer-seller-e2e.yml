@@ -87,4 +87,5 @@ jobs:
             e2e-db-result.txt
             /tmp/qitaa-app.log
             /tmp/auth-*.json
+            qitaa-e2e-failure.png
           if-no-files-found: warn
