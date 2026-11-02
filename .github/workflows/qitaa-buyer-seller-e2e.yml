@@ -57,6 +57,8 @@ jobs:
       - name: Build and start app against local Supabase
         run: |
           source /tmp/supabase.env
+          export VITE_SUPABASE_URL="$API_URL"
+          export SUPABASE_URL="$API_URL"
           export VITE_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY"
           export SUPABASE_PUBLISHABLE_KEY="$ANON_KEY"
           bun run dev --host 127.0.0.1 --port 4173 > /tmp/qitaa-app.log 2>&1 &
