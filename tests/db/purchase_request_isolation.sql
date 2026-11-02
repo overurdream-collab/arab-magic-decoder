@@ -84,4 +84,4 @@ SELECT pg_temp.check_true((SELECT status='cancelled' AND qty=2 FROM public.purch
  AND (SELECT stock_qty=5 FROM public.seller_offers WHERE id='95000000-0000-4000-8000-000000000001')
  AND (SELECT stock_qty=7 FROM public.seller_offers WHERE id='95000000-0000-4000-8000-000000000002'),'stock restored to 5 and 7, quantities never negative or cross-mutated');
 ROLLBACK;
-\echo 'purchase_request_isolation.sql PASS (21 assertions; fixture rolled back)'
+\echo 'purchase_request_isolation.sql PASS (22 assertions; fixture rolled back)'
