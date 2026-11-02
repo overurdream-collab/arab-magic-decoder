@@ -46,3 +46,7 @@ jobs:
 
       - name: Assert purchase request reservation and ACL
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_requests.sql
+      - name: Assert rejection closure and unchanged inventory
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_rejection.sql
+      - name: Assert buyer and seller cross-account isolation
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_isolation.sql
