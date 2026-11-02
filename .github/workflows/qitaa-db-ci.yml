@@ -2,6 +2,7 @@ name: Qitaa DB Security
 on:
   push:
     branches:
+      - main
       - feat/qitaa-phase1-seller-admin-review
       - feat/qitaa-catalog-import-staging
       - feat/qitaa-zero-result-analytics
