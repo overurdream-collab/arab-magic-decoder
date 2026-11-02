@@ -1,5 +1,9 @@
 name: Qitaa Buyer-Seller Browser E2E
 
+concurrency:
+  group: qitaa-buyer-seller-browser-e2e
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main, test/qitaa-buyer-seller-e2e]
