@@ -32,7 +32,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 3.1.0
       - name: Start isolated local Supabase
         run: |
           supabase start
