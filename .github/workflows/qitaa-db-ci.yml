@@ -53,3 +53,5 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_fulfillment.sql
       - name: Assert request quantity boundaries and full-stock restoration
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_quantities.sql
+      - name: Assert concurrent reservations cannot oversell the last stock
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_concurrency.sql
