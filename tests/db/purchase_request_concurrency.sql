@@ -7,6 +7,7 @@ BEGIN;
 
 SET ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000001',false);
+SELECT public.buyer_cancel_request(current_setting('qitaa.test.request_a')::uuid);
 SELECT set_config('qitaa.test.race_request_a',
  public.create_purchase_request('95000000-0000-4000-8000-000000000001',5)::text,false);
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000002',false);
@@ -83,7 +84,9 @@ DROP FUNCTION public.qitaa_test_accept_as_seller(uuid);
 
 BEGIN;
 DELETE FROM public.purchase_requests
- WHERE id IN (current_setting('qitaa.test.race_request_a')::uuid,
+ WHERE id IN (current_setting('qitaa.test.request_a')::uuid,
+              current_setting('qitaa.test.request_b')::uuid,
+              current_setting('qitaa.test.race_request_a')::uuid,
               current_setting('qitaa.test.race_request_b')::uuid);
 DELETE FROM public.seller_offers WHERE id IN
  ('95000000-0000-4000-8000-000000000001','95000000-0000-4000-8000-000000000002');
