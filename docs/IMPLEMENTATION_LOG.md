@@ -39,7 +39,7 @@ Next: inspect actual CI logs when available, verify the routes and security beha
 - The automated GitHub workflows use disposable local databases and synthetic accounts. CI success does NOT verify production migration state, real-world fulfillment, COD settlement, external VIN fitment accuracy, or release readiness.
 - Do not apply migrations to production or enable live payment/fulfillment solely on the basis of these checks.
 
-Next execution gates: validate inventory race behavior and seller stock edits; specify and test delivery/COD state boundaries and auditability; verify deployment/migration parity separately with explicit production authorization.
+Current execution gates after PR #41: validate vehicle identity data provenance/rights and browser garage scenarios; verify deployment/migration parity only with explicit production authorization. Delivery/COD/refund flows remain unimplemented pending approved operating rules. Inventory race and stock-edit regression coverage is now in CI.
 
 
 ## 2026-11-14 — Handover PRs and quantity guard merged
@@ -125,3 +125,9 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - أُضيفت اختبارات PostgreSQL مؤقتة تثبت أن المستخدم الآخر لا يستطيع قراءة سيارة العميل أو تعديلها أو حذفها أو انتحال مالكها، وأن المالك يظل قادراً على قراءة سيارته وتحديثها وإضافة سجل صيانة.
 - نتائج Actions: DB Security 43639935410، HTTP Smoke 43639935496، Browser E2E 43639935434، Vehicle Reference Preview 43639935488، CI 43639935457 — كلها ناجحة.
 - تغيير اختبارات فقط؛ لم يتغير التطبيق أو المخطط، ولم تُمس قاعدة الإنتاج.
+
+## 2026-11-14 — حدود صلاحيات سجل التدقيق للمجهول
+
+- PR #42 مدمج في SHA d726386f319c414c39d5b21cf7d440166b407cb9 بعد نجاح 5/5 فحوص على head f2db17a960942303a1450869f5855b2fcc18cb8d.
+- أضاف اختبار PostgreSQL مؤقتاً يثبت أن anon لا يملك EXECUTE على دالتي قراءة سجل الطلبات أو الإدارة، ولا SELECT/INSERT/UPDATE/DELETE على جدول سجل الأحداث، مع بقاء EXECUTE للحسابات المصادق عليها.
+- Actions: E2E 43640184208، HTTP Smoke 43640184183، DB Security 43640184222، Vehicle Preview 43640184190، CI 43640184220 — كلها ناجحة. الاختبار فقط؛ لا تغيير إنتاجي.
