@@ -34,6 +34,21 @@ SELECT pg_temp.check_true(
  'requesting all five units does not reserve stock before seller approval');
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000003',false);
 SELECT pg_temp.check_session('91000000-0000-4000-8000-000000000003');
+-- A request is not a reservation: the seller can change available stock before acceptance.
+UPDATE public.seller_offers SET stock_qty=4
+ WHERE id='95000000-0000-4000-8000-000000000001';
+SELECT pg_temp.expect_denial(
+ format('SELECT public.seller_respond_to_request(%L::uuid,''accept'')',
+  current_setting('qitaa.test.quantity_request')::uuid),
+ 'P0001','stock changed');
+SELECT pg_temp.check_true(
+ (SELECT stock_qty=4 FROM public.seller_offers
+  WHERE id='95000000-0000-4000-8000-000000000001')
+ AND (SELECT status='requested' AND qty=5 FROM public.purchase_requests
+  WHERE id=current_setting('qitaa.test.quantity_request')::uuid),
+ 'accepting after stock falls below requested quantity changes neither stock nor request state');
+UPDATE public.seller_offers SET stock_qty=5
+ WHERE id='95000000-0000-4000-8000-000000000001';
 SELECT pg_temp.check_true(
  public.seller_respond_to_request(current_setting('qitaa.test.quantity_request')::uuid,'accept')='accept',
  'seller can accept exactly the available stock');
