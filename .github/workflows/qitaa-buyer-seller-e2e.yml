@@ -1,7 +1,7 @@
 name: Qitaa Buyer-Seller Browser E2E
 
 concurrency:
-  group: qitaa-buyer-seller-browser-e2e
+  group: qitaa-buyer-seller-browser-e2e-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 on:
