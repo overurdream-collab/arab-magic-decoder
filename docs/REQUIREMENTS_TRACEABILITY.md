@@ -55,3 +55,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - Analytics base migration was applied; table privilege revokes were executed. Final SQL privilege re-check was blocked by a temporary Lovable free-plan MCP action quota. Treat this confirmation as PENDING, not PASS.
 - PR #12 adds a source-controlled unique index preventing duplicate open buyer/offer requests, but the index is NOT verified as deployed in the live database. Pending existing-row conflict check, migration execution and verification.
 - Production is NOT accepted: real-user purchase-request and seller UAT, browser/device smoke, payment/delivery settlement, lawful source review for external vehicle datasets, and audited fitment evidence remain open.
+
+
+## 2026-11-14 — Purchase-request quantity regression evidence
+
+- PR #17 merged as `ac19c5858e17096bc77417eaa126d96bccba548b`, after five CI workflows passed on SHA `dd1cb93be9795c91dd213506003bb6ac9e163bb2` (GitHub Actions run IDs: 43627946692, 43627946752, 43627946683, 43627946686, 43627946760).
+- **Completed and tested in disposable CI:** invalid quantity rejection; full available quantity accepted; initial request leaves stock unchanged; seller acceptance reserves exact stock; buyer cancellation restores exact stock.
+- **Still partial/unverified:** concurrent last-unit requests and seller stock edits racing with accepted reservations; real buyer/seller UAT; deployment migration parity. CI is not production verification.
