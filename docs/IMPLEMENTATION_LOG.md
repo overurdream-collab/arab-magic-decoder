@@ -29,3 +29,14 @@ Next: inspect actual CI logs when available, verify the routes and security beha
 - PR #12: added a partial unique index for one open request per buyer and offer, along with duplicate/re-order regression tests. CI passed, and changes merged. **Live application and verification of this follow-up migration remain pending.**
 - Snapshot of existing production catalog: 7 vehicle makes, 14 models, 18 parts, 8 sellers (6 verified), 77 offers (59 active from verified sellers), zero buyer purchase requests. No synthetic customer order data was inserted into production.
 - Still needed: restore DB query quota; verify analytics rights and apply the duplicate-request guard after checking for conflicting existing rows; run authorized buyer/seller UAT; test mobile browser and VIN integration; audit order fulfillment semantics and offer stock edits; validate the external vehicle-data usage rights before bulk catalog imports.
+
+## 2026-11-14 — Purchase lifecycle verification and CI isolation
+
+- PR #16 merged: buyer quantity selector enforces a bounded client quantity and passes it to the existing server-side purchase-request RPC. All five CI workflows passed before merge.
+- PR #18 merged: disposable PostgreSQL regression checks enforce acceptance before fulfillment, inventory reservation on acceptance, terminal fulfilled state, and denial of cancellation after fulfillment. All five CI workflows passed before merge.
+- PR #19 merged: browser E2E concurrency now scopes to a pull request or ref, preventing unrelated pull requests from cancelling one another. Its initial browser run failed during Supabase CLI setup; a retry completed successfully, with all five workflows green before merge.
+- PR #17 remains a separate change for quantity boundary, full-stock reservation and cancellation restoration. Its first browser workflow was cancelled under the old shared concurrency group; retry and final merge are tracked separately. Do not mark #17 complete until its retry succeeds and it is merged.
+- The automated GitHub workflows use disposable local databases and synthetic accounts. CI success does NOT verify production migration state, real-world fulfillment, COD settlement, external VIN fitment accuracy, or release readiness.
+- Do not apply migrations to production or enable live payment/fulfillment solely on the basis of these checks.
+
+Next execution gates: finish #17; validate inventory race behavior and seller stock edits; specify and test delivery/COD state boundaries and auditability; verify deployment/migration parity separately with explicit production authorization.
