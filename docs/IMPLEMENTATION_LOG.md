@@ -109,3 +109,11 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - Pinned the E2E workflow to Supabase CLI `3.1.0` after GitHub API rate limits blocked `version: latest` during setup.
 - All five workflows passed: DB Security `43635667831`, HTTP Smoke `43635667832`, Buyer-Seller Browser E2E `43635667839`, Qitaa CI `43635667919`, Vehicle Reference Preview `43635667910`.
 - Tests used a disposable PostgreSQL database and synthetic users; no production database changes.
+
+
+## 2026-11-14 — Concurrent seller stock edit and reservation
+
+- PR #38 merged as `c68754d679884db7e0547b0bc8a179ccac9e3df1`; tested head `50e854788ef7a79f25872b6a91f14b7087a86a73`.
+- Added a disposable PostgreSQL race where seller B accepts a two-unit request while editing available stock. The test confirms row-level serialization, preserves the accepted request, and verifies buyer cancellation raises edited stock from one to three.
+- All five workflows passed: DB Security `43637364399`, Qitaa CI `43637364404`, HTTP Smoke `43637364406`, Vehicle Reference Preview `43637364438`, Buyer-Seller Browser E2E `43637364455`.
+- Test-only change; no production database or application behavior was changed.
