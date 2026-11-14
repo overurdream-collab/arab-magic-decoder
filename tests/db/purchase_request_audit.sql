@@ -1,6 +1,28 @@
 \set ON_ERROR_STOP on
 -- Disposable PostgreSQL only: participants can read request history, but clients cannot alter it.
 BEGIN;
+-- Explicit SQL privilege regression: newly added SECURITY DEFINER readers
+-- must never become callable by anonymous sessions or PUBLIC.
+DO $audit_reader_acl$
+BEGIN
+ IF has_function_privilege('anon','public.list_purchase_request_events(uuid)','EXECUTE')
+
+ OR has_function_privilege('anon','public.list_admin_purchase_requests(text)','EXECUTE')
+ THEN
+  RAISE EXCEPTION 'SECURITY FAILURE: anonymous execution (including inherited PUBLIC grants) of request audit or admin readers';
+ END IF;
+ IF NOT has_function_privilege('authenticated','public.list_purchase_request_events(uuid)','EXECUTE')
+ OR NOT has_function_privilege('authenticated','public.list_admin_purchase_requests(text)','EXECUTE') THEN
+  RAISE EXCEPTION 'SECURITY FAILURE: authenticated reader privilege unexpectedly absent';
+ END IF;
+ IF has_table_privilege('anon','public.purchase_request_events','SELECT')
+ OR has_table_privilege('anon','public.purchase_request_events','INSERT')
+ OR has_table_privilege('anon','public.purchase_request_events','UPDATE')
+ OR has_table_privilege('anon','public.purchase_request_events','DELETE') THEN
+  RAISE EXCEPTION 'SECURITY FAILURE: anonymous access to append-only audit table';
+ END IF;
+END $audit_reader_acl$;
+
 \ir purchase_test_fixture.sql
 
 RESET ROLE;
