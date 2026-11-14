@@ -75,3 +75,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - **Completed and tested in disposable PostgreSQL CI:** seller reduces available inventory after the request is submitted; accepting an insufficient request is denied without changing inventory or request state. Restoring quantity permits acceptance.
 - PR #25 merged as `276f9c1ee17a36548503625856534e47cecbc881`; all five workflows passed on SHA `de8135626ccb7e52c68853b0bcdd93668ac5bb10`.
 - **Still partial/unverified:** true concurrent seller stock edits versus reservation transactions, real buyer/seller UAT, and production schema parity.
+
+
+## 2026-11-14 — Purchase request audit trail
+
+- **Completed and tested in disposable PostgreSQL CI:** request creation and status transitions append audit events with actor attribution and prior/new status. Buyer and verified owning seller can read; other buyers cannot; authenticated clients cannot write or delete events directly.
+- PR #27 merged as `dab0ac926b94c492d8e08b21a8f81602638d141c`; 5/5 workflows passed on `5b918b2fd888f0bda16834385d0f7f3f6baeaea0`.
+- **Still partial/unverified:** production migration parity/application, real user UAT, and audit trails for seller/catalog/admin actions outside purchase requests.
