@@ -73,6 +73,7 @@ export function previewVehicleReferences(
       make: string;
       model: string;
       years: Set<number>;
+      vehicleTypes: Set<number>;
       sources: Set<string>;
       names: Set<string>;
     }
@@ -100,10 +101,12 @@ export function previewVehicleReferences(
       make: row.make.trim(),
       model: row.model.trim(),
       years: new Set<number>(),
+      vehicleTypes: new Set<number>(),
       sources: new Set<string>(),
       names: new Set<string>(),
     };
     group.years.add(row.year);
+    group.vehicleTypes.add(row.vehicleTypeId);
     group.sources.add(row.sourceId.trim());
     group.names.add(row.make.trim() + " / " + row.model.trim());
     groups.set(key, group);
@@ -117,7 +120,7 @@ export function previewVehicleReferences(
       rows.some((r) => year >= r.yearStart && year <= r.yearEnd),
     );
     const status: VehicleCandidate["status"] =
-      group.names.size > 1
+      group.vehicleTypes.size > 1 || group.names.size > 1
         ? "review"
         : rows.length > 1
           ? "review"
@@ -129,8 +132,10 @@ export function previewVehicleReferences(
                 ? "new_model"
                 : "new_make";
     const reason =
-      group.names.size > 1
-        ? "conflicting source spellings"
+      group.vehicleTypes.size > 1
+        ? "conflicting vehicle types; verify source identity before import"
+        : group.names.size > 1
+          ? "conflicting source spellings"
         : rows.length > 1
           ? "multiple existing records"
           : rows.length === 1 && !matchingYear
