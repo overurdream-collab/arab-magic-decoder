@@ -62,3 +62,9 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - PR #17 merged as `ac19c5858e17096bc77417eaa126d96bccba548b`, after five CI workflows passed on SHA `dd1cb93be9795c91dd213506003bb6ac9e163bb2` (GitHub Actions run IDs: 43627946692, 43627946752, 43627946683, 43627946686, 43627946760).
 - **Completed and tested in disposable CI:** invalid quantity rejection; full available quantity accepted; initial request leaves stock unchanged; seller acceptance reserves exact stock; buyer cancellation restores exact stock.
 - **Still partial/unverified:** concurrent last-unit requests and seller stock edits racing with accepted reservations; real buyer/seller UAT; deployment migration parity. CI is not production verification.
+
+## 2026-11-14 — Inventory concurrency regression
+
+- **Completed and tested in disposable PostgreSQL CI:** two concurrent seller acceptances cannot reserve the same last five units. One request becomes accepted and reserves all five units; the competing request remains requested.
+- PR #23 merged as `843966ddfb743b405cbd607709babf813bc85373`; 5/5 workflows passed on tested SHA `4e2289660bc6dfaf56900209857843a2999e970e`.
+- **Still partial/unverified:** seller stock edits racing with accepted reservations; production migration/schema parity; real buyer/seller UAT. No production database changes were made.

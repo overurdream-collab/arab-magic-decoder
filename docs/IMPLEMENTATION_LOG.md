@@ -48,3 +48,10 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - PR #17 was rebased onto the then-current `main` to preserve PR #19's isolated E2E concurrency configuration. CI passed 5/5 on tested SHA `dd1cb93be9795c91dd213506003bb6ac9e163bb2`; merged as `ac19c5858e17096bc77417eaa126d96bccba548b`.
 - The quantity SQL test covers negative, zero, over-available, and full-stock quantities; confirms no reservation before seller acceptance, exact reservation on acceptance, and exact inventory restoration on permitted buyer cancellation. All checks used disposable databases and synthetic users; no production data or schema was changed.
 - Follow-up remains: test concurrent requests/stock edits under contention, and separately verify production migration parity only with explicit authorization.
+
+## 2026-11-14 — Concurrent inventory reservation test
+
+- PR #23 merged as `843966ddfb743b405cbd607709babf813bc85373`; all five required CI workflows passed on tested SHA `4e2289660bc6dfaf56900209857843a2999e970e` (run IDs: 43628942285, 43628942212, 43628942209, 43628942343, 43628942226).
+- A new disposable PostgreSQL test races two buyers' five-unit requests against the same five-unit offer. A test-only trigger holds the winning offer row lock so both seller-acceptance RPC calls overlap.
+- **Verified in CI:** exactly one accept succeeds, inventory reaches zero without going negative, and the competing request remains `requested`.
+- Seller stock edits racing with accepted reservations remain untested. No application migration or production database was changed.
