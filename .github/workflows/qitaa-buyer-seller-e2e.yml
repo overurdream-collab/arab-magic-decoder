@@ -80,6 +80,10 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4173
         run: node tests/e2e/buyer-seller.mjs
+      - name: Run garage browser journey
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: node tests/e2e/garage.mjs
       - name: Verify final database state and stock restoration
         run: |
           source /tmp/supabase.env
