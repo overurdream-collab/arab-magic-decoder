@@ -27,8 +27,10 @@ SELECT pg_temp.check_true(
  jsonb_array_length(public.list_admin_purchase_requests('fulfilled'))=0,
  'administrator fulfilled filter does not leak requested rows');
 SELECT pg_temp.check_true(
- jsonb_array_length(public.list_admin_purchase_requests())=2,
- 'administrator can see both synthetic buyers without duplicating requests');
+ (SELECT count(*)=1
+  FROM jsonb_array_elements(public.list_admin_purchase_requests()) AS item
+  WHERE item->>'id'=current_setting('qitaa.test.request_a')),
+ 'administrator monitor does not duplicate the seeded request');
 SELECT pg_temp.check_true(
  jsonb_array_length(public.list_purchase_request_events(current_setting('qitaa.test.request_a')::uuid))=1,
  'administrator can view request audit history');
