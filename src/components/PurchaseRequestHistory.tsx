@@ -21,7 +21,11 @@ const EVENT_LABEL: Record<string, string> = {
 
 export function PurchaseRequestHistory({ requestId }: { requestId: string }) {
   const [open, setOpen] = useState(false);
-  const { data = [], isLoading, isError } = useQuery({
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["purchase-request-events", requestId],
     enabled: open,
     queryFn: async () => {
