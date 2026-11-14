@@ -24,6 +24,12 @@ SELECT pg_temp.check_true(
  ),
  'administrator can filter request intents by status');
 SELECT pg_temp.check_true(
+ jsonb_array_length(public.list_admin_purchase_requests('fulfilled'))=0,
+ 'administrator fulfilled filter does not leak requested rows');
+SELECT pg_temp.check_true(
+ jsonb_array_length(public.list_admin_purchase_requests())=2,
+ 'administrator can see both synthetic buyers without duplicating requests');
+SELECT pg_temp.check_true(
  jsonb_array_length(public.list_purchase_request_events(current_setting('qitaa.test.request_a')::uuid))=1,
  'administrator can view request audit history');
 SELECT pg_temp.expect_denial(
@@ -50,6 +56,9 @@ SELECT pg_temp.check_true(
   WHERE request_id=current_setting('qitaa.test.request_a')::uuid),
  'another buyer cannot read the request event history');
 SELECT pg_temp.expect_denial(
+ 'SELECT public.list_admin_purchase_requests()',
+ 'P0001','admin access required');
+SELECT pg_temp.expect_denial(
  format('SELECT public.list_purchase_request_events(%L::uuid)',
   current_setting('qitaa.test.request_a')::uuid),
  'P0001','request not accessible');
@@ -61,6 +70,9 @@ SELECT pg_temp.check_true(
  (SELECT count(*)=1 FROM public.purchase_request_events
   WHERE request_id=current_setting('qitaa.test.request_a')::uuid),
  'the verified owning seller can read the request history');
+SELECT pg_temp.expect_denial(
+ 'SELECT public.list_admin_purchase_requests()',
+ 'P0001','admin access required');
 SELECT pg_temp.check_true(
  public.seller_respond_to_request(current_setting('qitaa.test.request_a')::uuid,'accept')='accept',
  'seller acceptance records through the existing transition RPC');
