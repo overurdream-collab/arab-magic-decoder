@@ -117,3 +117,11 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - Added a disposable PostgreSQL race where seller B accepts a two-unit request while editing available stock. The test confirms row-level serialization, preserves the accepted request, and verifies buyer cancellation raises edited stock from one to three.
 - All five workflows passed: DB Security `43637364399`, Qitaa CI `43637364404`, HTTP Smoke `43637364406`, Vehicle Reference Preview `43637364438`, Buyer-Seller Browser E2E `43637364455`.
 - Test-only change; no production database or application behavior was changed.
+
+
+## 2026-11-14 — عزل بيانات سيارات العملاء
+
+- PR #41 دُمج بالـSHA 740fb0e3206db7d928ae5245f17ef2bbf9ecebc3 بعد نجاح الفحوص الخمسة على head 4e760e44f9ff23f6e1c58768cb2de0e40010df17.
+- أُضيفت اختبارات PostgreSQL مؤقتة تثبت أن المستخدم الآخر لا يستطيع قراءة سيارة العميل أو تعديلها أو حذفها أو انتحال مالكها، وأن المالك يظل قادراً على قراءة سيارته وتحديثها وإضافة سجل صيانة.
+- نتائج Actions: DB Security 43639935410، HTTP Smoke 43639935496، Browser E2E 43639935434، Vehicle Reference Preview 43639935488، CI 43639935457 — كلها ناجحة.
+- تغيير اختبارات فقط؛ لم يتغير التطبيق أو المخطط، ولم تُمس قاعدة الإنتاج.
