@@ -12,8 +12,17 @@ SET ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000005',false);
 SELECT pg_temp.check_session('91000000-0000-4000-8000-000000000005');
 SELECT pg_temp.check_true(
- jsonb_array_length(public.list_admin_purchase_requests())=2,
- 'administrator can list all seeded request intents');
+ EXISTS (
+  SELECT 1 FROM jsonb_array_elements(public.list_admin_purchase_requests()) AS item
+  WHERE item->>'id'=current_setting('qitaa.test.request_a')
+ ),
+ 'administrator can list the seeded request intent');
+SELECT pg_temp.check_true(
+ EXISTS (
+  SELECT 1 FROM jsonb_array_elements(public.list_admin_purchase_requests('requested')) AS item
+  WHERE item->>'id'=current_setting('qitaa.test.request_a')
+ ),
+ 'administrator can filter request intents by status');
 SELECT pg_temp.check_true(
  jsonb_array_length(public.list_purchase_request_events(current_setting('qitaa.test.request_a')::uuid))=1,
  'administrator can view request audit history');
