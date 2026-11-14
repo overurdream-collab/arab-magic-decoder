@@ -199,3 +199,11 @@ PR #36 merged as `90c1c219feedcd008b246c8e2d2e9bbd65b71925`. All five workflows 
 ## Handover update — 2026-11-14
 
 PR #38 merged as `c68754d679884db7e0547b0bc8a179ccac9e3df1`. All five workflows passed on tested head `50e854788ef7a79f25872b6a91f14b7087a86a73` (run IDs: 43637364399, 43637364404, 43637364406, 43637364438, 43637364455). Disposable PostgreSQL concurrency coverage now verifies seller acceptance versus an overlapping edit to available stock; the buyer cancellation restores reserved quantity on top of the edited stock. No production schema or data changed. Remaining gates: production migration parity, real buyer/seller UAT, and delivery/COD/refund workflows.
+
+
+## تحديث التسليم — عزل كراج العميل — 2026-11-14
+
+- PR #41 مدمج في SHA 740fb0e3206db7d928ae5245f17ef2bbf9ecebc3 بعد نجاح 5/5 فحوص على head 4e760e44f9ff23f6e1c58768cb2de0e40010df17 (DB Security: 43639935410، HTTP Smoke: 43639935496، Browser E2E: 43639935434، Vehicle Reference Preview: 43639935488، CI: 43639935457).
+- اختبارات PostgreSQL المؤقتة تثبت عزل سيارة العميل عن القراءة والتعديل والحذف وانتحال الملكية، واستمرار صلاحيات المالك على مركبته وسجل صيانته.
+- لا تغييرات تطبيقية أو مخطط إنتاجي، ولا كتابة إلى قاعدة الإنتاج. التحقق من واجهة الكراج نفسها عبر المتصفح وتطابق ترحيلات الإنتاج لا يزالان مطلوبين.
+- آخر حالة محفوظة قبل PR التوثيق التالي: main عند SHA 740fb0e3206db7d928ae5245f17ef2bbf9ecebc3، PR #40 و#41 مدمجان؛ تحقق من الحالة الحية قبل أي تعديل جديد.
