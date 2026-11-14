@@ -3,6 +3,8 @@
 BEGIN;
 \ir purchase_test_fixture.sql
 
+SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000001',false);
+SELECT pg_temp.check_session('91000000-0000-4000-8000-000000000001');
 -- Buyer A sees only their own request event.
 SELECT pg_temp.check_true(
  (SELECT count(*)=1 AND min(to_status)='requested' AND min(from_status) IS NULL
