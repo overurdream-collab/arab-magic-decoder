@@ -95,3 +95,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 
 - PR #5 was an old unmergeable draft. Its lifecycle migration matches the current main migration, while its UI and tests predate the current tested implementation.
 - Closed as superseded; its existing work is represented by the current merged lifecycle code and later regression/security tests. No PR #5 code was merged from the stale branch.
+
+
+## 2026-11-14 — Administrative request monitoring
+
+- **Completed and tested in disposable CI:** authorized administrator can review and status-filter purchase requests and inspect their audit history. Non-admin calls to the list RPC are denied; admin browser journey is covered.
+- PR #32 merged as `abc7edd84b88d48b3facab7ca6fc90dbaa9ad3e2`; 5/5 workflows passed on `4bd75d1d6431e5b07b1de1e0cd0b0cc95ab7b8ff`.
+- **Still planned/unverified:** delivery assignment and shipment states, COD recording/reconciliation, disputes/refunds, real user UAT, and production migration parity.

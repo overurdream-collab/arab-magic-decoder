@@ -84,3 +84,11 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - Reviewed draft PR #5 (head SHA 746b7cb39794e1524d7bb341c32d627c1dd1c6ec, base SHA 671231076d39708bb34c21bf0b03462b9aa0a974); GitHub reported it unmergeable.
 - Its purchase-request migration blob matches current main exactly. The request UI and tests on the draft branch are older than current main, which includes quantity, concurrency, audit, participant history, and browser coverage.
 - Closed PR #5 as superseded, without merging or changing its branch contents. No source or production data changed.
+
+
+## 2026-11-14 — Read-only admin request monitoring
+
+- PR #32 merged as `abc7edd84b88d48b3facab7ca6fc90dbaa9ad3e2`; all five workflows passed on tested head `4bd75d1d6431e5b07b1de1e0cd0b0cc95ab7b8ff` (run IDs: 43634117323, 43634117286, 43634117259, 43634117243, 43634117303).
+- Added a server-authorized, status-filtered admin request list and admin access to request event history. The admin page is read-only; no transition, payment, or delivery actions were added.
+- **Verified in disposable CI:** admin can list/filter requests and inspect history; non-admin RPC access is denied; browser E2E confirms admin navigation and history display.
+- Production database unchanged. Delivery/COD operations and production UAT remain open.
