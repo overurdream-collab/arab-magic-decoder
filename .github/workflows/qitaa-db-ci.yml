@@ -55,3 +55,5 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_quantities.sql
       - name: Assert concurrent reservations cannot oversell the last stock
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_concurrency.sql
+      - name: Assert purchase request audit history and participant isolation
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_audit.sql
