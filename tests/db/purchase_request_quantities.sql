@@ -73,8 +73,10 @@ SELECT set_config('qitaa.test.edited_stock_request',
  public.create_purchase_request('95000000-0000-4000-8000-000000000001',2)::text,false);
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000003',false);
 SELECT pg_temp.check_true(
- public.seller_respond_to_request(current_setting('qitaa.test.edited_stock_request')::uuid,'accept')='accept'
- AND (SELECT stock_qty=3 FROM public.seller_offers
+ public.seller_respond_to_request(current_setting('qitaa.test.edited_stock_request')::uuid,'accept')='accept',
+ 'seller accepts the two-unit request');
+SELECT pg_temp.check_true(
+ (SELECT stock_qty=3 FROM public.seller_offers
   WHERE id='95000000-0000-4000-8000-000000000001'),
  'accepting two units leaves three available while the order quantity is reserved');
 UPDATE public.seller_offers SET stock_qty=1
