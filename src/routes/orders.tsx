@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthBox, useSession } from "@/components/AuthBox";
 import { fmtYER } from "@/lib/catalog";
+import { PurchaseRequestHistory } from "@/components/PurchaseRequestHistory";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({ meta: [{ title: "طلباتي — قِطَع" }, { name: "robots", content: "noindex" }] }),
@@ -103,6 +104,7 @@ function RequestList({ userId }: { userId: string }) {
           <p className="text-xs text-muted-foreground">
             {new Date(req.created_at).toLocaleString("ar-YE")}
           </p>
+          <PurchaseRequestHistory requestId={req.id} />
           {["requested", "accepted"].includes(req.status) && (
             <button
               className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50"

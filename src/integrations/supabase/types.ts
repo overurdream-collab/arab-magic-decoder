@@ -718,6 +718,7 @@ export type Database = {
       }
       is_current_user_admin: { Args: never; Returns: boolean }
       list_my_purchase_requests: { Args: never; Returns: Json }
+      list_purchase_request_events: { Args: { _request_id: string }; Returns: Json }
       list_seller_purchase_requests: { Args: never; Returns: Json }
       record_zero_result_search: { Args: { _term: string }; Returns: boolean }
       reject_seller_application: {

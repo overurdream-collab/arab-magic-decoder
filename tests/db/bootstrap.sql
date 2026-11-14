@@ -29,3 +29,5 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 \i supabase/migrations/20261015010000_search_gap_permissions.sql
 \i supabase/migrations/20261015020000_purchase_request_deduplication.sql
 \i supabase/migrations/20261015030000_purchase_request_audit.sql
+\i supabase/migrations/20261015040000_purchase_request_event_reader.sql
+\i supabase/migrations/20261015040000_purchase_request_event_reader.sql

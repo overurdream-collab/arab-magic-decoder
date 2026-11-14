@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtYER } from "@/lib/catalog";
+import { PurchaseRequestHistory } from "@/components/PurchaseRequestHistory";
 
 type Request = {
   id: string;
@@ -117,6 +118,7 @@ export function SellerRequests({ sellerId }: { sellerId: string }) {
               تم التجهيز/التسليم
             </button>
           )}
+          <PurchaseRequestHistory requestId={request.id} />
         </div>
       ))}
       {data.length === 0 && !isLoading && !isError && (
