@@ -65,6 +65,21 @@ describe("Qitaa offline vehicle-reference preview", () => {
     );
     expect(result.rejected).toBe(2);
   });
+  it("rejects invisible Unicode controls in make, model and source IDs", () => {
+    const result = previewVehicleReferences(
+      [
+        row("Toy\u200bota", "Corolla", 2020),
+        row("Toyota", "Cor\u202eolla", 2020),
+        row("Toyota", "Corolla", 2020, "gov\u2066"),
+        row("Toyota", "Corolla", 2020, "gov\u007f"),
+        row("Toyota", "Corolla", 2020, "gov"),
+      ],
+      [],
+    );
+    expect(result.rejected).toBe(4);
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]?.sourceIds).toEqual(["gov"]);
+  });
   it("limits file size and never mutates source objects", () => {
     const input = [row("Toyota", "Camry", 2020)];
     expect(() => previewVehicleReferences(input, [], { maxRows: 0 })).toThrow();
