@@ -62,3 +62,11 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - PR #25 merged as `276f9c1ee17a36548503625856534e47cecbc881`; all five required workflows passed on tested SHA `de8135626ccb7e52c68853b0bcdd93668ac5bb10` (run IDs: 43629625536, 43629625553, 43629625537, 43629625547, 43629625565).
 - **Verified in disposable PostgreSQL CI:** after a buyer creates a five-unit request, seller stock can change to four before acceptance; acceptance fails with `stock changed`, preserving stock at four and request status as `requested`. Restoring stock to five allows acceptance and existing cancellation restoration checks pass.
 - This validates stock rechecking at acceptance; it does not test concurrent seller edits against active reservations or production deployment parity. No production schema/data changed.
+
+
+## 2026-11-14 — Purchase request audit history
+
+- PR #27 merged as `dab0ac926b94c492d8e08b21a8f81602638d141c`; all five required workflows passed on tested head `5b918b2fd888f0bda16834385d0f7f3f6baeaea0` (run IDs: 43630530757, 43630530769, 43630530762, 43630530763, 43630530818).
+- Added an append-only event table for request creation/status changes, with actor, old/new status, note, and timestamp.
+- **Verified in disposable PostgreSQL CI:** buyer/seller participants can read their event history, unrelated buyer access is filtered, direct authenticated INSERT/UPDATE/DELETE is denied, and creation, acceptance, and cancellation are attributed to the correct actor.
+- Additive migration only. Production migration application, real account UAT, and audit coverage for other domains remain outstanding.
