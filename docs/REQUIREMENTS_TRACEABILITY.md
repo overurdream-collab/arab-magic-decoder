@@ -33,13 +33,19 @@ Status legend: **Existing** = supported by existing code/database structure, not
 | Flutter customer/workshop/seller/delivery | 01, 05 | installable native apps / released builds | **Planned:** no Flutter code at baseline |
 
 ## Prioritized execution gates
-- **G0:** repository identified; GitHub/Lovable code sync checked; no deployment actions.
-- **G1:** build, lint, typecheck and secure seller/admin onboarding tested with isolated accounts. Current PR is for this stage.
-- **G2:** catalog enrichment, fitment provenance and safe import; no false 'verified compatibility' claim.
-- **G3:** order lifecycle, clear seller ownership and audit, then delivery/COD staging.
-- **G4:** workshop, quick services and mobile workflows; service/part linkage.
-- **G5:** analytics, loyalty, notifications and bounded AI agents.
-- **G6:** production security, data migration rehearsals, performance, backups, real user acceptance, deployment approval.
+- **G0 — Baseline: recorded.** The repository and current stack are documented. No deployment or production write is authorized.
+- **G1 — Automated stability/security checks: passed in CI.** Typecheck, lint, build, database security, HTTP and buyer/seller browser workflows passed on reviewed PR heads. Real merchant/admin UAT, production migration parity and penetration testing remain unverified.
+- **G2 — Catalog and fitment: partial.** Central catalog and staged admin-reviewed CSV import are implemented and tested. Authoritative OEM/fitment provenance, complete imagery and production catalog review remain outstanding.
+- **G3 — Orders and inventory: partial.** Request creation, seller acceptance/rejection, reservations, cancellation, audit history and admin read-only monitoring have CI coverage. Delivery, COD reconciliation, disputes and refunds are not implemented; define their business workflow before coding.
+- **G4 — Workshops, quick services and mobile workflows: planned.** No workshop/service lifecycle or Flutter applications are present.
+- **G5 — Analytics, loyalty, notifications and bounded AI: planned/partial.** Zero-result analytics is partial; other target capabilities remain planned.
+- **G6 — Release readiness: pending.** Production migration rehearsal/parity, backups, real-user acceptance, performance/security review and explicit deployment approval remain release gates.
+
+## Current verified checkpoint — 2026-11-14
+- `main` is at `f7a6ce03bf48a5830c20ae19909b7d487bc822b4`; no open pull requests were found.
+- Latest `main` runs passed: DB Security `43638106235`, Buyer-Seller Browser E2E `43638106303`.
+- PR #39 is merged and records PR #38's inventory race regression; the complete reviewed PR gate passed before merge. No production database was changed.
+- **Resume point:** G2 catalog provenance is the next independent product gate. G3 delivery/COD work must wait for agreed operational rules; production UAT and parity require an authorized environment.
 
 ## Conflicts and pending input
 - The PDFs discuss custom add-on modules on top of pre-existing Active eCommerce. Owner explicitly overrode this: build from THIS repository only.
