@@ -5,6 +5,9 @@ BEGIN;
 
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000001',false);
 SELECT pg_temp.check_session('91000000-0000-4000-8000-000000000001');
+SELECT pg_temp.check_true(
+ jsonb_array_length(public.list_purchase_request_events(current_setting('qitaa.test.request_a')::uuid))=1,
+ 'buyer can read request history through the participant RPC');
 -- Buyer A sees only their own request event.
 SELECT pg_temp.check_true(
  (SELECT count(*)=1 AND min(to_status)='requested' AND min(from_status) IS NULL
@@ -16,6 +19,10 @@ SELECT pg_temp.check_true(
  (SELECT count(*)=0 FROM public.purchase_request_events
   WHERE request_id=current_setting('qitaa.test.request_a')::uuid),
  'another buyer cannot read the request event history');
+SELECT pg_temp.expect_denial(
+ format('SELECT public.list_purchase_request_events(%L::uuid)',
+  current_setting('qitaa.test.request_a')::uuid),
+ 'P0001','request not accessible');
 
 -- Seller A can read the request history and transition it.
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000003',false);
@@ -34,6 +41,9 @@ SELECT pg_temp.check_true(
   FROM public.purchase_request_events
   WHERE request_id=current_setting('qitaa.test.request_a')::uuid),
  'acceptance history captures prior status and acting seller');
+SELECT pg_temp.check_true(
+ jsonb_array_length(public.list_purchase_request_events(current_setting('qitaa.test.request_a')::uuid))=2,
+ 'seller participant RPC returns the appended acceptance event');
 
 -- The authenticated client cannot forge or rewrite audit history.
 SELECT pg_temp.expect_denial(
@@ -61,6 +71,9 @@ SELECT pg_temp.check_true(
   FROM public.purchase_request_events
   WHERE request_id=current_setting('qitaa.test.request_a')::uuid),
  'cancellation appends a third event attributed to the buyer');
+SELECT pg_temp.check_true(
+ jsonb_array_length(public.list_purchase_request_events(current_setting('qitaa.test.request_a')::uuid))=3,
+ 'buyer participant RPC returns the complete request history');
 
 ROLLBACK;
 \echo 'purchase_request_audit.sql PASS (synthetic fixture rolled back)'
