@@ -68,3 +68,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - **Completed and tested in disposable PostgreSQL CI:** two concurrent seller acceptances cannot reserve the same last five units. One request becomes accepted and reserves all five units; the competing request remains requested.
 - PR #23 merged as `843966ddfb743b405cbd607709babf813bc85373`; 5/5 workflows passed on tested SHA `4e2289660bc6dfaf56900209857843a2999e970e`.
 - **Still partial/unverified:** seller stock edits racing with accepted reservations; production migration/schema parity; real buyer/seller UAT. No production database changes were made.
+
+
+## 2026-11-14 — Stock recheck at seller acceptance
+
+- **Completed and tested in disposable PostgreSQL CI:** seller reduces available inventory after the request is submitted; accepting an insufficient request is denied without changing inventory or request state. Restoring quantity permits acceptance.
+- PR #25 merged as `276f9c1ee17a36548503625856534e47cecbc881`; all five workflows passed on SHA `de8135626ccb7e52c68853b0bcdd93668ac5bb10`.
+- **Still partial/unverified:** true concurrent seller stock edits versus reservation transactions, real buyer/seller UAT, and production schema parity.
