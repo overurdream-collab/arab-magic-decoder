@@ -39,7 +39,7 @@ Next: inspect actual CI logs when available, verify the routes and security beha
 - The automated GitHub workflows use disposable local databases and synthetic accounts. CI success does NOT verify production migration state, real-world fulfillment, COD settlement, external VIN fitment accuracy, or release readiness.
 - Do not apply migrations to production or enable live payment/fulfillment solely on the basis of these checks.
 
-Current execution gates after PR #41: validate vehicle identity data provenance/rights and browser garage scenarios; verify deployment/migration parity only with explicit production authorization. Delivery/COD/refund flows remain unimplemented pending approved operating rules. Inventory race and stock-edit regression coverage is now in CI.
+Current execution gates after PR #45: validate vehicle identity data provenance/rights before import; verify deployment/migration parity only with explicit production authorization. Delivery/COD/refund flows remain unimplemented pending approved operating rules. Inventory race, stock-edit, and garage browser regressions are in CI.
 
 
 ## 2026-11-14 — Handover PRs and quantity guard merged
@@ -131,3 +131,10 @@ Current execution gates after PR #41: validate vehicle identity data provenance/
 - PR #42 مدمج في SHA d726386f319c414c39d5b21cf7d440166b407cb9 بعد نجاح 5/5 فحوص على head f2db17a960942303a1450869f5855b2fcc18cb8d.
 - أضاف اختبار PostgreSQL مؤقتاً يثبت أن anon لا يملك EXECUTE على دالتي قراءة سجل الطلبات أو الإدارة، ولا SELECT/INSERT/UPDATE/DELETE على جدول سجل الأحداث، مع بقاء EXECUTE للحسابات المصادق عليها.
 - Actions: E2E 43640184208، HTTP Smoke 43640184183، DB Security 43640184222، Vehicle Preview 43640184190، CI 43640184220 — كلها ناجحة. الاختبار فقط؛ لا تغيير إنتاجي.
+
+## 2026-11-15 — رحلة متصفح الكراج
+
+- PR #45 دُمج في SHA 199911ec9ec394107febbf38046ad976ebe8b921؛ head المختبر fdef6dcd1969f9d69d022b25d7f15f7c9d5c5fdf.
+- أضاف رحلة متصفح على Supabase محلي مؤقت: العميل ينشئ سيارة، يسجل صيانة ويشاهد السجل؛ حساب عميل آخر لا يرى المركبة. أُضيفت صفوف ماركة/موديل اصطناعية إلى seed الخاص بـE2E فقط.
+- الفحوص الخمسة نجحت: HTTP Smoke 43643643130، Vehicle Reference Preview 43643643121، DB Security 43643643152، CI 43643643156، Browser E2E 43643643214. يؤكد سجل E2E صراحة نجاح إنشاء المركبة والصيانة وعزل الحساب الآخر.
+- تغييرات اختبار وبيانات مؤقتة فقط؛ لا تعديل على منطق التطبيق أو مخطط/بيانات الإنتاج.
