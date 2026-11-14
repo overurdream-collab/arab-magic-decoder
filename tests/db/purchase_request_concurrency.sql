@@ -73,7 +73,7 @@ SELECT pg_temp.check_true(
                current_setting('qitaa.test.race_request_b')::uuid) AND status='accepted')
  AND (SELECT count(*)=1 FROM public.purchase_requests
   WHERE id IN (current_setting('qitaa.test.race_request_a')::uuid,
-               current_setting('qitaa.test.race_request_b')::uuid,\n               current_setting('qitaa.test.race_request_c')::uuid) AND status='requested'),
+               current_setting('qitaa.test.race_request_b')::uuid) AND status='requested'),
  'one five-unit request reserves all stock; the competing request stays requested');
 
 -- A seller stock edit racing with a reservation must serialize on the offer row.
@@ -141,7 +141,8 @@ DELETE FROM public.purchase_requests
  WHERE id IN (current_setting('qitaa.test.request_a')::uuid,
               current_setting('qitaa.test.request_b')::uuid,
               current_setting('qitaa.test.race_request_a')::uuid,
-              current_setting('qitaa.test.race_request_b')::uuid,\n              current_setting('qitaa.test.race_request_c')::uuid);
+              current_setting('qitaa.test.race_request_b')::uuid,
+              current_setting('qitaa.test.race_request_c')::uuid);
 DELETE FROM public.seller_offers WHERE id IN
  ('95000000-0000-4000-8000-000000000001','95000000-0000-4000-8000-000000000002');
 DELETE FROM public.sellers WHERE id IN
