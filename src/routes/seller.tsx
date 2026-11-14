@@ -14,7 +14,7 @@ export const Route = createFileRoute("/seller")({
       { title: "لوحة التاجر — قِطَع" },
       {
         name: "description",
-        content: "أدر عروضك على الكتالوج المركزي: السعر بالريال اليمني والمخزون والجودة والضمان.",
+        content: "أدر عروضك على الكتالوج المركزي: السعر والكمية المتاحة والجودة والضمان.",
       },
       { property: "og:title", content: "لوحة التاجر — قِطَع" },
       {
@@ -303,7 +303,7 @@ function Dashboard({ seller }: { seller: Seller }) {
                 "القطعة",
                 "OEM",
                 "السعر",
-                "المخزون",
+                "المتاح للبيع",
                 "الحالة",
                 "الجودة",
                 "الضمان",
@@ -499,6 +499,10 @@ function OfferEditor({
       <p className="font-bold sm:col-span-4">
         {state.id ? "تعديل عرض" : "عرض جديد"}: {state.partName}
       </p>
+      <p className="text-sm text-muted-foreground sm:col-span-4">
+        الكمية المتاحة تستثني الوحدات المحجوزة للطلبات المقبولة. إذا أُلغي طلب مقبول، تعود كميته إلى
+        المتاح.
+      </p>
       <label className="text-xs">
         السعر (ر.ي)
         <input
@@ -511,7 +515,7 @@ function OfferEditor({
         />
       </label>
       <label className="text-xs">
-        المخزون
+        المتاح للبيع
         <input
           className={input}
           type="number"
