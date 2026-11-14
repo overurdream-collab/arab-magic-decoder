@@ -85,11 +85,11 @@ RESET ROLE;
 
 CREATE OR REPLACE FUNCTION public.qitaa_test_edit_available_stock(_offer_id uuid)
 RETURNS text LANGUAGE plpgsql SECURITY INVOKER SET search_path=''
-AS $
+AS $qitaa$
 BEGIN
  UPDATE public.seller_offers SET stock_qty=1 WHERE id=_offer_id;
  RETURN 'edited';
-END $;
+END $qitaa$;
 GRANT EXECUTE ON FUNCTION public.qitaa_test_edit_available_stock(uuid) TO authenticated;
 SELECT dblink_exec('qitaa_race_a',
  'SET request.jwt.claim.sub = ''91000000-0000-4000-8000-000000000004''');
