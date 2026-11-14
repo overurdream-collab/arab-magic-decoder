@@ -75,6 +75,8 @@ SELECT pg_temp.check_true(
   WHERE id IN (current_setting('qitaa.test.race_request_a')::uuid,
                current_setting('qitaa.test.race_request_b')::uuid) AND status='requested'),
  'one five-unit request reserves all stock; the competing request stays requested');
+SELECT dblink_disconnect('qitaa_race_a');
+SELECT dblink_disconnect('qitaa_race_b');
 
 -- A seller stock edit racing with a reservation must serialize on the offer row.
 SET ROLE authenticated;
@@ -91,6 +93,10 @@ BEGIN
  RETURN 'edited';
 END $qitaa$;
 GRANT EXECUTE ON FUNCTION public.qitaa_test_edit_available_stock(uuid) TO authenticated;
+SELECT dblink_connect('qitaa_race_a','dbname='||current_database());
+SELECT dblink_connect('qitaa_race_b','dbname='||current_database());
+SELECT dblink_exec('qitaa_race_a','SET ROLE authenticated');
+SELECT dblink_exec('qitaa_race_b','SET ROLE authenticated');
 SELECT dblink_exec('qitaa_race_a',
  'SET request.jwt.claim.sub = ''91000000-0000-4000-8000-000000000004''');
 SELECT dblink_exec('qitaa_race_b',
