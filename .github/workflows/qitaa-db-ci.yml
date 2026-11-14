@@ -43,8 +43,6 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/catalog_import.sql
       - name: Assert demand privacy and administrative access
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/search_gap.sql
-
-
       - name: Assert purchase request reservation and ACL
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_requests.sql
       - name: Assert rejection closure and unchanged inventory
@@ -53,3 +51,5 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_isolation.sql
       - name: Assert fulfillment terminal state and stock integrity
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_fulfillment.sql
+      - name: Assert request quantity boundaries and full-stock restoration
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/purchase_request_quantities.sql
