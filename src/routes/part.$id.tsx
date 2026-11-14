@@ -21,9 +21,10 @@ function PartPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const [requestBusy, setRequestBusy] = useState("");
+  const [requestQuantities, setRequestQuantities] = useState<Record<string, number>>({});
   const [requestMessage, setRequestMessage] = useState("");
 
-  async function requestOffer(offerId: string) {
+  async function requestOffer(offerId: string, quantity: number) {
     setRequestBusy(offerId);
     setRequestMessage("");
     const { data: user } = await supabase.auth.getUser();
@@ -34,7 +35,7 @@ function PartPage() {
     }
     const { error } = await supabase.rpc("create_purchase_request", {
       _offer_id: offerId,
-      _qty: 1,
+      _qty: quantity,
     });
     setRequestBusy("");
     if (error) {
@@ -180,10 +181,33 @@ function PartPage() {
             </span>
             <b className="text-lg text-primary">{fmtYER(Number(o.price_yer))}</b>
             {i === 0 && <span className="text-xs font-bold text-primary">الأرخص</span>}
+            <label className="flex items-center gap-2 text-sm">
+              الكمية
+              <input
+                type="number"
+                min={1}
+                max={Math.min(20, o.stock_qty)}
+                step={1}
+                value={requestQuantities[o.id] ?? 1}
+                disabled={!!requestBusy || o.stock_qty < 1}
+                onChange={(event) => {
+                  const quantity = Number(event.target.value);
+                  setRequestQuantities((previous) => ({ ...previous, [o.id]: quantity }));
+                }}
+                aria-label={`كمية الطلب من ${o.sellers?.name ?? "التاجر"}`}
+                className="w-20 rounded-lg border bg-background px-2 py-2"
+              />
+            </label>
             <button
               className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
-              disabled={!!requestBusy || o.stock_qty < 1}
-              onClick={() => requestOffer(o.id)}
+              disabled={
+                !!requestBusy ||
+                o.stock_qty < 1 ||
+                !Number.isInteger(requestQuantities[o.id] ?? 1) ||
+                (requestQuantities[o.id] ?? 1) < 1 ||
+                (requestQuantities[o.id] ?? 1) > Math.min(20, o.stock_qty)
+              }
+              onClick={() => requestOffer(o.id, requestQuantities[o.id] ?? 1)}
             >
               {o.stock_qty < 1
                 ? "غير متوفر"
