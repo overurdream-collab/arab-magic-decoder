@@ -70,3 +70,10 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - Added an append-only event table for request creation/status changes, with actor, old/new status, note, and timestamp.
 - **Verified in disposable PostgreSQL CI:** buyer/seller participants can read their event history, unrelated buyer access is filtered, direct authenticated INSERT/UPDATE/DELETE is denied, and creation, acceptance, and cancellation are attributed to the correct actor.
 - Additive migration only. Production migration application, real account UAT, and audit coverage for other domains remain outstanding.
+
+
+## 2026-11-14 — Participant request history UI
+
+- PR #29 merged as `6c38b3ba0be185c8ceb2aa0f1c7246459d9622c0`; all five workflows passed on tested SHA `37f16a709ca09b1e68ad23752258899877852737` (run IDs: 43631590639, 43631590648, 43631590649, 43631590647, 43631590642).
+- Buyer order cards and seller request cards now offer an on-demand event timeline, loaded through a participant-authorized RPC. The browser E2E confirms both buyer and verified seller can open the event history.
+- Request history UI is tested in CI; delivery tracking, payment settlement, production UAT, and audit views for other domains remain outstanding.

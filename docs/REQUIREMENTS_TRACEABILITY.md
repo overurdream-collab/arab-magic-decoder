@@ -82,3 +82,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - **Completed and tested in disposable PostgreSQL CI:** request creation and status transitions append audit events with actor attribution and prior/new status. Buyer and verified owning seller can read; other buyers cannot; authenticated clients cannot write or delete events directly.
 - PR #27 merged as `dab0ac926b94c492d8e08b21a8f81602638d141c`; 5/5 workflows passed on `5b918b2fd888f0bda16834385d0f7f3f6baeaea0`.
 - **Still partial/unverified:** production migration parity/application, real user UAT, and audit trails for seller/catalog/admin actions outside purchase requests.
+
+
+## 2026-11-14 — Request history visibility
+
+- **Completed and tested in disposable CI:** buyer and verified seller can open the request timeline from their order/request cards. The participant-only RPC rejects unrelated accounts; browser E2E verifies both authorized roles.
+- PR #29 merged as `6c38b3ba0be185c8ceb2aa0f1c7246459d9622c0`; 5/5 workflows passed on `37f16a709ca09b1e68ad23752258899877852737`.
+- **Still planned/unverified:** actual delivery-provider flow, COD settlement/refunds, production UAT, and audit views for administration/catalog operations.
