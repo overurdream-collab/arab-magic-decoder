@@ -117,3 +117,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - PR #36 merged as `90c1c219feedcd008b246c8e2d2e9bbd65b71925`; 5/5 workflows passed on tested head `8690cf45460f4c979b3ba048f649b162ed58a7f3` (run IDs: 43635667831, 43635667832, 43635667839, 43635667919, 43635667910).
 - CI now pins Supabase CLI `3.1.0` instead of resolving `latest` through GitHub's release API at runtime.
 - **Still partial/unverified:** real administrator UAT, production migration parity, and production release approval.
+
+
+## 2026-11-14 — Concurrent stock edit/reservation regression
+
+- **Completed and tested in disposable PostgreSQL CI:** seller acceptance and seller adjustment of available stock serialize without losing the accepted reservation. Buyer cancellation then restores the reserved quantity on top of the edited quantity (1 + 2 = 3).
+- PR #38 merged as `c68754d679884db7e0547b0bc8a179ccac9e3df1`; 5/5 workflows passed on tested head `50e854788ef7a79f25872b6a91f14b7087a86a73` (run IDs: 43637364399, 43637364404, 43637364406, 43637364438, 43637364455).
+- **Still partial/unverified:** production migration parity, real buyer/seller UAT, and end-to-end delivery/payment lifecycle.
