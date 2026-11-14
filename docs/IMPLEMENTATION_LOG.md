@@ -92,3 +92,11 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - Added a server-authorized, status-filtered admin request list and admin access to request event history. The admin page is read-only; no transition, payment, or delivery actions were added.
 - **Verified in disposable CI:** admin can list/filter requests and inspect history; non-admin RPC access is denied; browser E2E confirms admin navigation and history display.
 - Production database unchanged. Delivery/COD operations and production UAT remain open.
+
+
+## 2026-11-14 — Seller stock edits with accepted reservations
+
+- PR #34 merged as `3f4ae1ab388a9df6cbb44fe68274a9c615ec9103`; tested head was `c11a2a81365fef7c4e7f93058ed4bfe8c67ceacf`.
+- Added a disposable PostgreSQL regression for an accepted two-unit request from five units, a seller edit of available stock to one, and buyer cancellation. The expected final available stock is three (the edited one plus the released two). Clarified in the seller UI that the stock field means available-to-sell units and excludes accepted reservations.
+- All five CI workflows passed: Qitaa CI `43634718906`, DB Security `43634718975`, HTTP Smoke `43634718920`, Buyer-Seller Browser E2E `43634718921`, Vehicle Reference Preview `43634718912`.
+- No schema or production database changes. Delivery, COD, refunds, real-user UAT, and production migration parity remain open.
