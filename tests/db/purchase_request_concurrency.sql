@@ -73,11 +73,65 @@ SELECT pg_temp.check_true(
                current_setting('qitaa.test.race_request_b')::uuid) AND status='accepted')
  AND (SELECT count(*)=1 FROM public.purchase_requests
   WHERE id IN (current_setting('qitaa.test.race_request_a')::uuid,
-               current_setting('qitaa.test.race_request_b')::uuid) AND status='requested'),
+               current_setting('qitaa.test.race_request_b')::uuid,\n               current_setting('qitaa.test.race_request_c')::uuid) AND status='requested'),
  'one five-unit request reserves all stock; the competing request stays requested');
+
+-- A seller stock edit racing with a reservation must serialize on the offer row.
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000001',false);
+SELECT set_config('qitaa.test.race_request_c',
+ public.create_purchase_request('95000000-0000-4000-8000-000000000002',2)::text,false);
+RESET ROLE;
+
+CREATE OR REPLACE FUNCTION public.qitaa_test_edit_available_stock(_offer_id uuid)
+RETURNS text LANGUAGE plpgsql SECURITY INVOKER SET search_path=''
+AS $
+BEGIN
+ UPDATE public.seller_offers SET stock_qty=1 WHERE id=_offer_id;
+ RETURN 'edited';
+END $;
+GRANT EXECUTE ON FUNCTION public.qitaa_test_edit_available_stock(uuid) TO authenticated;
+SELECT dblink_exec('qitaa_race_a',
+ 'SET request.jwt.claim.sub = ''91000000-0000-4000-8000-000000000004''');
+SELECT dblink_exec('qitaa_race_b',
+ 'SET request.jwt.claim.sub = ''91000000-0000-4000-8000-000000000004''');
+SELECT pg_temp.check_true(
+ dblink_send_query('qitaa_race_a',
+  format('SELECT public.qitaa_test_accept_as_seller(%L::uuid)',
+   current_setting('qitaa.test.race_request_c')::uuid))=1,
+ 'seller acceptance starts before the concurrent stock edit');
+SELECT pg_sleep(0.25);
+SELECT pg_temp.check_true(
+ dblink_send_query('qitaa_race_b',
+  format('SELECT public.qitaa_test_edit_available_stock(%L::uuid)',
+   '95000000-0000-4000-8000-000000000002'::uuid))=1,
+ 'seller available-stock edit overlaps the reservation');
+SELECT pg_temp.check_true(
+ (SELECT count(*)=1 FROM dblink_get_result('qitaa_race_a',false) AS x(result text)),
+ 'reservation completes while holding the offer lock');
+SELECT pg_temp.check_true(
+ (SELECT count(*)=1 FROM dblink_get_result('qitaa_race_b',false) AS x(result text)),
+ 'concurrent seller stock edit completes after the reservation');
+SELECT pg_temp.check_true(
+ (SELECT stock_qty=1 FROM public.seller_offers
+  WHERE id='95000000-0000-4000-8000-000000000002')
+ AND (SELECT status='accepted' FROM public.purchase_requests
+  WHERE id=current_setting('qitaa.test.race_request_c')::uuid),
+ 'reservation and seller edit serialize without rewriting the accepted order');
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000001',false);
+SELECT pg_temp.check_true(
+ public.buyer_cancel_request(current_setting('qitaa.test.race_request_c')::uuid),
+ 'buyer can cancel after the concurrent stock edit completes');
+RESET ROLE;
+SELECT pg_temp.check_true(
+ (SELECT stock_qty=3 FROM public.seller_offers
+  WHERE id='95000000-0000-4000-8000-000000000002'),
+ 'cancellation restores two reserved units on top of the edited quantity');
 
 SELECT dblink_disconnect('qitaa_race_a');
 SELECT dblink_disconnect('qitaa_race_b');
+DROP FUNCTION public.qitaa_test_edit_available_stock(uuid);
 DROP TRIGGER qitaa_test_delay_stock_update ON public.seller_offers;
 DROP FUNCTION public.qitaa_test_delay_stock_update();
 DROP FUNCTION public.qitaa_test_accept_as_seller(uuid);
@@ -87,7 +141,7 @@ DELETE FROM public.purchase_requests
  WHERE id IN (current_setting('qitaa.test.request_a')::uuid,
               current_setting('qitaa.test.request_b')::uuid,
               current_setting('qitaa.test.race_request_a')::uuid,
-              current_setting('qitaa.test.race_request_b')::uuid);
+              current_setting('qitaa.test.race_request_b')::uuid,\n              current_setting('qitaa.test.race_request_c')::uuid);
 DELETE FROM public.seller_offers WHERE id IN
  ('95000000-0000-4000-8000-000000000001','95000000-0000-4000-8000-000000000002');
 DELETE FROM public.sellers WHERE id IN
