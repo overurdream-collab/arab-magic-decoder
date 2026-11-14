@@ -49,6 +49,9 @@ try {
   if (!buyerPage.url().endsWith("/orders"))
     throw new Error("Purchase request did not navigate to /orders");
   await buyerPage.getByText("بانتظار موافقة التاجر").waitFor({ timeout: 15000 });
+  await buyerPage.getByRole("button", { name: "عرض سجل الطلب" }).click();
+  await buyerPage.getByText("أرسل المشتري الطلب").waitFor({ timeout: 10000 });
+  report.push("PASS buyer can read the request audit history");
   report.push("PASS buyer creates purchase request through part page");
 
   const outsiderContext = await browser.newContext();
@@ -63,6 +66,9 @@ try {
   await sellerPage.getByText("طلبات العملاء").waitFor({ timeout: 15000 });
   await sellerPage.getByRole("button", { name: "تأكيد التوفر" }).click();
   await sellerPage.getByText("محجوز").waitFor({ timeout: 15000 });
+  await sellerPage.getByRole("button", { name: "عرض سجل الطلب" }).click();
+  await sellerPage.getByText("وافق التاجر وحجز الكمية").waitFor({ timeout: 10000 });
+  report.push("PASS verified seller can read the request audit history");
   report.push("PASS seller sees and accepts the request");
 
   await buyerPage.reload();
