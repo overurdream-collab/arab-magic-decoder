@@ -6,10 +6,10 @@ BEGIN;
 DO $audit_reader_acl$
 BEGIN
  IF has_function_privilege('anon','public.list_purchase_request_events(uuid)','EXECUTE')
- OR has_function_privilege('public','public.list_purchase_request_events(uuid)','EXECUTE')
+
  OR has_function_privilege('anon','public.list_admin_purchase_requests(text)','EXECUTE')
- OR has_function_privilege('public','public.list_admin_purchase_requests(text)','EXECUTE') THEN
-  RAISE EXCEPTION 'SECURITY FAILURE: anonymous/PUBLIC execution of request audit or admin readers';
+ THEN
+  RAISE EXCEPTION 'SECURITY FAILURE: anonymous execution (including inherited PUBLIC grants) of request audit or admin readers';
  END IF;
  IF NOT has_function_privilege('authenticated','public.list_purchase_request_events(uuid)','EXECUTE')
  OR NOT has_function_privilege('authenticated','public.list_admin_purchase_requests(text)','EXECUTE') THEN
