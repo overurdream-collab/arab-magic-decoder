@@ -25,6 +25,8 @@ jobs:
       E2E_SELLER_PASSWORD: Qitaa-E2E-Seller-2026!
       E2E_OUTSIDER_EMAIL: outsider.e2e@qitaa.test
       E2E_OUTSIDER_PASSWORD: Qitaa-E2E-Outsider-2026!
+      E2E_ADMIN_EMAIL: admin.e2e@qitaa.test
+      E2E_ADMIN_PASSWORD: Qitaa-E2E-Admin-2026!
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -47,7 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           source /tmp/supabase.env
-          for spec in "buyer:$E2E_BUYER_EMAIL:$E2E_BUYER_PASSWORD" "seller:$E2E_SELLER_EMAIL:$E2E_SELLER_PASSWORD" "outsider:$E2E_OUTSIDER_EMAIL:$E2E_OUTSIDER_PASSWORD"; do
+          for spec in "buyer:$E2E_BUYER_EMAIL:$E2E_BUYER_PASSWORD" "seller:$E2E_SELLER_EMAIL:$E2E_SELLER_PASSWORD" "outsider:$E2E_OUTSIDER_EMAIL:$E2E_OUTSIDER_PASSWORD" "admin:$E2E_ADMIN_EMAIL:$E2E_ADMIN_PASSWORD"; do
             IFS=: read -r role email password <<< "$spec"
             curl --fail-with-body -sS "$API_URL/auth/v1/admin/users" \
               -H "apikey: $SERVICE_ROLE_KEY" -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
@@ -55,7 +57,8 @@ jobs:
               -d "{\"email\":\"$email\",\"password\":\"$password\",\"email_confirm\":true,\"user_metadata\":{\"full_name\":\"E2E $role\"}}" > "/tmp/auth-$role.json"
           done
           SELLER_ID=$(python3 -c 'import json;print(json.load(open("/tmp/auth-seller.json"))["id"])')
-          psql "$DB_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO public.user_roles(user_id,role) VALUES ('$SELLER_ID','seller');"
+          ADMIN_ID=$(python3 -c 'import json;print(json.load(open("/tmp/auth-admin.json"))["id"])')
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO public.user_roles(user_id,role) VALUES ('$SELLER_ID','seller'),('$ADMIN_ID','admin');"
           sed "s/__SELLER_ID__/$SELLER_ID/g" tests/e2e/seed.sql > /tmp/qitaa-seed.sql
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f /tmp/qitaa-seed.sql
       - name: Build and start app against local Supabase
