@@ -1,3 +1,11 @@
+# قِطَع — Qitaa
+
+> **تسليم المشروع للمبرمج التالي:** [وثيقة التسليم الفني العربية](docs/DEVELOPER_HANDOVER_AR_2026-11-14.md) · [المرجع الأساسي](docs/PROJECT_BASELINE.md) · [مصفوفة المتطلبات](docs/REQUIREMENTS_TRACEABILITY.md) · [سجل التنفيذ](docs/IMPLEMENTATION_LOG.md)
+>
+> هذا المستودع React/TanStack Start + Supabase، وليس تطبيق Flutter أو Laravel مكتملًا. لا تستخدم روابط النشر أو نجاح CI كدليل على جاهزية الإنتاج.
+
+---
+
 # Arabic Companion
 
 هل تدعم اللغه العربيه
