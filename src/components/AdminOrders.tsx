@@ -28,7 +28,11 @@ const STATUS: Record<string, string> = {
 
 export function AdminOrders() {
   const [status, setStatus] = useState("all");
-  const { data = [], isLoading, isError } = useQuery({
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["admin-purchase-requests", status],
     queryFn: async () => {
       const result =
