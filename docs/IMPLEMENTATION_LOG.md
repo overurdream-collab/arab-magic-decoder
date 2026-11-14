@@ -77,3 +77,10 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - PR #29 merged as `6c38b3ba0be185c8ceb2aa0f1c7246459d9622c0`; all five workflows passed on tested SHA `37f16a709ca09b1e68ad23752258899877852737` (run IDs: 43631590639, 43631590648, 43631590649, 43631590647, 43631590642).
 - Buyer order cards and seller request cards now offer an on-demand event timeline, loaded through a participant-authorized RPC. The browser E2E confirms both buyer and verified seller can open the event history.
 - Request history UI is tested in CI; delivery tracking, payment settlement, production UAT, and audit views for other domains remain outstanding.
+
+
+## 2026-11-14 — Stale draft PR cleanup
+
+- Reviewed draft PR #5 (head SHA 746b7cb39794e1524d7bb341c32d627c1dd1c6ec, base SHA 671231076d39708bb34c21bf0b03462b9aa0a974); GitHub reported it unmergeable.
+- Its purchase-request migration blob matches current main exactly. The request UI and tests on the draft branch are older than current main, which includes quantity, concurrency, audit, participant history, and browser coverage.
+- Closed PR #5 as superseded, without merging or changing its branch contents. No source or production data changed.
