@@ -68,5 +68,27 @@ SELECT pg_temp.check_true(
  AND (SELECT status='cancelled' FROM public.purchase_requests
   WHERE id=current_setting('qitaa.test.quantity_request')::uuid),
  'cancellation restores exactly five units');
+
+SELECT set_config('qitaa.test.edited_stock_request',
+ public.create_purchase_request('95000000-0000-4000-8000-000000000001',2)::text,false);
+SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000003',false);
+SELECT pg_temp.check_true(
+ public.seller_respond_to_request(current_setting('qitaa.test.edited_stock_request')::uuid,'accept')='accept'
+ AND (SELECT stock_qty=3 FROM public.seller_offers
+  WHERE id='95000000-0000-4000-8000-000000000001'),
+ 'accepting two units leaves three available while the order quantity is reserved');
+UPDATE public.seller_offers SET stock_qty=1
+ WHERE id='95000000-0000-4000-8000-000000000001';
+SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000002',false);
+SELECT pg_temp.check_true(
+ public.buyer_cancel_request(current_setting('qitaa.test.edited_stock_request')::uuid),
+ 'buyer can cancel after seller adjusts available stock');
+SELECT pg_temp.check_true(
+ (SELECT stock_qty=3 FROM public.seller_offers
+  WHERE id='95000000-0000-4000-8000-000000000001')
+ AND (SELECT status='cancelled' FROM public.purchase_requests
+  WHERE id=current_setting('qitaa.test.edited_stock_request')::uuid),
+ 'cancellation adds the two released units to the seller-adjusted available quantity');
+
 ROLLBACK;
 \echo 'purchase_request_quantities.sql PASS (fixture rolled back)'
