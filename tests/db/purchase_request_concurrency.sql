@@ -156,4 +156,4 @@ DELETE FROM auth.users WHERE id IN
   '91000000-0000-4000-8000-000000000003','91000000-0000-4000-8000-000000000004');
 COMMIT;
 
-\echo 'purchase_request_concurrency.sql PASS (competing acceptances serialize; synthetic fixture cleaned)'
+\echo 'purchase_request_concurrency.sql PASS (acceptance races serialize; synthetic fixture cleaned)'
