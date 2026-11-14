@@ -109,3 +109,11 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - **Completed and tested in disposable CI:** after a two-unit request is accepted from five available units, the seller may edit remaining available stock to one; buyer cancellation releases the two reserved units and final availability is three. Seller UI labels the edited value as available-to-sell stock.
 - PR #34 merged as `3f4ae1ab388a9df6cbb44fe68274a9c615ec9103`; 5/5 workflows passed on tested head `c11a2a81365fef7c4e7f93058ed4bfe8c67ceacf` (run IDs: 43634718906, 43634718975, 43634718920, 43634718921, 43634718912).
 - **Still partial/unverified:** concurrent stock edit and reservation transactions, production migration parity, and real buyer/seller UAT. No production database was changed.
+
+
+## 2026-11-14 — Admin purchase-monitor authorization and filters
+
+- **Completed and tested in disposable CI:** the admin request-list RPC supports status filtering, does not duplicate the seeded request, and denies both buyer and seller roles. E2E browser and final database verification also passed.
+- PR #36 merged as `90c1c219feedcd008b246c8e2d2e9bbd65b71925`; 5/5 workflows passed on tested head `8690cf45460f4c979b3ba048f649b162ed58a7f3` (run IDs: 43635667831, 43635667832, 43635667839, 43635667919, 43635667910).
+- CI now pins Supabase CLI `3.1.0` instead of resolving `latest` through GitHub's release API at runtime.
+- **Still partial/unverified:** real administrator UAT, production migration parity, and production release approval.
