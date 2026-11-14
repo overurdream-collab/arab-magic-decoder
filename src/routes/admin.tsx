@@ -7,6 +7,7 @@ import { AuthBox, useSession } from "@/components/AuthBox";
 import { SELLER_TYPES } from "@/lib/seller-types";
 import { CatalogImport } from "@/components/CatalogImport";
 import { SearchGapAnalytics } from "@/components/SearchGapAnalytics";
+import { AdminOrders } from "@/components/AdminOrders";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -65,7 +66,7 @@ function AdminGate({ userId }: { userId: string }) {
       return !!data;
     },
   });
-  const [tab, setTab] = useState<"apps" | "catalog" | "import" | "analytics">("apps");
+  const [tab, setTab] = useState<"apps" | "catalog" | "import" | "analytics" | "orders">("apps");
   if (isLoading) return <p className="text-muted-foreground">جارٍ التحقق من الصلاحية…</p>;
   if (!isAdmin)
     return (
@@ -88,11 +89,13 @@ function AdminGate({ userId }: { userId: string }) {
         {t("catalog", "الكتالوج والتوافق")}
         {t("import", "استيراد CSV")}
         {t("analytics", "الطلب غير المخدوم")}
+        {t("orders", "الطلبات")}
       </div>
       {tab === "apps" && <Applications />}
       {tab === "catalog" && <Catalog />}
       {tab === "import" && <CatalogImport />}
       {tab === "analytics" && <SearchGapAnalytics />}
+      {tab === "orders" && <AdminOrders />}
     </div>
   );
 }

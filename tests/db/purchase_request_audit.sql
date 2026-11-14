@@ -3,6 +3,33 @@
 BEGIN;
 \ir purchase_test_fixture.sql
 
+RESET ROLE;
+INSERT INTO auth.users(id,raw_user_meta_data) VALUES
+ ('91000000-0000-4000-8000-000000000005','{"full_name":"synthetic admin"}');
+INSERT INTO public.user_roles(user_id,role) VALUES
+ ('91000000-0000-4000-8000-000000000005','admin');
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000005',false);
+SELECT pg_temp.check_session('91000000-0000-4000-8000-000000000005');
+SELECT pg_temp.check_true(
+ EXISTS (
+  SELECT 1 FROM jsonb_array_elements(public.list_admin_purchase_requests()) AS item
+  WHERE item->>'id'=current_setting('qitaa.test.request_a')
+ ),
+ 'administrator can list the seeded request intent');
+SELECT pg_temp.check_true(
+ EXISTS (
+  SELECT 1 FROM jsonb_array_elements(public.list_admin_purchase_requests('requested')) AS item
+  WHERE item->>'id'=current_setting('qitaa.test.request_a')
+ ),
+ 'administrator can filter request intents by status');
+SELECT pg_temp.check_true(
+ jsonb_array_length(public.list_purchase_request_events(current_setting('qitaa.test.request_a')::uuid))=1,
+ 'administrator can view request audit history');
+SELECT pg_temp.expect_denial(
+ 'SELECT public.list_admin_purchase_requests(''not-a-status'')',
+ 'P0001','invalid status');
+
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000001',false);
 SELECT pg_temp.check_session('91000000-0000-4000-8000-000000000001');
 SELECT pg_temp.check_true(
@@ -15,6 +42,9 @@ SELECT pg_temp.check_true(
   WHERE request_id=current_setting('qitaa.test.request_a')::uuid),
  'request creation is recorded as the first event');
 SELECT set_config('request.jwt.claim.sub','91000000-0000-4000-8000-000000000002',false);
+SELECT pg_temp.expect_denial(
+ 'SELECT public.list_admin_purchase_requests()',
+ 'P0001','admin access required');
 SELECT pg_temp.check_true(
  (SELECT count(*)=0 FROM public.purchase_request_events
   WHERE request_id=current_setting('qitaa.test.request_a')::uuid),
