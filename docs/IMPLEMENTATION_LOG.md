@@ -39,7 +39,7 @@ Next: inspect actual CI logs when available, verify the routes and security beha
 - The automated GitHub workflows use disposable local databases and synthetic accounts. CI success does NOT verify production migration state, real-world fulfillment, COD settlement, external VIN fitment accuracy, or release readiness.
 - Do not apply migrations to production or enable live payment/fulfillment solely on the basis of these checks.
 
-Next execution gates: validate inventory race behavior and seller stock edits; specify and test delivery/COD state boundaries and auditability; verify deployment/migration parity separately with explicit production authorization.
+Current execution gates after PR #41: validate vehicle identity data provenance/rights and browser garage scenarios; verify deployment/migration parity only with explicit production authorization. Delivery/COD/refund flows remain unimplemented pending approved operating rules. Inventory race and stock-edit regression coverage is now in CI.
 
 
 ## 2026-11-14 — Handover PRs and quantity guard merged
