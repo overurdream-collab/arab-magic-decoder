@@ -130,3 +130,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - **Completed and tested in disposable PostgreSQL CI:** seller acceptance and seller adjustment of available stock serialize without losing the accepted reservation. Buyer cancellation then restores the reserved quantity on top of the edited quantity (1 + 2 = 3).
 - PR #38 merged as `c68754d679884db7e0547b0bc8a179ccac9e3df1`; 5/5 workflows passed on tested head `50e854788ef7a79f25872b6a91f14b7087a86a73` (run IDs: 43637364399, 43637364404, 43637364406, 43637364438, 43637364455).
 - **Still partial/unverified:** production migration parity, real buyer/seller UAT, and end-to-end delivery/payment lifecycle.
+
+
+## 2026-11-14 — عزل كراج العميل
+
+- **مكتمل ومختبر في قاعدة PostgreSQL مؤقتة:** حظر قراءة/تعديل/حذف مركبة مستخدم آخر، وحظر إنشاء مركبة بهوية مالك مزيفة، مع إثبات استمرار وصول المالك إلى مركبته وسجل الصيانة.
+- PR #41 مدمج بالـSHA 740fb0e3206db7d928ae5245f17ef2bbf9ecebc3 بعد نجاح 5/5 فحوص على head 4e760e44f9ff23f6e1c58768cb2de0e40010df17 (run IDs: 43639935410, 43639935496, 43639935434, 43639935488, 43639935457).
+- **المتبقي:** اختبار تدفق المركبة عبر المتصفح وتكامل RLS في قاعدة الإنتاج ما يزالان غير مثبتين؛ لا تغيير إنتاجي. بوابة المنتج المستقلة التالية هي توثيق مصدر بيانات المركبات وحقوقه قبل استيراد أي بيانات مرجعية.
