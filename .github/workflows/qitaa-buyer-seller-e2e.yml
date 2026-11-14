@@ -35,7 +35,7 @@ jobs:
           version: 3.1.0
       - name: Start isolated local Supabase
         run: |
-          supabase start
+          supabase start --exclude mailpit
           supabase db reset
           supabase status -o env > /tmp/supabase.env
           cat /tmp/supabase.env | sed -E 's/(KEY|TOKEN)=.*/\1=[REDACTED]/'

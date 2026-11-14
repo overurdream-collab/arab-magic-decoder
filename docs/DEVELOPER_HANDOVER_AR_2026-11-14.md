@@ -189,3 +189,8 @@
 ## Handover update — 2026-11-14
 
 PR #34 is merged as `3f4ae1ab388a9df6cbb44fe68274a9c615ec9103`. On tested head `c11a2a81365fef7c4e7f93058ed4bfe8c67ceacf`, all five required GitHub Actions workflows passed (run IDs: 43634718906, 43634718975, 43634718920, 43634718921, 43634718912). The new disposable SQL regression verifies that cancellation restores reserved units on top of a seller-edited available quantity. Seller UI now explains this inventory meaning. No production schema/data was changed. Remaining gates include actual concurrent seller edits versus reservation transactions, delivery/COD/refund workflows, real buyer/seller UAT, production migration parity, and release approval.
+
+
+## Handover update — 2026-11-14
+
+PR #36 merged as `90c1c219feedcd008b246c8e2d2e9bbd65b71925`. All five workflows passed on tested head `8690cf45460f4c979b3ba048f649b162ed58a7f3` (run IDs: 43635667831, 43635667832, 43635667839, 43635667919, 43635667910). Disposable PostgreSQL tests now verify admin status filtering, no duplicate request row, and rejection of buyer/seller access to the admin list RPC. The browser E2E completed with final database verification. The E2E workflow pins Supabase CLI 3.1.0 to avoid GitHub release API rate-limit failures. Production schema parity and real administrator UAT remain pending; no production database was changed.

@@ -100,3 +100,12 @@ Next execution gates: validate inventory race behavior and seller stock edits; s
 - Added a disposable PostgreSQL regression for an accepted two-unit request from five units, a seller edit of available stock to one, and buyer cancellation. The expected final available stock is three (the edited one plus the released two). Clarified in the seller UI that the stock field means available-to-sell units and excludes accepted reservations.
 - All five CI workflows passed: Qitaa CI `43634718906`, DB Security `43634718975`, HTTP Smoke `43634718920`, Buyer-Seller Browser E2E `43634718921`, Vehicle Reference Preview `43634718912`.
 - No schema or production database changes. Delivery, COD, refunds, real-user UAT, and production migration parity remain open.
+
+
+## 2026-11-14 — Admin request monitor isolation regression
+
+- PR #36 merged as `90c1c219feedcd008b246c8e2d2e9bbd65b71925`; tested head `8690cf45460f4c979b3ba048f649b162ed58a7f3`.
+- Added disposable PostgreSQL checks for admin status filtering, request uniqueness in the returned list, and denial of the admin RPC to buyer and seller roles.
+- Pinned the E2E workflow to Supabase CLI `3.1.0` after GitHub API rate limits blocked `version: latest` during setup.
+- All five workflows passed: DB Security `43635667831`, HTTP Smoke `43635667832`, Buyer-Seller Browser E2E `43635667839`, Qitaa CI `43635667919`, Vehicle Reference Preview `43635667910`.
+- Tests used a disposable PostgreSQL database and synthetic users; no production database changes.
