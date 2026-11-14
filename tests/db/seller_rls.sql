@@ -142,3 +142,61 @@ BEGIN
 END $$;
 RESET ROLE;
 SELECT 'Qitaa seller/admin/garage RLS disposable integration checks: PASS' result;
+
+
+-- Garage privacy: another authenticated customer cannot read, mutate, delete,
+-- or create a vehicle row on behalf of its owner.
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+DO $$
+DECLARE n integer;
+BEGIN
+  SELECT count(*) INTO n FROM public.customer_vehicles
+  WHERE id='dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+  IF n<>0 THEN RAISE EXCEPTION 'SECURITY FAILURE: customer sees another user vehicle'; END IF;
+
+  UPDATE public.customer_vehicles SET current_mileage=9999
+  WHERE id='dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n<>0 THEN RAISE EXCEPTION 'SECURITY FAILURE: customer changed another user vehicle'; END IF;
+
+  DELETE FROM public.customer_vehicles
+  WHERE id='dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n<>0 THEN RAISE EXCEPTION 'SECURITY FAILURE: customer deleted another user vehicle'; END IF;
+END $$;
+DO $$
+DECLARE denied boolean := false;
+BEGIN
+  BEGIN
+    INSERT INTO public.customer_vehicles(user_id,current_mileage)
+      VALUES ('22222222-2222-4222-8222-222222222222',0);
+  EXCEPTION WHEN OTHERS THEN denied := true;
+  END;
+  IF NOT denied THEN RAISE EXCEPTION 'SECURITY FAILURE: customer spoofed another vehicle owner'; END IF;
+END $$;
+RESET ROLE;
+
+-- The owner retains normal access to the vehicle and its maintenance history.
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222',false);
+DO $$
+DECLARE n integer;
+BEGIN
+  SELECT count(*) INTO n FROM public.customer_vehicles
+  WHERE id='dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+  IF n<>1 THEN RAISE EXCEPTION 'Vehicle owner cannot read own vehicle'; END IF;
+
+  UPDATE public.customer_vehicles SET current_mileage=1500
+  WHERE id='dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n<>1 THEN RAISE EXCEPTION 'Vehicle owner cannot update own vehicle'; END IF;
+
+  INSERT INTO public.vehicle_maintenance_logs(vehicle_id,user_id,current_mileage,next_due_mileage)
+    VALUES('dddddddd-dddd-4ddd-8ddd-dddddddddddd',auth.uid(),1500,6500);
+  SELECT count(*) INTO n FROM public.vehicle_maintenance_logs
+  WHERE vehicle_id='dddddddd-dddd-4ddd-8ddd-dddddddddddd' AND user_id=auth.uid();
+  IF n<>1 THEN RAISE EXCEPTION 'Vehicle owner cannot manage own maintenance log'; END IF;
+END $$;
+RESET ROLE;
+SELECT 'Qitaa seller/admin/garage RLS disposable integration checks: PASS' result;
