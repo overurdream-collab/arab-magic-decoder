@@ -194,3 +194,8 @@ PR #34 is merged as `3f4ae1ab388a9df6cbb44fe68274a9c615ec9103`. On tested head `
 ## Handover update — 2026-11-14
 
 PR #36 merged as `90c1c219feedcd008b246c8e2d2e9bbd65b71925`. All five workflows passed on tested head `8690cf45460f4c979b3ba048f649b162ed58a7f3` (run IDs: 43635667831, 43635667832, 43635667839, 43635667919, 43635667910). Disposable PostgreSQL tests now verify admin status filtering, no duplicate request row, and rejection of buyer/seller access to the admin list RPC. The browser E2E completed with final database verification. The E2E workflow pins Supabase CLI 3.1.0 to avoid GitHub release API rate-limit failures. Production schema parity and real administrator UAT remain pending; no production database was changed.
+
+
+## Handover update — 2026-11-14
+
+PR #38 merged as `c68754d679884db7e0547b0bc8a179ccac9e3df1`. All five workflows passed on tested head `50e854788ef7a79f25872b6a91f14b7087a86a73` (run IDs: 43637364399, 43637364404, 43637364406, 43637364438, 43637364455). Disposable PostgreSQL concurrency coverage now verifies seller acceptance versus an overlapping edit to available stock; the buyer cancellation restores reserved quantity on top of the edited stock. No production schema or data changed. Remaining gates: production migration parity, real buyer/seller UAT, and delivery/COD/refund workflows.
