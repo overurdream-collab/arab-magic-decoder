@@ -39,4 +39,12 @@ Next: inspect actual CI logs when available, verify the routes and security beha
 - The automated GitHub workflows use disposable local databases and synthetic accounts. CI success does NOT verify production migration state, real-world fulfillment, COD settlement, external VIN fitment accuracy, or release readiness.
 - Do not apply migrations to production or enable live payment/fulfillment solely on the basis of these checks.
 
-Next execution gates: finish #17; validate inventory race behavior and seller stock edits; specify and test delivery/COD state boundaries and auditability; verify deployment/migration parity separately with explicit production authorization.
+Next execution gates: validate inventory race behavior and seller stock edits; specify and test delivery/COD state boundaries and auditability; verify deployment/migration parity separately with explicit production authorization.
+
+
+## 2026-11-14 — Handover PRs and quantity guard merged
+
+- PR #20 (merge SHA `4476779a526b315e3d70b5ac22bd1b9eff418778`) and PR #21 (merge SHA `bfa91d92fb7dc2c8ff6db1ff02e7b9d0f9b7771c`) merged after all five required workflows succeeded on their reviewed heads.
+- PR #17 was rebased onto the then-current `main` to preserve PR #19's isolated E2E concurrency configuration. CI passed 5/5 on tested SHA `dd1cb93be9795c91dd213506003bb6ac9e163bb2`; merged as `ac19c5858e17096bc77417eaa126d96bccba548b`.
+- The quantity SQL test covers negative, zero, over-available, and full-stock quantities; confirms no reservation before seller acceptance, exact reservation on acceptance, and exact inventory restoration on permitted buyer cancellation. All checks used disposable databases and synthetic users; no production data or schema was changed.
+- Follow-up remains: test concurrent requests/stock edits under contention, and separately verify production migration parity only with explicit authorization.
