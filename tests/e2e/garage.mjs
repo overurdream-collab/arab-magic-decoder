@@ -44,8 +44,7 @@ try {
   await owner.getByPlaceholder("نوع الزيت (مثلاً: شل)").fill("زيت اختبار");
   await owner.getByPlaceholder("اللزوجة 5W-30").fill("5W-30");
   await owner.getByRole("button", { name: "حفظ السجل" }).click();
-  await owner.getByText("تغيير زيت وفلتر").waitFor({ timeout: 15000 });
-  await owner.getByText(/زيت اختبار/).waitFor({ timeout: 15000 });
+  await owner.locator("li").filter({ hasText: "زيت اختبار" }).waitFor({ timeout: 15000 });
   report.push("PASS owner records maintenance and sees service history");
 
   const otherContext = await browser.newContext();
