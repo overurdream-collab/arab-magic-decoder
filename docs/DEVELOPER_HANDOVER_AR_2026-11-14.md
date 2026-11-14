@@ -184,3 +184,8 @@
 - PR #32 مدمج في SHA `abc7edd84b88d48b3facab7ca6fc90dbaa9ad3e2` بعد نجاح 5/5 فحوص على SHA `4bd75d1d6431e5b07b1de1e0cd0b0cc95ab7b8ff`.
 - أضيفت قائمة إدارية للقراءة فقط مع فلترة حسب الحالة وعرض سجل الأحداث. تمنع الدوال الخادمية غير المسؤول من قراءة القائمة أو سجل الطلب. اختبر مسار المتصفح بحساب مسؤول اصطناعي.
 - لا تتضمن الشاشة تغيير حالة الطلب أو تسوية مالية. التوصيل وCOD والنزاعات والاسترداد وUAT الإنتاجي ما تزال غير منفذة.
+
+
+## Handover update — 2026-11-14
+
+PR #34 is merged as `3f4ae1ab388a9df6cbb44fe68274a9c615ec9103`. On tested head `c11a2a81365fef7c4e7f93058ed4bfe8c67ceacf`, all five required GitHub Actions workflows passed (run IDs: 43634718906, 43634718975, 43634718920, 43634718921, 43634718912). The new disposable SQL regression verifies that cancellation restores reserved units on top of a seller-edited available quantity. Seller UI now explains this inventory meaning. No production schema/data was changed. Remaining gates include actual concurrent seller edits versus reservation transactions, delivery/COD/refund workflows, real buyer/seller UAT, production migration parity, and release approval.

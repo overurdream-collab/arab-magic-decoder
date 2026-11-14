@@ -102,3 +102,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - **Completed and tested in disposable CI:** authorized administrator can review and status-filter purchase requests and inspect their audit history. Non-admin calls to the list RPC are denied; admin browser journey is covered.
 - PR #32 merged as `abc7edd84b88d48b3facab7ca6fc90dbaa9ad3e2`; 5/5 workflows passed on `4bd75d1d6431e5b07b1de1e0cd0b0cc95ab7b8ff`.
 - **Still planned/unverified:** delivery assignment and shipment states, COD recording/reconciliation, disputes/refunds, real user UAT, and production migration parity.
+
+
+## 2026-11-14 — Seller stock edit after reservation
+
+- **Completed and tested in disposable CI:** after a two-unit request is accepted from five available units, the seller may edit remaining available stock to one; buyer cancellation releases the two reserved units and final availability is three. Seller UI labels the edited value as available-to-sell stock.
+- PR #34 merged as `3f4ae1ab388a9df6cbb44fe68274a9c615ec9103`; 5/5 workflows passed on tested head `c11a2a81365fef7c4e7f93058ed4bfe8c67ceacf` (run IDs: 43634718906, 43634718975, 43634718920, 43634718921, 43634718912).
+- **Still partial/unverified:** concurrent stock edit and reservation transactions, production migration parity, and real buyer/seller UAT. No production database was changed.
