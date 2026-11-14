@@ -78,9 +78,24 @@ try {
   await buyerPage.getByText("أُلغي الطلب").waitFor({ timeout: 15000 });
   report.push("PASS buyer cancels accepted request");
 
+  const adminContext = await browser.newContext();
+  const adminPage = await adminContext.newPage();
+  await login(
+    adminPage,
+    { email: process.env.E2E_ADMIN_EMAIL, password: process.env.E2E_ADMIN_PASSWORD },
+    "/admin",
+  );
+  await adminPage.getByRole("button", { name: "الطلبات", exact: true }).click();
+  await adminPage.getByText("طلبات توفر القطع").waitFor({ timeout: 15000 });
+  await adminPage.getByText("أُلغي الطلب").waitFor({ timeout: 15000 });
+  await adminPage.getByRole("button", { name: "عرض سجل الطلب" }).click();
+  await adminPage.getByText("ألغى المشتري الطلب").waitFor({ timeout: 10000 });
+  report.push("PASS admin can monitor request status and audit history");
+
   await buyerContext.close();
   await outsiderContext.close();
   await sellerContext.close();
+  await adminContext.close();
   console.log(report.join("\n"));
 } catch (error) {
   console.error(report.join("\n"));
