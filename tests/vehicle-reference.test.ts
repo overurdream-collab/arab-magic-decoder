@@ -196,7 +196,7 @@ describe("Qitaa offline vehicle-reference preview", () => {
       null,
       50_001,
     ]) {
-      expect(() => previewVehicleReferences(input, [], { maxRows })).toThrow(
+      expect(() => previewVehicleReferences(input, [], { maxRows: maxRows as number })).toThrow(
         "Invalid vehicle import size",
       );
     }
