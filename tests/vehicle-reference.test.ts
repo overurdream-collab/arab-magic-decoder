@@ -120,11 +120,14 @@ describe("Qitaa offline vehicle-reference preview", () => {
         row("Toyota", "Cor\u202eolla", 2020),
         row("Toyota", "Corolla", 2020, "gov\u2066"),
         row("Toyota", "Corolla", 2020, "gov\u007f"),
+        row("Toyota\u2028Fake", "Corolla", 2020),
+        row("Toyota", "Corolla\u2029Fake", 2020),
+        row("Toyota", "Corolla", 2020, "gov\u2028hidden"),
         row("Toyota", "Corolla", 2020, "gov"),
       ],
       [],
     );
-    expect(result.rejected).toBe(4);
+    expect(result.rejected).toBe(7);
     expect(result.candidates).toHaveLength(1);
     expect(result.candidates[0]?.sourceIds).toEqual(["gov"]);
   });

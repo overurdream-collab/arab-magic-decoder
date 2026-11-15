@@ -49,9 +49,9 @@ const safeName = (name: unknown): name is string =>
   name.length <= 100 &&
   name.trim().length >= 1 &&
   !/[<>]/.test(name) &&
-  // Reject ASCII/Unicode controls and format characters (e.g. bidi overrides,
-  // zero-width joiners) that can disguise vehicle identities or source IDs.
-  !/[\p{Cc}\p{Cf}]/u.test(name);
+  // Reject controls, format characters and Unicode line separators (e.g. bidi
+  // overrides and zero-width joiners) that can disguise identities or source IDs.
+  !/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u.test(name);
 
 const currentUpperBound = () => new Date().getUTCFullYear() + 2;
 
