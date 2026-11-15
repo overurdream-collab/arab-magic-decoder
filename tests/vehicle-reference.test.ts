@@ -64,10 +64,7 @@ describe("Qitaa offline vehicle-reference preview", () => {
     expect(result.candidates[0]?.years).toEqual([2020, 2021]);
     // Passenger-only previews must not accidentally retain the truck row.
     const passenger = previewVehicleReferences(
-      [
-        row("Example", "Transit", 2020),
-        { ...row("Example", "Transit", 2021), vehicleTypeId: 3 },
-      ],
+      [row("Example", "Transit", 2020), { ...row("Example", "Transit", 2021), vehicleTypeId: 3 }],
       [],
       { passengerOnly: true },
     );
