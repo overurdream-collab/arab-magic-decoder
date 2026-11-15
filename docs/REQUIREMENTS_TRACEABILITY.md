@@ -167,3 +167,10 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - Catalog/fitment — Partial and blocked from external import: upstream datasets remain candidates only until source/version-specific provenance, redistribution terms and attribution are checked. Model/year is not fitment evidence.
 - Orders — Partial: current request, reservation, cancellation, audit and admin read-only flows have CI coverage. Delivery, COD settlement, refunds/disputes and production UAT remain unfinished/unverified.
 - Release readiness — Pending: production schema/RLS parity, real-account UAT, backup/restore practice, security/performance review and explicit release authorization remain open.
+
+## Verified checkpoint — 2026-11-15 (admin audit coverage)
+
+- Latest merge: main SHA 96d1b21cff766c3c455d9b92705e3dd3d3d9be34; PRs #58 and #59 merged after all five required workflows passed on their final heads.
+- Seller onboarding — Partial: submission, approval, and rejection now emit append-only audit events with actor/status and rejection note. Applicant/admin read scope and database immutability are covered in disposable PostgreSQL tests. No dedicated audit-history UI or real administrator UAT has been verified.
+- Admin catalog import — Partial: staging and application now emit append-only metadata events (batch ID, actor, source label, status, timestamp); the imported payload is not copied into the event table. Admin-only reads and write/immutability boundaries have disposable DB coverage. Production migration parity and admin UAT remain unverified.
+- Security/release — Partial/pending: the above checks do not prove production RLS/migration parity, backups, penetration testing, or real-user acceptance. Do not apply migrations to production without explicit authorization.
