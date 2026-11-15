@@ -49,6 +49,29 @@ describe("Qitaa offline vehicle-reference preview", () => {
     );
     expect(result.candidates[0]?.status).toBe("review");
   });
+  it("flags same make/model with conflicting vehicle categories for human review", () => {
+    const result = previewVehicleReferences(
+      [
+        row("Example", "Transit", 2020, "passenger-source"),
+        { ...row("Example", "Transit", 2021, "truck-source"), vehicleTypeId: 3 },
+      ],
+      [],
+    );
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]?.status).toBe("review");
+    expect(result.candidates[0]?.reason).toContain("conflicting vehicle types");
+    expect(result.candidates[0]?.sourceIds).toEqual(["passenger-source", "truck-source"]);
+    expect(result.candidates[0]?.years).toEqual([2020, 2021]);
+    // Passenger-only previews must not accidentally retain the truck row.
+    const passenger = previewVehicleReferences(
+      [row("Example", "Transit", 2020), { ...row("Example", "Transit", 2021), vehicleTypeId: 3 }],
+      [],
+      { passengerOnly: true },
+    );
+    expect(passenger.rejected).toBe(1);
+    expect(passenger.candidates[0]?.status).toBe("new_make");
+    expect(passenger.candidates[0]?.years).toEqual([2020]);
+  });
   it("does not import motorcycles as passenger cars", () => {
     const result = previewVehicleReferences(
       [{ ...row("Honda", "CBR", 2022), vehicleTypeId: 1 }],
