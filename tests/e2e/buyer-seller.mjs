@@ -94,7 +94,7 @@ try {
 
   await adminPage.getByRole("button", { name: "طلبات التجار", exact: true }).click();
   const pendingApplication = adminPage.getByRole("row").filter({ hasText: "E2E Audit Shop" });
-  await pendingApplication.getByRole("button", { name: /عرض سجل التدقيق/ }).click();
+  await pendingApplication.getByRole("button", { name: /عرض سجل/ }).click();
   await adminPage.getByText("أُرسل طلب التاجر").waitFor({ timeout: 10000 });
   await pendingApplication.getByRole("button", { name: "موافقة" }).click();
   await adminPage.getByText("تمت الموافقة وإنشاء متجر موثّق.").waitFor({ timeout: 10000 });
