@@ -152,7 +152,9 @@ export function previewVehicleReferences(
         r.yearStart > r.yearEnd ||
         r.yearEnd > currentUpperBound(),
     );
-    const matchingYear = years.some((year) =>
+    // A partial overlap is not enough: every observed source year must be
+    // covered before treating the candidate as an existing catalog match.
+    const allYearsCovered = years.every((year) =>
       rows.some((r) => year >= r.yearStart && year <= r.yearEnd),
     );
     const status: VehicleCandidate["status"] =
@@ -160,7 +162,7 @@ export function previewVehicleReferences(
         ? "review"
         : rows.length > 1
           ? "review"
-          : rows.length === 1 && !matchingYear
+          : rows.length === 1 && !allYearsCovered
             ? "review"
             : rows.length === 1
               ? "existing"
@@ -175,7 +177,7 @@ export function previewVehicleReferences(
           ? "conflicting source spellings"
           : rows.length > 1
             ? "multiple existing records"
-            : rows.length === 1 && !matchingYear
+            : rows.length === 1 && !allYearsCovered
               ? "year range outside existing record"
               : rows.length === 1
                 ? "existing model (not a verified generation match)"
