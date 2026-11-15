@@ -4,17 +4,17 @@ SET ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub','33333333-3333-4333-8333-333333333333',false);
 DO $audit$
 DECLARE
-  batch_id uuid;
+  v_batch_id uuid;
   event_count integer;
   event_types text[];
   event_statuses text[];
   actors uuid[];
 BEGIN
-  SELECT id INTO batch_id FROM public.catalog_import_batches WHERE source_name='test.csv';
+  SELECT e.batch_id INTO v_batch_id FROM public.catalog_import_events e WHERE e.source_name='test.csv' LIMIT 1;
   SELECT count(*), array_agg(event_type ORDER BY id), array_agg(status ORDER BY id),
          array_agg(actor_id ORDER BY id)
     INTO event_count, event_types, event_statuses, actors
-    FROM public.catalog_import_events WHERE catalog_import_events.batch_id=batch_id;
+    FROM public.catalog_import_events e WHERE e.batch_id=v_batch_id;
   IF event_count<>2
      OR event_types<>ARRAY['staged','applied']::text[]
      OR event_statuses<>ARRAY['staged','applied']::text[]
