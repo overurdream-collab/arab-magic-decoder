@@ -149,3 +149,12 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - **مكتمل ومختبر على Supabase مؤقت:** إنشاء مركبة وسجل صيانة عبر الواجهة، وظهورهما للمالك، وعدم ظهور المركبة لحساب عميل آخر.
 - PR #45 مدمج في SHA 199911ec9ec394107febbf38046ad976ebe8b921 بعد نجاح 5/5 فحوص على head fdef6dcd1969f9d69d022b25d7f15f7c9d5c5fdf (run IDs: 43643643130, 43643643121, 43643643152, 43643643156, 43643643214).
 - صفوف المركبات الاصطناعية تخص seed E2E المحلي فقط. ما يزال تطابق ترحيلات/RLS الإنتاج وUAT بحسابات حقيقية وحقوق بيانات المركبات قبل الاستيراد غير متحقق.
+
+## Verified checkpoint — 2026-11-15
+
+- Latest inspected `main` SHA: `71ba890e5322ced52c94e23f7b07fe78e1a378a2`; PR #49 is merged. No open PRs were present at inspection.
+- **Vehicle identity — Partial, with preview safeguards tested:** PR #47 rejects invisible control characters, PR #48 routes conflicting type identities to review, and PR #49 uses collision-safe composite identity keys. Each PR passed all five required workflows on its reviewed head. These tests validate the offline preview/staging path; they do not validate external-data licensing, actual fitment correctness, or production data.
+- **Vehicle source data — Blocked from import pending provenance review:** upstream package licensing does not establish rights to every bundled source. An updated source review records terms and provenance links where identified; no data is approved/imported by this checkpoint.
+- **Order lifecycle — Partial:** request/accept/reject/reserve/cancel/audit and admin read-only monitoring are implemented and covered by CI. Delivery, COD reconciliation, refund/dispute handling, and real-user fulfillment UAT remain unimplemented or unverified.
+- **Release readiness — Pending:** production migration parity, real buyer/seller/admin UAT, backups/recovery, performance/security review, and explicit release approval are outstanding.
+- PR #49 five required checks on head `21cc71e7426db921e1d1bd1518aea5bea6f9b937`: CI `43659702029`, Buyer-Seller E2E `43659702052`, DB Security `43659702074`, HTTP Smoke `43659702031`, Vehicle Reference Preview `43659702077` — all succeeded. Post-merge main DB Security and E2E checks were still in progress at documentation time; inspect current Actions before claiming main CI complete.
