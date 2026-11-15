@@ -291,7 +291,10 @@ function SellerApplicationHistory({ applicationId }: { applicationId: string }) 
           <span className="text-muted-foreground">
             {event.from_status ?? "—"} ← {event.to_status}
           </span>
-          <span className="font-mono text-xs text-muted-foreground" title={event.actor_id ?? undefined}>
+          <span
+            className="font-mono text-xs text-muted-foreground"
+            title={event.actor_id ?? undefined}
+          >
             المنفذ: {event.actor_id ?? "النظام"}
           </span>
           {event.review_note && <span>{event.review_note}</span>}
