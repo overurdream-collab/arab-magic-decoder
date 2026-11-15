@@ -1,7 +1,7 @@
 # ADR-004: Vehicle identity and data-source adoption
 
 **Date:** 2026-10-15  
-**Status:** Partially implemented — identity safety changes tested on a feature branch; external dataset import not approved for production.
+**Status:** Identity-preview safety changes merged and regression-tested on main; external dataset import is not approved for production.
 
 ## Decision
 Retain Qitaa's React/TanStack + Supabase implementation. Do not replace the app with Medusa or Saleor. Evaluate @meterapp/vehicle-db (GitHub MeterApp/vehicle-db, package v2.19.0) as a vehicle *identity candidate source*, not a parts-fitment or OEM source.
@@ -28,3 +28,8 @@ Retain Qitaa's React/TanStack + Supabase implementation. Do not replace the app 
 
 ## Follow-up
 Prototype MeterApp data in an isolated test fixture and produce a provenance/license report; then implement an admin-reviewed vehicle import workflow. Evaluate official NHTSA vPIC separately with explicit network, privacy, availability and country-coverage constraints. Medusa is deferred until the Qitaa order lifecycle is designed and a quantitative build-vs-integrate test is complete.
+
+
+## Implementation checkpoint — 2026-11-15
+
+PRs #47–#56 hardened the offline preview against invisible/conflicting identities, delimiter collisions, malformed existing year ranges, Unicode separators and unpaired UTF-16 code units; they also enforce the 50,000-row hard ceiling. Each code PR was merged after all five required workflows passed on its final reviewed head. See docs/IMPLEMENTATION_LOG.md for SHA and run-level evidence. These safeguards do not authorize import, establish dataset rights, or prove fitment. Production schema parity and real-user UAT remain separate gates.
