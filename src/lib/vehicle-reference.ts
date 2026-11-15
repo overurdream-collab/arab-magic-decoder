@@ -39,6 +39,10 @@ export type VehiclePreview = {
 const canonical = (name: string) =>
   name.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en");
 
+// Tuple encoding prevents make/model delimiter collisions (e.g. "A|B"/"C" vs "A"/"B|C").
+const identityKey = (make: string, model: string) =>
+  JSON.stringify([canonical(make), canonical(model)]);
+
 const safeName = (name: unknown): name is string =>
   typeof name === "string" &&
   name.length >= 1 &&
@@ -63,7 +67,7 @@ export function previewVehicleReferences(
   const existingMakes = new Set(existing.map((v) => canonical(v.makeName)));
   const existingModels = new Map<string, ExistingVehicle[]>();
   for (const row of existing) {
-    const key = canonical(row.makeName) + "|" + canonical(row.modelName);
+    const key = identityKey(row.makeName, row.modelName);
     existingModels.set(key, [...(existingModels.get(key) ?? []), row]);
   }
 
@@ -96,7 +100,7 @@ export function previewVehicleReferences(
       rejected++;
       continue;
     }
-    const key = canonical(row.make) + "|" + canonical(row.model);
+    const key = identityKey(row.make, row.model);
     const group = groups.get(key) ?? {
       make: row.make.trim(),
       model: row.model.trim(),
