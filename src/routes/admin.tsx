@@ -220,7 +220,7 @@ function Applications() {
                     </td>
                   </tr>
                 )}
-              </Fragment>   </Fragment>
+              </Fragment>
             ))}
             {data?.length === 0 && (
               <tr>
