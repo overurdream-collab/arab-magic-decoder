@@ -193,6 +193,7 @@ describe("Qitaa offline vehicle-reference preview", () => {
       0.5,
       1.5,
       Number.MAX_SAFE_INTEGER + 1,
+      null,
       50_001,
     ]) {
       expect(() => previewVehicleReferences(input, [], { maxRows })).toThrow(
