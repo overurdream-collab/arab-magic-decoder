@@ -100,11 +100,11 @@ describe("Qitaa offline vehicle-reference preview", () => {
   it("fails closed on malformed existing make and model identities", () => {
     const valid = { makeName: "Toyota", modelName: "Corolla", yearStart: 2018, yearEnd: 2022 };
     for (const invalid of [
-      { ...valid, makeName: "Toy\\u202eota" },
-      { ...valid, modelName: "Cor\\u200bolla" },
+      { ...valid, makeName: "Toy\u202eota" },
+      { ...valid, modelName: "Cor\u200bolla" },
       { ...valid, makeName: "<script>" },
       { ...valid, modelName: " " },
-      { ...valid, makeName: "Toy\\uD800ota" },
+      { ...valid, makeName: "Toy\uD800ota" },
       { ...valid, makeName: null },
     ]) {
       expect(() =>
