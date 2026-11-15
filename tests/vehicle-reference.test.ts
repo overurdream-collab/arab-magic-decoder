@@ -134,16 +134,16 @@ describe("Qitaa offline vehicle-reference preview", () => {
   it("rejects malformed UTF-16 in vehicle identities and source IDs", () => {
     const result = previewVehicleReferences(
       [
-        row("Toy\\uD800ota", "Corolla", 2020),
-        row("Toyota", "Cor\\uDC00olla", 2020),
-        row("Toyota", "Corolla", 2020, "src\\uD800"),
-        row("Toyota", "Corolla", 2020, "valid-\\uD83D\\uDE97"),
+        row("Toy\uD800ota", "Corolla", 2020),
+        row("Toyota", "Cor\uDC00olla", 2020),
+        row("Toyota", "Corolla", 2020, "src\uD800"),
+        row("Toyota", "Corolla", 2020, "valid-\uD83D\uDE97"),
       ],
       [],
     );
     expect(result.rejected).toBe(3);
     expect(result.candidates).toHaveLength(1);
-    expect(result.candidates[0]?.sourceIds).toEqual(["valid-\\uD83D\\uDE97"]);
+    expect(result.candidates[0]?.sourceIds).toEqual(["valid-\uD83D\uDE97"]);
   });
   it("limits file size and never mutates source objects", () => {
     const input = [row("Toyota", "Camry", 2020)];
