@@ -236,7 +236,6 @@ function Applications() {
   );
 }
 
-
 type SellerApplicationEvent = {
   id: number;
   event_type: string;
@@ -288,9 +287,7 @@ function SellerApplicationHistory({ applicationId }: { applicationId: string }) 
           key={event.id}
           className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-3 text-sm"
         >
-          <span className="font-semibold">
-            {labels[event.event_type] ?? event.event_type}
-          </span>
+          <span className="font-semibold">{labels[event.event_type] ?? event.event_type}</span>
           <span className="text-muted-foreground">
             {event.from_status ?? "—"} ← {event.to_status}
           </span>
