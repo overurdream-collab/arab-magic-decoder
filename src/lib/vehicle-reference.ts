@@ -66,9 +66,10 @@ export function previewVehicleReferences(
   options: { maxRows?: number; passengerOnly?: boolean } = {},
 ): VehiclePreview {
   const maxRows = options.maxRows ?? MAX_PREVIEW_ROWS;
+  if (options.passengerOnly !== undefined && typeof options.passengerOnly !== "boolean")
+    throw new Error("Invalid passenger-only preview option");
   if (
     !Array.isArray(input) ||
-    (options.passengerOnly !== undefined && typeof options.passengerOnly !== "boolean") ||
     !Number.isSafeInteger(maxRows) ||
     maxRows < 1 ||
     maxRows > MAX_PREVIEW_ROWS ||
