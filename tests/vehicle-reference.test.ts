@@ -116,6 +116,12 @@ describe("Qitaa offline vehicle-reference preview", () => {
   it("limits file size and never mutates source objects", () => {
     const input = [row("Toyota", "Camry", 2020)];
     expect(() => previewVehicleReferences(input, [], { maxRows: 0 })).toThrow();
+    for (const maxRows of [NaN, Infinity, -Infinity, 0.5, 1.5, Number.MAX_SAFE_INTEGER + 1]) {
+      expect(() => previewVehicleReferences(input, [], { maxRows })).toThrow(
+        "Invalid vehicle import size",
+      );
+    }
+    expect(() => previewVehicleReferences(input, [], { maxRows: 1 })).not.toThrow();
     const snapshot = JSON.stringify(input);
     previewVehicleReferences(input, []);
     expect(JSON.stringify(input)).toBe(snapshot);
