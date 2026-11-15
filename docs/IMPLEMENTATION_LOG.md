@@ -172,3 +172,14 @@ Current execution gates after PR #45: validate vehicle identity data provenance/
 - PR #59 merged as 96d1b21cff766c3c455d9b92705e3dd3d3d9be34 on reviewed head 9e761ad9ee7848ff87734f97f58b8fb5e8d07cf9. Added append-only catalog-import events for staged/applied transitions, actor and source label; the event table does not copy payload or preview data. Admin-only reads and denied direct writes are covered with immutability checks. The first DB run exposed an existing has_role permission issue when the test queried the separate batch table; the test now verifies through the new event table without widening existing privileges. Final five checks passed: E2E 43685875350, offline import 43685875447, anonymous pages 43685875390, DB Security 43685875367, CI 43685875325.
 - Both migrations and regressions ran against disposable PostgreSQL in CI. No production database, schema, catalog, deployment, or customer data was changed.
 - Current main at this checkpoint: 96d1b21cff766c3c455d9b92705e3dd3d3d9be34. The post-merge main DB Security and Buyer-Seller E2E workflows were still in progress when recorded; check the latest Actions before claiming main is green.
+
+
+## 2026-11-15 — عرض سجل التدقيق في لوحة المسؤول
+
+- PR #61 merged as `be91e113f7dc281a2d2028532f20b0868dfa6503`; final tested head `fcdf44506cb854e710d283168d34f2640b0358b6`.
+- Added admin-gated seller application history (submission and review status events) and the latest 20 catalog import events (staged/applied), using the existing RLS policies and typed Supabase schema.
+- Extended isolated browser E2E seeds and assertions. The final journey passed seller submission/approval history and catalog staging/application history, as well as the existing buyer/seller/admin and garage flows.
+- All five required checks passed on the final PR head: CI `43687991606`, DB Security `43687991724`, Vehicle Reference Preview `43687991703`, HTTP Smoke `43687991507`, Browser E2E `43687991616`.
+- Earlier attempts found and corrected a JSX row wrapper, formatting issues, E2E seed ordering, and a test selector that did not match the button's accessible name. The final runs above passed after those corrections.
+- Only disposable local Supabase E2E data was used. No production migration, data, payment, or deployment action occurred. Admin audit history is now visible in the current UI and browser-tested, but real administrator UAT and production migration/RLS parity remain unverified.
+- Current main merge checkpoint: `be91e113f7dc281a2d2028532f20b0868dfa6503`. Recheck current open PRs and Actions before continuing.
