@@ -68,6 +68,7 @@ export function previewVehicleReferences(
   const maxRows = options.maxRows ?? MAX_PREVIEW_ROWS;
   if (
     !Array.isArray(input) ||
+    (options.passengerOnly !== undefined && typeof options.passengerOnly !== "boolean") ||
     !Number.isSafeInteger(maxRows) ||
     maxRows < 1 ||
     maxRows > MAX_PREVIEW_ROWS ||
