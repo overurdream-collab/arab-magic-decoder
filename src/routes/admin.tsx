@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Shield, Check, X, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -104,6 +104,7 @@ function Applications() {
   const qc = useQueryClient();
   const [status, setStatus] = useState("pending");
   const [msg, setMsg] = useState("");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const { data } = useQuery({
     queryKey: ["admin-apps", status],
     queryFn: async () => {
@@ -167,42 +168,59 @@ function Applications() {
           </thead>
           <tbody>
             {data?.map((a) => (
-              <tr key={a.id} className="border-t align-top">
-                <td className="p-3 font-semibold">{a.business_name}</td>
-                <td className="p-3">{SELLER_TYPES[a.seller_type] ?? a.seller_type}</td>
-                <td className="p-3">
-                  {a.city}
-                  {a.district ? ` — ${a.district}` : ""}
-                </td>
-                <td className="p-3" dir="ltr">
-                  {a.phone}
-                </td>
-                <td className="p-3">{a.commercial_register ?? "—"}</td>
-                <td className="max-w-xs p-3 text-muted-foreground">
-                  {a.notes ?? a.review_note ?? "—"}
-                </td>
-                <td className="p-3">{new Date(a.created_at).toLocaleDateString("ar-YE")}</td>
-                <td className="p-3">
-                  {a.status === "pending" && (
-                    <div className="flex gap-1">
-                      <button
-                        aria-label="موافقة"
-                        className="rounded bg-primary p-1.5 text-primary-foreground"
-                        onClick={() => act(a.id, true)}
-                      >
-                        <Check className="h-4 w-4" />
-                      </button>
-                      <button
-                        aria-label="رفض"
-                        className="rounded border p-1.5"
-                        onClick={() => act(a.id, false)}
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
+              <Fragment key={a.id}>
+                <tr className="border-t align-top">
+                  <td className="p-3 font-semibold">{a.business_name}</td>
+                  <td className="p-3">{SELLER_TYPES[a.seller_type] ?? a.seller_type}</td>
+                  <td className="p-3">
+                    {a.city}
+                    {a.district ? ` — ${a.district}` : ""}
+                  </td>
+                  <td className="p-3" dir="ltr">
+                    {a.phone}
+                  </td>
+                  <td className="p-3">{a.commercial_register ?? "—"}</td>
+                  <td className="max-w-xs p-3 text-muted-foreground">
+                    {a.notes ?? a.review_note ?? "—"}
+                  </td>
+                  <td className="p-3">{new Date(a.created_at).toLocaleDateString("ar-YE")}</td>
+                  <td className="space-y-2 p-3">
+                    <button
+                      className="rounded-lg border px-2 py-1 text-xs font-semibold"
+                      aria-label={`عرض سجل ${a.business_name}`}
+                      aria-expanded={expandedId === a.id}
+                      onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}
+                    >
+                      {expandedId === a.id ? "إخفاء السجل" : "عرض سجل التدقيق"}
+                    </button>
+                    {a.status === "pending" && (
+                      <div className="flex gap-1">
+                        <button
+                          aria-label="موافقة"
+                          className="rounded bg-primary p-1.5 text-primary-foreground"
+                          onClick={() => act(a.id, true)}
+                        >
+                          <Check className="h-4 w-4" />
+                        </button>
+                        <button
+                          aria-label="رفض"
+                          className="rounded border p-1.5"
+                          onClick={() => act(a.id, false)}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+                {expandedId === a.id && (
+                  <tr>
+                    <td colSpan={8} className="bg-muted/30 p-4">
+                      <SellerApplicationHistory applicationId={a.id} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
             {data?.length === 0 && (
               <tr>
@@ -215,6 +233,71 @@ function Applications() {
         </table>
       </div>
     </div>
+  );
+}
+
+type SellerApplicationEvent = {
+  id: number;
+  event_type: string;
+  from_status: string | null;
+  to_status: string;
+  actor_id: string | null;
+  occurred_at: string;
+  review_note: string | null;
+};
+
+function SellerApplicationHistory({ applicationId }: { applicationId: string }) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["seller-application-events", applicationId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("seller_application_events")
+        .select("id,event_type,from_status,to_status,actor_id,occurred_at,review_note")
+        .eq("application_id", applicationId)
+        .order("id", { ascending: true });
+      if (error) throw error;
+      return data as SellerApplicationEvent[];
+    },
+  });
+
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground">جارٍ تحميل سجل الطلب…</p>;
+  }
+  if (isError) {
+    return (
+      <p role="alert" className="text-sm text-destructive">
+        تعذّر تحميل سجل الطلب.
+      </p>
+    );
+  }
+  if (!data?.length) {
+    return <p className="text-sm text-muted-foreground">لا توجد أحداث مسجلة لهذا الطلب.</p>;
+  }
+
+  const labels: Record<string, string> = {
+    submitted: "أُرسل طلب التاجر",
+    approved: "تمت الموافقة على طلب التاجر",
+    rejected: "تم رفض طلب التاجر",
+  };
+
+  return (
+    <ol aria-label="سجل تدقيق طلب التاجر" className="space-y-2">
+      {data.map((event) => (
+        <li
+          key={event.id}
+          className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-3 text-sm"
+        >
+          <span className="font-semibold">{labels[event.event_type] ?? event.event_type}</span>
+          <span className="text-muted-foreground">
+            {event.from_status ?? "—"} ← {event.to_status}
+          </span>
+          {event.review_note && <span>{event.review_note}</span>}
+          <time className="text-xs text-muted-foreground">
+            {new Date(event.occurred_at).toLocaleString("ar-YE")}
+          </time>
+        </li>
+      ))}
+    </ol>
   );
 }
 

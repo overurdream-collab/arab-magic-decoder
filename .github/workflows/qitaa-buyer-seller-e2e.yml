@@ -57,9 +57,10 @@ jobs:
               -d "{\"email\":\"$email\",\"password\":\"$password\",\"email_confirm\":true,\"user_metadata\":{\"full_name\":\"E2E $role\"}}" > "/tmp/auth-$role.json"
           done
           SELLER_ID=$(python3 -c 'import json;print(json.load(open("/tmp/auth-seller.json"))["id"])')
+          BUYER_ID=$(python3 -c 'import json;print(json.load(open("/tmp/auth-buyer.json"))["id"])')
           ADMIN_ID=$(python3 -c 'import json;print(json.load(open("/tmp/auth-admin.json"))["id"])')
           psql "$DB_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO public.user_roles(user_id,role) VALUES ('$SELLER_ID','seller'),('$ADMIN_ID','admin');"
-          sed "s/__SELLER_ID__/$SELLER_ID/g" tests/e2e/seed.sql > /tmp/qitaa-seed.sql
+          sed -e "s/__SELLER_ID__/$SELLER_ID/g" -e "s/__BUYER_ID__/$BUYER_ID/g" -e "s/__ADMIN_ID__/$ADMIN_ID/g" tests/e2e/seed.sql > /tmp/qitaa-seed.sql
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f /tmp/qitaa-seed.sql
       - name: Build and start app against local Supabase
         run: |
