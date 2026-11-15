@@ -74,6 +74,13 @@ export function previewVehicleReferences(
     input.length > maxRows
   )
     throw new Error("Invalid vehicle import size");
+  // Fail closed on malformed existing identities rather than matching against
+  // disguised names or throwing an unhelpful normalization TypeError.
+  if (
+    !Array.isArray(existing) ||
+    existing.some((v) => !v || !safeName(v.makeName) || !safeName(v.modelName))
+  )
+    throw new Error("Invalid existing vehicle identity");
   const existingMakes = new Set(existing.map((v) => canonical(v.makeName)));
   const existingModels = new Map<string, ExistingVehicle[]>();
   for (const row of existing) {
