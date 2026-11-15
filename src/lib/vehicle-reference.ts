@@ -53,6 +53,8 @@ const safeName = (name: unknown): name is string =>
   // overrides and zero-width joiners) that can disguise identities or source IDs.
   !/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u.test(name);
 
+const MAX_PREVIEW_ROWS = 50_000;
+
 const currentUpperBound = () => new Date().getUTCFullYear() + 2;
 
 /** Preview source rows; retain provenance, reject invalid years, flag collisions. */
@@ -61,11 +63,12 @@ export function previewVehicleReferences(
   existing: ExistingVehicle[],
   options: { maxRows?: number; passengerOnly?: boolean } = {},
 ): VehiclePreview {
-  const maxRows = options.maxRows ?? 50000;
+  const maxRows = options.maxRows ?? MAX_PREVIEW_ROWS;
   if (
     !Array.isArray(input) ||
     !Number.isSafeInteger(maxRows) ||
     maxRows < 1 ||
+    maxRows > MAX_PREVIEW_ROWS ||
     input.length > maxRows
   )
     throw new Error("Invalid vehicle import size");
