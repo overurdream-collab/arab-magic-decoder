@@ -67,7 +67,8 @@ export function previewVehicleReferences(
 ): VehiclePreview {
   if (!options || typeof options !== "object" || Array.isArray(options))
     throw new Error("Invalid vehicle preview options");
-  const maxRows = options.maxRows ?? MAX_PREVIEW_ROWS;
+  // An omitted limit uses the default; an explicit null is malformed input.
+  const maxRows = options.maxRows === undefined ? MAX_PREVIEW_ROWS : options.maxRows;
   if (options.passengerOnly !== undefined && typeof options.passengerOnly !== "boolean")
     throw new Error("Invalid passenger-only preview option");
   if (
