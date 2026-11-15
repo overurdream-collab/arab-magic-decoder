@@ -113,7 +113,7 @@ END $$;
 RESET ROLE;
 
 -- The trigger also protects history from privileged UPDATE/DELETE paths.
-DO $
+DO $audit$
 DECLARE blocked boolean:=false;
 BEGIN
   BEGIN
@@ -131,5 +131,5 @@ BEGIN
     blocked := SQLERRM='seller application audit events are append-only';
   END;
   IF NOT blocked THEN RAISE EXCEPTION 'append-only trigger did not block event deletion'; END IF;
-END $;
+END $audit$;
 SELECT 'seller application audit history, actor attribution, append-only ACL and isolation PASS';
