@@ -17,8 +17,8 @@ INSERT INTO public.vehicle_models(id,make_id,name_ar,name_en,year_start,year_end
 
 -- Seed admin-only audit history using synthetic users in the isolated E2E database.
 SELECT set_config('request.jwt.claim.sub', '__BUYER_ID__', false);
-INSERT INTO public.seller_applications(user_id,business_name,seller_type,city,phone,notes)
-VALUES ('__BUYER_ID__','E2E Audit Shop','new_parts','صنعاء','770000099','Synthetic audit-history test');
+INSERT INTO public.seller_applications(user_id,business_name,seller_type,city,phone,notes,status)
+VALUES ('__BUYER_ID__','E2E Audit Shop','new_parts','صنعاء','770000099','Synthetic audit-history test','pending');
 
 SELECT set_config('request.jwt.claim.sub', '__ADMIN_ID__', false);
 SELECT public.admin_stage_catalog(
