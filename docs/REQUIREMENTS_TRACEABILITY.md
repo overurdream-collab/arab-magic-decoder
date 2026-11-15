@@ -158,3 +158,12 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - **Order lifecycle — Partial:** request/accept/reject/reserve/cancel/audit and admin read-only monitoring are implemented and covered by CI. Delivery, COD reconciliation, refund/dispute handling, and real-user fulfillment UAT remain unimplemented or unverified.
 - **Release readiness — Pending:** production migration parity, real buyer/seller/admin UAT, backups/recovery, performance/security review, and explicit release approval are outstanding.
 - PR #49 five required checks on head `21cc71e7426db921e1d1bd1518aea5bea6f9b937`: CI `43659702029`, Buyer-Seller E2E `43659702052`, DB Security `43659702074`, HTTP Smoke `43659702031`, Vehicle Reference Preview `43659702077` — all succeeded. Post-merge main DB Security and E2E checks were still in progress at documentation time; inspect current Actions before claiming main CI complete.
+
+## Verified checkpoint — 2026-11-15 (after PR #56)
+
+- Latest reviewed merge: main SHA 32f2fa2540882b83f4af4edb2c2a05d7e391ae82; PRs #53–#56 are merged. At the time of this documentation change, no open PR was present.
+- Vehicle identity preview — implemented and regression-tested, not production import: malformed existing year ranges, conflicting types/names, delimiter collisions, controls/format characters, Unicode line/paragraph separators, unpaired UTF-16 surrogates, and caller attempts to raise the 50,000-row ceiling now have synthetic regression coverage. The preview remains read-only and does not verify fitment or source rights.
+- PR #55 final head 7be970b989e959623324efab822649e2687cd929 passed all five required workflows; PR #56 final head 4b8da4076df1dd6b17393f0b43e9e69f82b544db passed all five required workflows. Detailed run IDs and the first-run corrections are in docs/IMPLEMENTATION_LOG.md.
+- Catalog/fitment — Partial and blocked from external import: upstream datasets remain candidates only until source/version-specific provenance, redistribution terms and attribution are checked. Model/year is not fitment evidence.
+- Orders — Partial: current request, reservation, cancellation, audit and admin read-only flows have CI coverage. Delivery, COD settlement, refunds/disputes and production UAT remain unfinished/unverified.
+- Release readiness — Pending: production schema/RLS parity, real-account UAT, backup/restore practice, security/performance review and explicit release authorization remain open.
