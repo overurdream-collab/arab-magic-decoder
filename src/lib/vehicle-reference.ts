@@ -62,7 +62,12 @@ export function previewVehicleReferences(
   options: { maxRows?: number; passengerOnly?: boolean } = {},
 ): VehiclePreview {
   const maxRows = options.maxRows ?? 50000;
-  if (!Array.isArray(input) || input.length > maxRows || maxRows < 1)
+  if (
+    !Array.isArray(input) ||
+    !Number.isSafeInteger(maxRows) ||
+    maxRows < 1 ||
+    input.length > maxRows
+  )
     throw new Error("Invalid vehicle import size");
   const existingMakes = new Set(existing.map((v) => canonical(v.makeName)));
   const existingModels = new Map<string, ExistingVehicle[]>();
