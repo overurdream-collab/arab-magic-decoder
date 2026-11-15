@@ -206,6 +206,12 @@ export function CatalogImport() {
                 <span className="font-semibold">
                   {event.event_type === "staged" ? "تمت معاينة الدفعة" : "تم اعتماد الدفعة"}
                 </span>
+                <span
+                  className="font-mono text-xs text-muted-foreground"
+                  title={event.actor_id ?? undefined}
+                >
+                  المنفذ: {event.actor_id ?? "النظام"}
+                </span>
                 <span dir="ltr" className="font-mono text-xs">
                   {event.source_name}
                 </span>
