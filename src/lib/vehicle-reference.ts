@@ -51,6 +51,7 @@ const safeName = (name: unknown): name is string =>
   !/[<>]/.test(name) &&
   // Reject controls, format characters and Unicode line separators (e.g. bidi
   // overrides and zero-width joiners) that can disguise identities or source IDs.
+  // Reject unpaired UTF-16 surrogates; valid emoji pairs remain allowed.
   !/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u.test(name);
 
 const currentUpperBound = () => new Date().getUTCFullYear() + 2;
