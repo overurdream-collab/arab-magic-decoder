@@ -115,6 +115,16 @@ describe("Qitaa offline vehicle-reference preview", () => {
       "Invalid existing vehicle identity",
     );
   });
+  it("rejects malformed options containers with a clear error", () => {
+    const input = [row("Toyota", "Corolla", 2020)];
+    for (const options of [null, false, 0, "passenger", []]) {
+      expect(() => previewVehicleReferences(input, [], options as never)).toThrow(
+        "Invalid vehicle preview options",
+      );
+    }
+    expect(previewVehicleReferences(input, []).candidates).toHaveLength(1);
+    expect(previewVehicleReferences(input, [], {}).candidates).toHaveLength(1);
+  });
   it("rejects nonboolean passenger-only filters instead of silently coercing them", () => {
     const input = [row("Toyota", "Corolla", 2020)];
     for (const passengerOnly of ["false", 1, null, {}]) {
