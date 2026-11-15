@@ -136,13 +136,13 @@ export function previewVehicleReferences(
         ? "conflicting vehicle types; verify source identity before import"
         : group.names.size > 1
           ? "conflicting source spellings"
-        : rows.length > 1
-          ? "multiple existing records"
-          : rows.length === 1 && !matchingYear
-            ? "year range outside existing record"
-            : rows.length === 1
-              ? "existing model (not a verified generation match)"
-              : "new identity needs human review before database insert";
+          : rows.length > 1
+            ? "multiple existing records"
+            : rows.length === 1 && !matchingYear
+              ? "year range outside existing record"
+              : rows.length === 1
+                ? "existing model (not a verified generation match)"
+                : "new identity needs human review before database insert";
     candidates.push({
       make: group.make,
       model: group.model,
