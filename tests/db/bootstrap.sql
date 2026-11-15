@@ -32,3 +32,4 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 \i supabase/migrations/20261015040000_purchase_request_event_reader.sql
 \i supabase/migrations/20261015050000_admin_purchase_request_read.sql
 \i supabase/migrations/20261115070000_seller_application_audit.sql
+\i supabase/migrations/20261115080000_catalog_import_audit.sql

@@ -43,6 +43,8 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/seller_application_audit.sql
       - name: Assert catalog import approvals and tamper resistance
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/catalog_import.sql
+      - name: Assert catalog import audit history and immutability
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/catalog_import_audit.sql
       - name: Assert demand privacy and administrative access
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/search_gap.sql
       - name: Assert purchase request reservation and ACL
