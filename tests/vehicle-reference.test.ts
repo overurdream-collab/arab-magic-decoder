@@ -72,6 +72,16 @@ describe("Qitaa offline vehicle-reference preview", () => {
     expect(passenger.candidates[0]?.status).toBe("new_make");
     expect(passenger.candidates[0]?.years).toEqual([2020]);
   });
+  it("keeps distinct make/model tuples separate when names contain delimiters", () => {
+    const result = previewVehicleReferences(
+      [row("A|B", "C", 2020), row("A", "B|C", 2021)],
+      [{ makeName: "A|B", modelName: "C", yearStart: 2019, yearEnd: 2022 }],
+    );
+    expect(result.candidates).toHaveLength(2);
+    expect(result.candidates.find((item) => item.make === "A|B")?.status).toBe("existing");
+    expect(result.candidates.find((item) => item.make === "A")?.status).toBe("new_make");
+    expect(result.candidates.find((item) => item.make === "A")?.years).toEqual([2021]);
+  });
   it("does not import motorcycles as passenger cars", () => {
     const result = previewVehicleReferences(
       [{ ...row("Honda", "CBR", 2022), vehicleTypeId: 1 }],
