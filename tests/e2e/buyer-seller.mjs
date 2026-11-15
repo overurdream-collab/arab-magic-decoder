@@ -107,7 +107,10 @@ try {
   await adminPage.getByText("سجل تدقيق الاستيراد الأخير").waitFor({ timeout: 10000 });
   await adminPage.getByText("تمت معاينة الدفعة").waitFor({ timeout: 10000 });
   await adminPage.getByText("تم اعتماد الدفعة").waitFor({ timeout: 10000 });
-  assert.ok((await adminPage.getByText(/المنفذ:/).count()) >= 2, "catalog audit actors are visible");
+  assert.ok(
+    (await adminPage.getByText(/المنفذ:/).count()) >= 2,
+    "catalog audit actors are visible",
+  );
   report.push("PASS admin can review catalog import staging and application events");
 
   await buyerContext.close();
