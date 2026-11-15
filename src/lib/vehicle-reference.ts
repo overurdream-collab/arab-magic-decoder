@@ -125,11 +125,19 @@ export function previewVehicleReferences(
   for (const [key, group] of groups) {
     const years = [...group.years].sort((a, b) => a - b);
     const rows = existingModels.get(key) ?? [];
+    const invalidExistingRange = rows.some(
+      (r) =>
+        !Number.isInteger(r.yearStart) ||
+        !Number.isInteger(r.yearEnd) ||
+        r.yearStart < 1886 ||
+        r.yearStart > r.yearEnd ||
+        r.yearEnd > currentUpperBound(),
+    );
     const matchingYear = years.some((year) =>
       rows.some((r) => year >= r.yearStart && year <= r.yearEnd),
     );
     const status: VehicleCandidate["status"] =
-      group.vehicleTypes.size > 1 || group.names.size > 1
+      invalidExistingRange || group.vehicleTypes.size > 1 || group.names.size > 1
         ? "review"
         : rows.length > 1
           ? "review"
@@ -140,8 +148,9 @@ export function previewVehicleReferences(
               : existingMakes.has(canonical(group.make))
                 ? "new_model"
                 : "new_make";
-    const reason =
-      group.vehicleTypes.size > 1
+    const reason = invalidExistingRange
+      ? "invalid existing year range; verify catalog record before matching"
+      : group.vehicleTypes.size > 1
         ? "conflicting vehicle types; verify source identity before import"
         : group.names.size > 1
           ? "conflicting source spellings"

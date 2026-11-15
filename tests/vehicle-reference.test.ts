@@ -82,6 +82,21 @@ describe("Qitaa offline vehicle-reference preview", () => {
     expect(result.candidates.find((item) => item.make === "A")?.status).toBe("new_make");
     expect(result.candidates.find((item) => item.make === "A")?.years).toEqual([2021]);
   });
+  it("requires review for malformed existing catalog year ranges", () => {
+    for (const [yearStart, yearEnd] of [
+      [2022, 2020],
+      [1800, 2020],
+      [2020.5, 2022],
+      [2020, 9999],
+    ]) {
+      const result = previewVehicleReferences(
+        [row("Toyota", "Corolla", 2020)],
+        [{ makeName: "Toyota", modelName: "Corolla", yearStart, yearEnd }],
+      );
+      expect(result.candidates[0]?.status).toBe("review");
+      expect(result.candidates[0]?.reason).toContain("invalid existing year range");
+    }
+  });
   it("does not import motorcycles as passenger cars", () => {
     const result = previewVehicleReferences(
       [{ ...row("Honda", "CBR", 2022), vehicleTypeId: 1 }],
