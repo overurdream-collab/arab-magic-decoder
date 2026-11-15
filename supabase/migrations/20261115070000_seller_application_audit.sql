@@ -24,7 +24,7 @@ CREATE POLICY "applicant and admin read seller application events"
   FOR SELECT TO authenticated
   USING (
     applicant_id = (SELECT auth.uid())
-    OR (SELECT public.has_role(auth.uid(), 'admin'::public.app_role))
+    OR (SELECT public.is_current_user_admin())
   );
 
 CREATE OR REPLACE FUNCTION public.log_seller_application_event()
