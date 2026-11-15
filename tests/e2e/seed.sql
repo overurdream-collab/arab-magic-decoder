@@ -1,4 +1,17 @@
 \set ON_ERROR_STOP on
+
+-- Seed admin-only audit history using synthetic users in the isolated E2E database.
+SELECT set_config('request.jwt.claim.sub', '__BUYER_ID__', false);
+INSERT INTO public.seller_applications(user_id,business_name,seller_type,city,phone,notes)
+VALUES ('__BUYER_ID__','E2E Audit Shop','new_parts','صنعاء','770000099','Synthetic audit-history test');
+
+SELECT set_config('request.jwt.claim.sub', '__ADMIN_ID__', false);
+SELECT public.admin_stage_catalog(
+  '[{"oem_number":"QITAA-E2E-AUDIT-01","name_ar":"قطعة سجل التدقيق","name_en":"Audit history test item","category_slug":"e2e-test","alt_numbers":"QITAA-E2E-AUDIT-ALT"}]'::jsonb,
+  'e2e-audit.csv'
+)->>'batch_id' AS audit_batch_id \gset
+SELECT public.admin_commit_catalog(:'audit_batch_id'::uuid);
+
 INSERT INTO public.categories(id,slug,name_ar,name_en) VALUES
 ('92000000-0000-4000-8000-000000000001','e2e-test','اختبار','E2E test');
 INSERT INTO public.catalog_parts(id,category_id,oem_number,name_ar,name_en)
