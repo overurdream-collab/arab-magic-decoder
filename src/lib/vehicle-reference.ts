@@ -40,7 +40,8 @@ const canonical = (name: string) =>
   name.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en");
 
 // Tuple encoding prevents make/model delimiter collisions (e.g. "A|B"/"C" vs "A"/"B|C").
-const identityKey = (make: string, model: string) => JSON.stringify([canonical(make), canonical(model)]);
+const identityKey = (make: string, model: string) =>
+  JSON.stringify([canonical(make), canonical(model)]);
 
 const safeName = (name: unknown): name is string =>
   typeof name === "string" &&
