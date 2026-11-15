@@ -148,10 +148,9 @@ export function previewVehicleReferences(
               : existingMakes.has(canonical(group.make))
                 ? "new_model"
                 : "new_make";
-    const reason =
-      invalidExistingRange
-        ? "invalid existing year range; verify catalog record before matching"
-        : group.vehicleTypes.size > 1
+    const reason = invalidExistingRange
+      ? "invalid existing year range; verify catalog record before matching"
+      : group.vehicleTypes.size > 1
         ? "conflicting vehicle types; verify source identity before import"
         : group.names.size > 1
           ? "conflicting source spellings"
