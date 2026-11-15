@@ -39,6 +39,23 @@ describe("Qitaa offline vehicle-reference preview", () => {
     );
     expect(result.candidates[0]?.status).toBe("review");
   });
+  it("requires review when only some observed years overlap an existing range", () => {
+    const result = previewVehicleReferences(
+      [row("Toyota", "Corolla", 2020), row("Toyota", "Corolla", 2025)],
+      [{ makeName: "Toyota", modelName: "Corolla", yearStart: 2018, yearEnd: 2022 }],
+    );
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]?.years).toEqual([2020, 2025]);
+    expect(result.candidates[0]?.status).toBe("review");
+    expect(result.candidates[0]?.reason).toContain("year range outside existing record");
+  });
+  it("keeps fully covered observed years as existing", () => {
+    const result = previewVehicleReferences(
+      [row("Toyota", "Corolla", 2019), row("Toyota", "Corolla", 2021)],
+      [{ makeName: "Toyota", modelName: "Corolla", yearStart: 2018, yearEnd: 2022 }],
+    );
+    expect(result.candidates[0]?.status).toBe("existing");
+  });
   it("never silently resolves two existing records as one", () => {
     const result = previewVehicleReferences(
       [row("Toyota", "Corolla", 2020)],
