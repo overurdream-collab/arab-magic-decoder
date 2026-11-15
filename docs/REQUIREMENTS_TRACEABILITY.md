@@ -171,8 +171,8 @@ Status legend: **Existing** = supported by existing code/database structure, not
 ## Verified checkpoint — 2026-11-15 (admin audit coverage)
 
 - Latest merge: main SHA 96d1b21cff766c3c455d9b92705e3dd3d3d9be34; PRs #58 and #59 merged after all five required workflows passed on their final heads.
-- Seller onboarding — Partial: submission, approval, and rejection emit append-only audit events with actor/status and rejection note. Applicant/admin read scope and database immutability are covered in disposable PostgreSQL tests. PR #61 adds an admin-gated history view; browser E2E verifies submission and approval events. Real administrator UAT and production migration/RLS parity remain unverified.
-- Admin catalog import — Partial: staging and application emit append-only metadata events (batch ID, actor, source label, status, timestamp); the imported payload is not copied into the event table. PR #61 displays the latest 20 events in the admin import view, and browser E2E verifies staged/applied history. Production migration parity and real admin UAT remain unverified.
+- Seller onboarding — Partial: submission, approval, and rejection emit append-only audit events with actor/status and rejection note. Applicant/admin read scope and database immutability are covered in disposable PostgreSQL tests. PR #61 adds an admin-gated history view with actor IDs, and browser E2E verifies submission and approval events plus actor attribution. Real administrator UAT and production migration/RLS parity remain unverified.
+- Admin catalog import — Partial: staging and application emit append-only metadata events (batch ID, actor, source label, status, timestamp); the imported payload is not copied into the event table. PR #61 displays the latest 20 events and actor IDs in the admin import view, and browser E2E verifies staged/applied history and actor attribution. Production migration parity and real admin UAT remain unverified.
 - Security/release — Partial/pending: the above checks do not prove production RLS/migration parity, backups, penetration testing, or real-user acceptance. Do not apply migrations to production without explicit authorization.
 
 
@@ -182,3 +182,12 @@ Status legend: **Existing** = supported by existing code/database structure, not
 - Seller application audit history and recent catalog import audit history are now available to admins in the UI. Database RLS remains the authorization boundary; E2E used synthetic users and a disposable local database.
 - All five required workflows passed on the final head: CI `43687991606`, DB Security `43687991724`, Vehicle Preview `43687991703`, HTTP Smoke `43687991507`, Browser E2E `43687991616`. The browser assertions for application submission/approval and import staging/application passed.
 - This is an admin interface and automated test checkpoint, not real admin UAT or release approval. Production migration/RLS parity, delivery/COD/refunds, real-user fulfillment UAT and other unimplemented target domains remain open.
+
+
+
+## Verified checkpoint — 2026-11-15 (PR #63 actor display)
+
+- Main merge SHA: `f1b9ad7d81748755dcf304ee74e8150695e2d65b`; PR #63 tested head: `5252cd53869dd1b0095880770a46101a7dc85bec`.
+- Admin audit timelines display actor IDs/system attribution. E2E verifies this for seller application and catalog import event histories.
+- All five checks passed on the tested PR head: CI `43688980871`, DB Security `43688980886`, Vehicle Preview `43688980937`, HTTP Smoke `43688980904`, Browser E2E `43688980867`.
+- No production changes. Real administrator UAT and production migration/RLS parity remain unverified; broader release blockers are unchanged.
