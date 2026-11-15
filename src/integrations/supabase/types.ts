@@ -50,6 +50,36 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_import_events: {
+        Row: {
+          actor_id: string | null
+          batch_id: string
+          event_type: string
+          id: number
+          occurred_at: string
+          source_name: string
+          status: string
+        }
+        Insert: {
+          actor_id?: string | null
+          batch_id: string
+          event_type: string
+          id?: number
+          occurred_at?: string
+          source_name: string
+          status: string
+        }
+        Update: {
+          actor_id?: string | null
+          batch_id?: string
+          event_type?: string
+          id?: number
+          occurred_at?: string
+          source_name?: string
+          status?: string
+        }
+        Relationships: []
+      }
       catalog_parts: {
         Row: {
           alt_numbers: string[]
@@ -365,6 +395,42 @@ export type Database = {
           id?: string
           last_seen_at?: string
           term?: string
+        }
+        Relationships: []
+      }
+      seller_application_events: {
+        Row: {
+          actor_id: string | null
+          applicant_id: string
+          application_id: string
+          event_type: string
+          from_status: string | null
+          id: number
+          occurred_at: string
+          review_note: string | null
+          to_status: string
+        }
+        Insert: {
+          actor_id?: string | null
+          applicant_id: string
+          application_id: string
+          event_type: string
+          from_status?: string | null
+          id?: number
+          occurred_at?: string
+          review_note?: string | null
+          to_status: string
+        }
+        Update: {
+          actor_id?: string | null
+          applicant_id?: string
+          application_id?: string
+          event_type?: string
+          from_status?: string | null
+          id?: number
+          occurred_at?: string
+          review_note?: string | null
+          to_status?: string
         }
         Relationships: []
       }
