@@ -29,7 +29,11 @@ export function CatalogImport() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState("");
-  const { data: auditEvents = [], isLoading: auditLoading, isError: auditError } = useQuery({
+  const {
+    data: auditEvents = [],
+    isLoading: auditLoading,
+    isError: auditError,
+  } = useQuery({
     queryKey: ["catalog-import-events"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -195,11 +199,16 @@ export function CatalogImport() {
         {auditEvents.length > 0 && (
           <ol className="space-y-2">
             {auditEvents.map((event) => (
-              <li key={event.id} className="flex flex-wrap items-center gap-2 rounded-lg border p-3 text-sm">
+              <li
+                key={event.id}
+                className="flex flex-wrap items-center gap-2 rounded-lg border p-3 text-sm"
+              >
                 <span className="font-semibold">
                   {event.event_type === "staged" ? "تمت معاينة الدفعة" : "تم اعتماد الدفعة"}
                 </span>
-                <span dir="ltr" className="font-mono text-xs">{event.source_name}</span>
+                <span dir="ltr" className="font-mono text-xs">
+                  {event.source_name}
+                </span>
                 <time className="text-xs text-muted-foreground">
                   {new Date(event.occurred_at).toLocaleString("ar-YE")}
                 </time>
