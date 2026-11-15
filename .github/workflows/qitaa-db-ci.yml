@@ -39,6 +39,8 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/bootstrap.sql
       - name: Assert marketplace and garage row-level permissions
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/seller_rls.sql
+      - name: Assert seller application audit history and immutability
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/db/seller_application_audit.sql
       - name: Assert catalog import approvals and tamper resistance
         run: psql -X -v ON_ERROR_STOP=1 -f tests/db/catalog_import.sql
       - name: Assert demand privacy and administrative access
