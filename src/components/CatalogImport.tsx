@@ -1,9 +1,19 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { parseCatalogCsv, type CatalogCsvItem } from "@/lib/catalog-csv";
 
 type PreviewItem = CatalogCsvItem & { action: "insert" | "update" };
+type ImportEvent = {
+  id: number;
+  batch_id: string;
+  actor_id: string | null;
+  source_name: string;
+  event_type: "staged" | "applied";
+  status: "staged" | "applied";
+  occurred_at: string;
+};
+
 type StagedBatch = {
   batch_id: string;
   added: number;
@@ -19,6 +29,18 @@ export function CatalogImport() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState("");
+  const { data: auditEvents = [], isLoading: auditLoading, isError: auditError } = useQuery({
+    queryKey: ["catalog-import-events"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("catalog_import_events")
+        .select("id,batch_id,actor_id,source_name,event_type,status,occurred_at")
+        .order("id", { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      return data as ImportEvent[];
+    },
+  });
 
   async function chooseFile(file: File | undefined) {
     setBatch(null);
@@ -51,6 +73,7 @@ export function CatalogImport() {
       return;
     }
     setBatch(data as unknown as StagedBatch);
+    await qc.invalidateQueries({ queryKey: ["catalog-import-events"] });
   }
 
   async function apply() {
@@ -70,6 +93,7 @@ export function CatalogImport() {
     await qc.invalidateQueries({ queryKey: ["admin-catalog"] });
     await qc.invalidateQueries({ queryKey: ["search"] });
     await qc.invalidateQueries({ queryKey: ["featured"] });
+    await qc.invalidateQueries({ queryKey: ["catalog-import-events"] });
   }
 
   return (
@@ -157,6 +181,33 @@ export function CatalogImport() {
           {done}
         </p>
       )}
+      <div className="space-y-3 border-t pt-4">
+        <h3 className="font-bold">سجل تدقيق الاستيراد الأخير</h3>
+        {auditLoading && <p className="text-sm text-muted-foreground">جارٍ تحميل السجل…</p>}
+        {auditError && (
+          <p role="alert" className="text-sm text-destructive">
+            تعذر تحميل سجل تدقيق الاستيراد.
+          </p>
+        )}
+        {!auditLoading && !auditError && auditEvents.length === 0 && (
+          <p className="text-sm text-muted-foreground">لا توجد دفعات مسجلة.</p>
+        )}
+        {auditEvents.length > 0 && (
+          <ol className="space-y-2">
+            {auditEvents.map((event) => (
+              <li key={event.id} className="flex flex-wrap items-center gap-2 rounded-lg border p-3 text-sm">
+                <span className="font-semibold">
+                  {event.event_type === "staged" ? "تمت معاينة الدفعة" : "تم اعتماد الدفعة"}
+                </span>
+                <span dir="ltr" className="font-mono text-xs">{event.source_name}</span>
+                <time className="text-xs text-muted-foreground">
+                  {new Date(event.occurred_at).toLocaleString("ar-YE")}
+                </time>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
     </section>
   );
 }
