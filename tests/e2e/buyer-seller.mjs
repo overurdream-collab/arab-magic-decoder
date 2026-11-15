@@ -96,6 +96,7 @@ try {
   const pendingApplication = adminPage.getByRole("row").filter({ hasText: "E2E Audit Shop" });
   await pendingApplication.getByRole("button", { name: /عرض سجل/ }).click();
   await adminPage.getByText("أُرسل طلب التاجر").waitFor({ timeout: 10000 });
+  await adminPage.getByText(/المنفذ:/).waitFor({ timeout: 10000 });
   await pendingApplication.getByRole("button", { name: "موافقة" }).click();
   await adminPage.getByText("تمت الموافقة وإنشاء متجر موثّق.").waitFor({ timeout: 10000 });
   await adminPage.getByRole("combobox").selectOption("approved");
@@ -106,6 +107,10 @@ try {
   await adminPage.getByText("سجل تدقيق الاستيراد الأخير").waitFor({ timeout: 10000 });
   await adminPage.getByText("تمت معاينة الدفعة").waitFor({ timeout: 10000 });
   await adminPage.getByText("تم اعتماد الدفعة").waitFor({ timeout: 10000 });
+  assert.ok(
+    (await adminPage.getByText(/المنفذ:/).count()) >= 2,
+    "catalog audit actors are visible",
+  );
   report.push("PASS admin can review catalog import staging and application events");
 
   await buyerContext.close();

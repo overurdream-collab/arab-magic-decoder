@@ -291,6 +291,12 @@ function SellerApplicationHistory({ applicationId }: { applicationId: string }) 
           <span className="text-muted-foreground">
             {event.from_status ?? "—"} ← {event.to_status}
           </span>
+          <span
+            className="font-mono text-xs text-muted-foreground"
+            title={event.actor_id ?? undefined}
+          >
+            المنفذ: {event.actor_id ?? "النظام"}
+          </span>
           {event.review_note && <span>{event.review_note}</span>}
           <time className="text-xs text-muted-foreground">
             {new Date(event.occurred_at).toLocaleString("ar-YE")}
