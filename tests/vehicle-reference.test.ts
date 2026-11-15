@@ -97,6 +97,24 @@ describe("Qitaa offline vehicle-reference preview", () => {
       expect(result.candidates[0]?.reason).toContain("invalid existing year range");
     }
   });
+  it("fails closed on malformed existing make and model identities", () => {
+    const valid = { makeName: "Toyota", modelName: "Corolla", yearStart: 2018, yearEnd: 2022 };
+    for (const invalid of [
+      { ...valid, makeName: "Toy\\u202eota" },
+      { ...valid, modelName: "Cor\\u200bolla" },
+      { ...valid, makeName: "<script>" },
+      { ...valid, modelName: " " },
+      { ...valid, makeName: "Toy\\uD800ota" },
+      { ...valid, makeName: null },
+    ]) {
+      expect(() =>
+        previewVehicleReferences([row("Toyota", "Corolla", 2020)], [invalid] as never),
+      ).toThrow("Invalid existing vehicle identity");
+    }
+    expect(() => previewVehicleReferences([], null as never)).toThrow(
+      "Invalid existing vehicle identity",
+    );
+  });
   it("does not import motorcycles as passenger cars", () => {
     const result = previewVehicleReferences(
       [{ ...row("Honda", "CBR", 2022), vehicleTypeId: 1 }],
