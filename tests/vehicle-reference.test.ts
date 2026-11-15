@@ -168,6 +168,27 @@ describe("Qitaa offline vehicle-reference preview", () => {
     );
     expect(result.rejected).toBe(2);
   });
+  it("rejects compatibility characters that normalize into forbidden delimiters", () => {
+    const result = previewVehicleReferences(
+      [
+        row("Toyota\uFF1Cscript\uFF1E", "Corolla", 2020),
+        row("Toyota", "Corolla\uFF1C", 2020),
+        row("Toyota", "Corolla", 2020, "source\uFF1E"),
+        row("Toyota", "Corolla", 2020, "valid-source"),
+      ],
+      [],
+    );
+    expect(result.rejected).toBe(3);
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]?.sourceIds).toEqual(["valid-source"]);
+
+    expect(() =>
+      previewVehicleReferences(
+        [row("Toyota", "Corolla", 2020)],
+        [{ makeName: "Toyota\uFF1C", modelName: "Corolla", yearStart: 2018, yearEnd: 2022 }],
+      ),
+    ).toThrow("Invalid existing vehicle identity");
+  });
   it("rejects invisible Unicode controls in make, model and source IDs", () => {
     const result = previewVehicleReferences(
       [
