@@ -118,9 +118,9 @@ describe("Qitaa offline vehicle-reference preview", () => {
   it("rejects nonboolean passenger-only filters instead of silently coercing them", () => {
     const input = [row("Toyota", "Corolla", 2020)];
     for (const passengerOnly of ["false", 1, null, {}]) {
-      expect(() =>
-        previewVehicleReferences(input, [], { passengerOnly } as never),
-      ).toThrow("Invalid passenger-only preview option");
+      expect(() => previewVehicleReferences(input, [], { passengerOnly } as never)).toThrow(
+        "Invalid passenger-only preview option",
+      );
     }
     expect(previewVehicleReferences(input, [], { passengerOnly: false }).rejected).toBe(0);
     expect(previewVehicleReferences(input, [], { passengerOnly: true }).rejected).toBe(0);
