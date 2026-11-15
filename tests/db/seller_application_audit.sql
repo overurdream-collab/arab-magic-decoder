@@ -111,4 +111,25 @@ BEGIN
   IF NOT denied THEN RAISE EXCEPTION 'anonymous role can access seller application events'; END IF;
 END $$;
 RESET ROLE;
+
+-- The trigger also protects history from privileged UPDATE/DELETE paths.
+DO $
+DECLARE blocked boolean:=false;
+BEGIN
+  BEGIN
+    UPDATE public.seller_application_events SET review_note='tampered'
+     WHERE event_type='approved';
+  EXCEPTION WHEN OTHERS THEN
+    blocked := SQLERRM='seller application audit events are append-only';
+  END;
+  IF NOT blocked THEN RAISE EXCEPTION 'append-only trigger did not block event update'; END IF;
+
+  blocked:=false;
+  BEGIN
+    DELETE FROM public.seller_application_events WHERE event_type='approved';
+  EXCEPTION WHEN OTHERS THEN
+    blocked := SQLERRM='seller application audit events are append-only';
+  END;
+  IF NOT blocked THEN RAISE EXCEPTION 'append-only trigger did not block event deletion'; END IF;
+END $;
 SELECT 'seller application audit history, actor attribution, append-only ACL and isolation PASS';
