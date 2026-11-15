@@ -183,3 +183,12 @@ Current execution gates after PR #45: validate vehicle identity data provenance/
 - Earlier attempts found and corrected a JSX row wrapper, formatting issues, E2E seed ordering, and a test selector that did not match the button's accessible name. The final runs above passed after those corrections.
 - Only disposable local Supabase E2E data was used. No production migration, data, payment, or deployment action occurred. Admin audit history is now visible in the current UI and browser-tested, but real administrator UAT and production migration/RLS parity remain unverified.
 - Current main merge checkpoint: `be91e113f7dc281a2d2028532f20b0868dfa6503`. Recheck current open PRs and Actions before continuing.
+
+
+## 2026-11-15 — إظهار منفذ حدث التدقيق في الواجهات الإدارية
+
+- PR #63 merged as `f1b9ad7d81748755dcf304ee74e8150695e2d65b`, reviewed head `5252cd53869dd1b0095880770a46101a7dc85bec`.
+- The seller-application and catalog-import audit timelines now show the actor ID (or system actor) alongside the event, status/note, and timestamp. No schema or authorization change was needed; actor attribution was already recorded by the append-only tables.
+- Browser E2E verifies actor attribution on both timelines. All five required checks passed: CI `43688980871`, DB Security `43688980886`, Vehicle Preview `43688980937`, HTTP Smoke `43688980904`, Browser E2E `43688980867`.
+- Uses only synthetic disposable E2E data. No production database or deployment was touched. Admin UAT and production migration/RLS parity remain unverified.
+- Current main merge checkpoint: `f1b9ad7d81748755dcf304ee74e8150695e2d65b`.
