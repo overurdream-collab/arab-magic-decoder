@@ -53,7 +53,9 @@ const safeName = (name: unknown): name is string =>
   // overrides and zero-width joiners) that can disguise identities or source IDs.
   // Reject unpaired UTF-16 surrogates; valid emoji pairs remain allowed.
   !/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u.test(name) &&
-  !/[\uD800-\uDFFF]/u.test(name);
+  !Array.from(name).some(
+    (character) => character.length === 1 && /[\uD800-\uDFFF]/.test(character),
+  );
 
 const MAX_PREVIEW_ROWS = 50_000;
 
