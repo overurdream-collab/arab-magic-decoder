@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Shield, Check, X, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -168,7 +168,8 @@ function Applications() {
           </thead>
           <tbody>
             {data?.map((a) => (
-              <tr key={a.id} className="border-t align-top">
+              <Fragment key={a.id}>
+              <tr className="border-t align-top">
                 <td className="p-3 font-semibold">{a.business_name}</td>
                 <td className="p-3">{SELLER_TYPES[a.seller_type] ?? a.seller_type}</td>
                 <td className="p-3">
@@ -213,12 +214,13 @@ function Applications() {
                 </td>
               </tr>
               {expandedId === a.id && (
-                <tr key={`${a.id}-audit`}>
+                <tr>
                   <td colSpan={8} className="bg-muted/30 p-4">
                     <SellerApplicationHistory applicationId={a.id} />
                   </td>
                 </tr>
               )}
+              </Fragment>
             ))}
             {data?.length === 0 && (
               <tr>
