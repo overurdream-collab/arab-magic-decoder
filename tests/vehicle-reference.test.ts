@@ -182,6 +182,16 @@ describe("Qitaa offline vehicle-reference preview", () => {
     expect(result.rejected).toBe(3);
     expect(result.candidates).toHaveLength(1);
     expect(result.candidates[0]?.sourceIds).toEqual(["valid-\uD83D\uDE97"]);
+    expect(result.candidates[0]?.make).toBe("Toyota");
+  });
+  it("accepts valid supplementary Unicode in names and source IDs", () => {
+    const result = previewVehicleReferences(
+      [row("Brand-\uD83D\uDE97", "Model-\uD83D\uDE99", 2020, "source-\uD83D\uDE97")],
+      [],
+    );
+    expect(result.rejected).toBe(0);
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]?.sourceIds).toEqual(["source-\uD83D\uDE97"]);
   });
   it("limits file size and never mutates source objects", () => {
     const input = [row("Toyota", "Camry", 2020)];
