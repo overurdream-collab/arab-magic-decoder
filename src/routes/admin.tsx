@@ -169,58 +169,58 @@ function Applications() {
           <tbody>
             {data?.map((a) => (
               <Fragment key={a.id}>
-              <tr className="border-t align-top">
-                <td className="p-3 font-semibold">{a.business_name}</td>
-                <td className="p-3">{SELLER_TYPES[a.seller_type] ?? a.seller_type}</td>
-                <td className="p-3">
-                  {a.city}
-                  {a.district ? ` — ${a.district}` : ""}
-                </td>
-                <td className="p-3" dir="ltr">
-                  {a.phone}
-                </td>
-                <td className="p-3">{a.commercial_register ?? "—"}</td>
-                <td className="max-w-xs p-3 text-muted-foreground">
-                  {a.notes ?? a.review_note ?? "—"}
-                </td>
-                <td className="p-3">{new Date(a.created_at).toLocaleDateString("ar-YE")}</td>
-                <td className="space-y-2 p-3">
-                  <button
-                    className="rounded-lg border px-2 py-1 text-xs font-semibold"
-                    aria-label={`عرض سجل ${a.business_name}`}
-                    aria-expanded={expandedId === a.id}
-                    onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}
-                  >
-                    {expandedId === a.id ? "إخفاء السجل" : "عرض سجل التدقيق"}
-                  </button>
-                  {a.status === "pending" && (
-                    <div className="flex gap-1">
-                      <button
-                        aria-label="موافقة"
-                        className="rounded bg-primary p-1.5 text-primary-foreground"
-                        onClick={() => act(a.id, true)}
-                      >
-                        <Check className="h-4 w-4" />
-                      </button>
-                      <button
-                        aria-label="رفض"
-                        className="rounded border p-1.5"
-                        onClick={() => act(a.id, false)}
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-              {expandedId === a.id && (
-                <tr>
-                  <td colSpan={8} className="bg-muted/30 p-4">
-                    <SellerApplicationHistory applicationId={a.id} />
+                <tr className="border-t align-top">
+                  <td className="p-3 font-semibold">{a.business_name}</td>
+                  <td className="p-3">{SELLER_TYPES[a.seller_type] ?? a.seller_type}</td>
+                  <td className="p-3">
+                    {a.city}
+                    {a.district ? ` — ${a.district}` : ""}
+                  </td>
+                  <td className="p-3" dir="ltr">
+                    {a.phone}
+                  </td>
+                  <td className="p-3">{a.commercial_register ?? "—"}</td>
+                  <td className="max-w-xs p-3 text-muted-foreground">
+                    {a.notes ?? a.review_note ?? "—"}
+                  </td>
+                  <td className="p-3">{new Date(a.created_at).toLocaleDateString("ar-YE")}</td>
+                  <td className="space-y-2 p-3">
+                    <button
+                      className="rounded-lg border px-2 py-1 text-xs font-semibold"
+                      aria-label={`عرض سجل ${a.business_name}`}
+                      aria-expanded={expandedId === a.id}
+                      onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}
+                    >
+                      {expandedId === a.id ? "إخفاء السجل" : "عرض سجل التدقيق"}
+                    </button>
+                    {a.status === "pending" && (
+                      <div className="flex gap-1">
+                        <button
+                          aria-label="موافقة"
+                          className="rounded bg-primary p-1.5 text-primary-foreground"
+                          onClick={() => act(a.id, true)}
+                        >
+                          <Check className="h-4 w-4" />
+                        </button>
+                        <button
+                          aria-label="رفض"
+                          className="rounded border p-1.5"
+                          onClick={() => act(a.id, false)}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
-              )}
-              </Fragment>
+                {expandedId === a.id && (
+                  <tr>
+                    <td colSpan={8} className="bg-muted/30 p-4">
+                      <SellerApplicationHistory applicationId={a.id} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>   </Fragment>
             ))}
             {data?.length === 0 && (
               <tr>
@@ -261,9 +261,19 @@ function SellerApplicationHistory({ applicationId }: { applicationId: string }) 
     },
   });
 
-  if (isLoading) return <p className="text-sm text-muted-foreground">جارٍ تحميل سجل الطلب…</p>;
-  if (isError) return <p role="alert" className="text-sm text-destructive">تعذّر تحميل سجل الطلب.</p>;
-  if (!data?.length) return <p className="text-sm text-muted-foreground">لا توجد أحداث مسجلة لهذا الطلب.</p>;
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground">جارٍ تحميل سجل الطلب…</p>;
+  }
+  if (isError) {
+    return (
+      <p role="alert" className="text-sm text-destructive">
+        تعذّر تحميل سجل الطلب.
+      </p>
+    );
+  }
+  if (!data?.length) {
+    return <p className="text-sm text-muted-foreground">لا توجد أحداث مسجلة لهذا الطلب.</p>;
+  }
 
   const labels: Record<string, string> = {
     submitted: "أُرسل طلب التاجر",
@@ -274,11 +284,20 @@ function SellerApplicationHistory({ applicationId }: { applicationId: string }) 
   return (
     <ol aria-label="سجل تدقيق طلب التاجر" className="space-y-2">
       {data.map((event) => (
-        <li key={event.id} className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-3 text-sm">
-          <span className="font-semibold">{labels[event.event_type] ?? event.event_type}</span>
-          <span className="text-muted-foreground">{event.from_status ?? "—"} ← {event.to_status}</span>
+        <li
+          key={event.id}
+          className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-3 text-sm"
+        >
+          <span className="font-semibold">
+            {labels[event.event_type] ?? event.event_type}
+          </span>
+          <span className="text-muted-foreground">
+            {event.from_status ?? "—"} ← {event.to_status}
+          </span>
           {event.review_note && <span>{event.review_note}</span>}
-          <time className="text-xs text-muted-foreground">{new Date(event.occurred_at).toLocaleString("ar-YE")}</time>
+          <time className="text-xs text-muted-foreground">
+            {new Date(event.occurred_at).toLocaleString("ar-YE")}
+          </time>
         </li>
       ))}
     </ol>
