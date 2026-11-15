@@ -51,7 +51,9 @@ const safeName = (name: unknown): name is string =>
   !/[<>]/.test(name) &&
   // Reject controls, format characters and Unicode line separators (e.g. bidi
   // overrides and zero-width joiners) that can disguise identities or source IDs.
-  !/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u.test(name);
+  // Reject unpaired UTF-16 surrogates; valid emoji pairs remain allowed.
+  !/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u.test(name) &&
+  !/[\uD800-\uDFFF]/u.test(name);
 
 const MAX_PREVIEW_ROWS = 50_000;
 
