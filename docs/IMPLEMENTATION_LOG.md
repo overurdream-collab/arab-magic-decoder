@@ -147,3 +147,12 @@ Current execution gates after PR #45: validate vehicle identity data provenance/
 - These changes affect offline preview logic/tests only. No external dataset was imported, and no production database, deployment, payment, or customer data was changed.
 - Vehicle source-rights review was refreshed in `docs/VEHICLE_DATA_SOURCE_REVIEW.md`; source-specific terms and the limits of package licensing are recorded. Candidate open-government subsets remain unapproved for import pending dataset/version-level provenance and attribution checks.
 - Current main SHA at this checkpoint: `71ba890e5322ced52c94e23f7b07fe78e1a378a2`. Main-branch DB Security and Buyer-Seller E2E workflows were still running when this note was prepared; verify their final conclusions before treating the post-merge main checkpoint as green.
+
+
+## 2026-11-15 — Offline vehicle preview size-bound validation
+
+- PR #51 merged as `050065ed8f4f0762ed14f55aaa3124fb7e17c978` after five successful checks on reviewed head `50ffcc038d66d078c1ed5236f911ccae6bccb0db`.
+- Verified workflow runs: Qitaa CI `43660826618`, DB Security `43660826596`, HTTP Smoke `43660826578`, Vehicle Reference Preview `43660826667`, Browser E2E `43660826586` — all completed successfully.
+- `maxRows` now requires a positive safe integer, rejecting NaN, infinity, fractional and unsafe limits. Synthetic unit regressions cover invalid values and a valid one-row bound.
+- PR #17 and #18 were already merged; browser E2E concurrency isolation was implemented in PR #19. No duplicate edits to these completed gates.
+- No production database, import, payment or deployment was performed. Source redistribution rights, authoritative OEM/fitment verification, production migration parity, real-account UAT and delivery/COD/refund business rules remain open.
