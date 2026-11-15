@@ -92,6 +92,22 @@ try {
   await adminPage.getByText("ألغى المشتري الطلب").waitFor({ timeout: 10000 });
   report.push("PASS admin can monitor request status and audit history");
 
+  await adminPage.getByRole("button", { name: "طلبات التجار", exact: true }).click();
+  const pendingApplication = adminPage.getByRole("row").filter({ hasText: "E2E Audit Shop" });
+  await pendingApplication.getByRole("button", { name: /عرض سجل التدقيق/ }).click();
+  await adminPage.getByText("أُرسل طلب التاجر").waitFor({ timeout: 10000 });
+  await pendingApplication.getByRole("button", { name: "موافقة" }).click();
+  await adminPage.getByText("تمت الموافقة وإنشاء متجر موثّق.").waitFor({ timeout: 10000 });
+  await adminPage.getByRole("combobox").selectOption("approved");
+  await adminPage.getByText("تمت الموافقة على طلب التاجر").waitFor({ timeout: 10000 });
+  report.push("PASS admin can review seller application submission and approval events");
+
+  await adminPage.getByRole("button", { name: "استيراد CSV", exact: true }).click();
+  await adminPage.getByText("سجل تدقيق الاستيراد الأخير").waitFor({ timeout: 10000 });
+  await adminPage.getByText("تمت معاينة الدفعة").waitFor({ timeout: 10000 });
+  await adminPage.getByText("تم اعتماد الدفعة").waitFor({ timeout: 10000 });
+  report.push("PASS admin can review catalog import staging and application events");
+
   await buyerContext.close();
   await outsiderContext.close();
   await sellerContext.close();
