@@ -16,7 +16,7 @@ test('browser E2E concurrency is isolated per pull request or branch', () => {
 test('browser evidence uploads exclude auth payloads and have short retention', () => {
   const upload = workflow.split(/\n\s*- name: Upload browser evidence\s*\n/)[1];
   assert.ok(upload, 'browser evidence upload step must exist');
-  const paths = upload.match(/^\s*path:\s*\|\s*\n((?:\s{12,}[^\n]+\n)+)/m)?.[1];
+  const paths = upload.match(/^\s*path:[ \t]*\|[ \t]*\n((?:\s{12,}[^\n]+\n)+)/m)?.[1];
   assert.ok(paths, 'explicit artifact allowlist required');
   const entries = paths.trim().split('\n').map((line) => line.trim());
   assert.deepEqual(entries, [
