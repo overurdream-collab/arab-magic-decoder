@@ -207,6 +207,28 @@ describe("Qitaa offline vehicle-reference preview", () => {
     expect(result.candidates).toHaveLength(1);
     expect(result.candidates[0]?.sourceIds).toEqual(["gov"]);
   });
+  it("rejects identities and source IDs exceeding the limit after NFKC expansion", () => {
+    // U+FB03 (ffi ligature) expands to three ASCII letters under NFKC.
+    const expanded = "\uFB03".repeat(34);
+    const result = previewVehicleReferences(
+      [
+        row(expanded, "Model", 2020),
+        row("Brand", expanded, 2020),
+        row("Brand", "Model", 2020, expanded),
+        row("Brand", "Model", 2020, "safe-source"),
+      ],
+      [],
+    );
+    expect(result.rejected).toBe(3);
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]?.sourceIds).toEqual(["safe-source"]);
+    expect(() =>
+      previewVehicleReferences(
+        [row("Brand", "Model", 2020)],
+        [{ makeName: expanded, modelName: "Model", yearStart: 2019, yearEnd: 2021 }],
+      ),
+    ).toThrow("Invalid existing vehicle identity");
+  });
   it("rejects malformed UTF-16 in vehicle identities and source IDs", () => {
     const result = previewVehicleReferences(
       [
