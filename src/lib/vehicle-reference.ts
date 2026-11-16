@@ -48,7 +48,9 @@ const safeName = (name: unknown): name is string =>
   name.length >= 1 &&
   name.length <= 100 &&
   name.trim().length >= 1 &&
-  !/[<>]/.test(name) &&
+  // Compatibility normalization can turn fullwidth angle brackets into HTML
+  // delimiters. Validate the canonical identity as well as the raw input.
+  !/[<>]/.test(name.normalize("NFKC")) &&
   // Reject controls, format characters and Unicode line separators (e.g. bidi
   // overrides and zero-width joiners) that can disguise identities or source IDs.
   // Reject unpaired UTF-16 surrogates; valid emoji pairs remain allowed.
