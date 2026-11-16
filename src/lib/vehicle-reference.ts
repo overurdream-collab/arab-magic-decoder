@@ -47,6 +47,9 @@ const safeName = (name: unknown): name is string =>
   typeof name === "string" &&
   name.length >= 1 &&
   name.length <= 100 &&
+  // NFKC can expand one code point into multiple characters. Enforce the
+  // same bound on the canonical identity used for matching and display.
+  name.normalize("NFKC").length <= 100 &&
   name.trim().length >= 1 &&
   // Compatibility normalization can turn fullwidth angle brackets into HTML
   // delimiters. Validate the canonical identity as well as the raw input.
