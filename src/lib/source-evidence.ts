@@ -29,6 +29,9 @@ export function checkSourceEvidence(value: unknown): {
     try {
       const url = new URL(v[key] as string);
       const host = url.hostname.toLowerCase();
+      // Offline provenance metadata does not need literal IPv6 hosts. Reject all
+      // IPv6 literals, including IPv4-mapped forms that bypass IPv4 checks.
+      if (host.startsWith("[") && host.endsWith("]")) return false;
       const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
       const octets = ipv4?.slice(1).map(Number);
       const privateIpv4 = Boolean(
