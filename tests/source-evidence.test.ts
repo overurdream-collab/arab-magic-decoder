@@ -81,6 +81,20 @@ describe("offline source provenance review gate", () => {
       checkSourceEvidence({ ...complete, retrievedAt: "9999-12-31T23:59:59Z" }).missing,
     ).toContain("retrievedAt");
   });
+  it("rejects loopback and private network source URLs", () => {
+    for (const datasetUrl of [
+      "https://localhost/data",
+      "https://internal.localhost/data",
+      "https://127.0.0.1/data",
+      "https://10.0.0.1/data",
+      "https://172.16.0.1/data",
+      "https://192.168.1.2/data",
+      "https://169.254.169.254/latest/meta-data",
+      "https://[::1]/data",
+    ]) {
+      expect(checkSourceEvidence({ ...complete, datasetUrl }).missing).toContain("datasetUrl");
+    }
+  });
   it("does not mutate the supplied manifest", () => {
     const before = JSON.stringify(complete);
     checkSourceEvidence(complete);
