@@ -40,15 +40,23 @@ export function checkSourceEvidence(value: unknown): {
   const retrievedAt = v["retrievedAt"];
   const dateParts =
     typeof retrievedAt === "string" ? /^(\d{4})-(\d{2})-(\d{2})T/.exec(retrievedAt) : null;
+  // Date.UTC maps years 00–99 to 1900–1999; setUTCFullYear preserves the stated year.
+  const calendarDate = new Date(0);
+  if (dateParts) {
+    calendarDate.setUTCFullYear(
+      Number(dateParts[1]),
+      Number(dateParts[2]) - 1,
+      Number(dateParts[3]),
+    );
+  }
   const validCalendarDate = Boolean(
     dateParts &&
     Number(dateParts[2]) >= 1 &&
     Number(dateParts[2]) <= 12 &&
     Number(dateParts[3]) >= 1 &&
     Number(dateParts[3]) <= 31 &&
-    new Date(Date.UTC(Number(dateParts[1]), Number(dateParts[2]) - 1, Number(dateParts[3])))
-      .toISOString()
-      .slice(0, 10) === `${dateParts[1]}-${dateParts[2]}-${dateParts[3]}`,
+    calendarDate.toISOString().slice(0, 10) ===
+      `${dateParts[1]}-${dateParts[2]}-${dateParts[3]}`,
   );
   if (
     !validCalendarDate ||
