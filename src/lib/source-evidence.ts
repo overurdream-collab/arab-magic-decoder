@@ -14,7 +14,10 @@ export type SourceEvidence = {
   reviewedBy: string;
 };
 
-export function checkSourceEvidence(value: unknown): { readyForHumanReview: boolean; missing: string[] } {
+export function checkSourceEvidence(value: unknown): {
+  readyForHumanReview: boolean;
+  missing: string[];
+} {
   const missing: string[] = [];
   if (!value || typeof value !== "object" || Array.isArray(value))
     return { readyForHumanReview: false, missing: ["source evidence object"] };
@@ -38,7 +41,8 @@ export function checkSourceEvidence(value: unknown): { readyForHumanReview: bool
     !text("retrievedAt") ||
     !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(v["retrievedAt"] as string) ||
     !Number.isFinite(Date.parse(v["retrievedAt"] as string))
-  ) missing.push("retrievedAt");
+  )
+    missing.push("retrievedAt");
   if (!["model_year", "registration_year", "catalog_presence"].includes(v["yearMeaning"] as string))
     missing.push("yearMeaning");
   if (v["rightsReviewed"] !== true) missing.push("rightsReviewed");
