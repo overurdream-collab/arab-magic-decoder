@@ -33,17 +33,14 @@ export function checkSourceEvidence(value: unknown): { readyForHumanReview: bool
   if (!https("datasetUrl")) missing.push("datasetUrl");
   if (!https("termsUrl")) missing.push("termsUrl");
   for (const key of ["version", "attribution", "reviewedBy"]) if (!text(key)) missing.push(key);
-  if (
-    !text("sha256") ||
-    !/^[a-f0-9]{64}$/i.test(v['sha256'] as string)
-  ) missing.push("sha256");
+  if (!text("sha256") || !/^[a-f0-9]{64}$/i.test(v["sha256"] as string)) missing.push("sha256");
   if (
     !text("retrievedAt") ||
-    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(v['retrievedAt'] as string) ||
-    !Number.isFinite(Date.parse(v['retrievedAt'] as string))
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(v["retrievedAt"] as string) ||
+    !Number.isFinite(Date.parse(v["retrievedAt"] as string))
   ) missing.push("retrievedAt");
-  if (!["model_year", "registration_year", "catalog_presence"].includes(v['yearMeaning'] as string))
+  if (!["model_year", "registration_year", "catalog_presence"].includes(v["yearMeaning"] as string))
     missing.push("yearMeaning");
-  if (v['rightsReviewed'] !== true) missing.push("rightsReviewed");
+  if (v["rightsReviewed"] !== true) missing.push("rightsReviewed");
   return { readyForHumanReview: missing.length === 0, missing };
 }
