@@ -63,7 +63,8 @@ export function checkSourceEvidence(value: unknown): {
     !/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?Z$/.test(
       v["retrievedAt"] as string,
     ) ||
-    !Number.isFinite(Date.parse(v["retrievedAt"] as string))
+    !Number.isFinite(Date.parse(v["retrievedAt"] as string)) ||
+    Date.parse(v["retrievedAt"] as string) > Date.now()
   )
     missing.push("retrievedAt");
   if (!["model_year", "registration_year", "catalog_presence"].includes(v["yearMeaning"] as string))
