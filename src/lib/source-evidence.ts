@@ -29,7 +29,7 @@ export function checkSourceEvidence(value: unknown): {
     try {
       const url = new URL(v[key] as string);
       const host = url.hostname.toLowerCase();
-      const ipv4 = /^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$/.exec(host);
+      const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
       const octets = ipv4?.slice(1).map(Number);
       const privateIpv4 = Boolean(
         octets &&
@@ -37,7 +37,7 @@ export function checkSourceEvidence(value: unknown): {
           octets[0] === 10 ||
           octets[0] === 127 ||
           (octets[0] === 169 && octets[1] === 254) ||
-          (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31) ||
+          (octets[0] === 172 && (octets[1] ?? -1) >= 16 && (octets[1] ?? -1) <= 31) ||
           (octets[0] === 192 && octets[1] === 168)),
       );
       const localHost =
