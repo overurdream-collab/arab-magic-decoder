@@ -73,7 +73,7 @@ describe("offline source provenance review gate", () => {
       expect(checkSourceEvidence({ ...complete, retrievedAt }).missing).toContain("retrievedAt");
     }
     expect(
-      checkSourceEvidence({ ...complete, retrievedAt: "2026-11-17T23:59:59Z" }).readyForHumanReview,
+      checkSourceEvidence({ ...complete, retrievedAt: "2024-11-17T23:59:59Z" }).readyForHumanReview,
     ).toBe(true);
   });
   it("rejects retrieval timestamps in the future", () => {
