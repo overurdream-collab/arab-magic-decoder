@@ -55,12 +55,10 @@ describe("offline source provenance review gate", () => {
   });
   it("validates literal years 0001–0099 without Date.UTC century normalization", () => {
     expect(
-      checkSourceEvidence({ ...complete, retrievedAt: "0099-12-31T00:00:00Z" })
-        .readyForHumanReview,
+      checkSourceEvidence({ ...complete, retrievedAt: "0099-12-31T00:00:00Z" }).readyForHumanReview,
     ).toBe(true);
     expect(
-      checkSourceEvidence({ ...complete, retrievedAt: "0004-02-29T00:00:00Z" })
-        .readyForHumanReview,
+      checkSourceEvidence({ ...complete, retrievedAt: "0004-02-29T00:00:00Z" }).readyForHumanReview,
     ).toBe(true);
     expect(
       checkSourceEvidence({ ...complete, retrievedAt: "0001-02-29T00:00:00Z" }).missing,
