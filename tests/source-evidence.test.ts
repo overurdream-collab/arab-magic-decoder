@@ -53,6 +53,17 @@ describe("offline source provenance review gate", () => {
       checkSourceEvidence({ ...complete, retrievedAt: "2024-02-29T00:00:00Z" }).readyForHumanReview,
     ).toBe(true);
   });
+  it("validates literal years 0001–0099 without Date.UTC century normalization", () => {
+    expect(
+      checkSourceEvidence({ ...complete, retrievedAt: "0099-12-31T00:00:00Z" }).readyForHumanReview,
+    ).toBe(true);
+    expect(
+      checkSourceEvidence({ ...complete, retrievedAt: "0004-02-29T00:00:00Z" }).readyForHumanReview,
+    ).toBe(true);
+    expect(
+      checkSourceEvidence({ ...complete, retrievedAt: "0001-02-29T00:00:00Z" }).missing,
+    ).toContain("retrievedAt");
+  });
   it("rejects out-of-range UTC clock fields rather than normalized timestamps", () => {
     for (const retrievedAt of [
       "2026-11-17T24:00:00Z",
