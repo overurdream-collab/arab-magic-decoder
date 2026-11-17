@@ -53,7 +53,9 @@ export function checkSourceEvidence(value: unknown): {
   if (
     !validCalendarDate ||
     !text("retrievedAt") ||
-    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(v["retrievedAt"] as string) ||
+    !/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?Z$/.test(
+      v["retrievedAt"] as string,
+    ) ||
     !Number.isFinite(Date.parse(v["retrievedAt"] as string))
   )
     missing.push("retrievedAt");

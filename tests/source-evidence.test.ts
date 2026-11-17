@@ -53,6 +53,18 @@ describe("offline source provenance review gate", () => {
       checkSourceEvidence({ ...complete, retrievedAt: "2024-02-29T00:00:00Z" }).readyForHumanReview,
     ).toBe(true);
   });
+  it("rejects out-of-range UTC clock fields rather than normalized timestamps", () => {
+    for (const retrievedAt of [
+      "2026-11-17T24:00:00Z",
+      "2026-11-17T23:60:00Z",
+      "2026-11-17T23:59:60Z",
+    ]) {
+      expect(checkSourceEvidence({ ...complete, retrievedAt }).missing).toContain("retrievedAt");
+    }
+    expect(
+      checkSourceEvidence({ ...complete, retrievedAt: "2026-11-17T23:59:59Z" }).readyForHumanReview,
+    ).toBe(true);
+  });
   it("does not mutate the supplied manifest", () => {
     const before = JSON.stringify(complete);
     checkSourceEvidence(complete);
