@@ -28,7 +28,33 @@ export function checkSourceEvidence(value: unknown): {
     if (!text(key)) return false;
     try {
       const url = new URL(v[key] as string);
-      return url.protocol === "https:" && Boolean(url.hostname) && !url.username && !url.password;
+      const host = url.hostname.toLowerCase();
+      const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
+      const octets = ipv4?.slice(1).map(Number);
+      const privateIpv4 = Boolean(
+        octets &&
+        (octets[0] === 0 ||
+          octets[0] === 10 ||
+          octets[0] === 127 ||
+          (octets[0] === 169 && octets[1] === 254) ||
+          (octets[0] === 172 && (octets[1] ?? -1) >= 16 && (octets[1] ?? -1) <= 31) ||
+          (octets[0] === 192 && octets[1] === 168)),
+      );
+      const localHost =
+        host === "localhost" ||
+        host.endsWith(".localhost") ||
+        host === "[::1]" ||
+        host.startsWith("[fc") ||
+        host.startsWith("[fd") ||
+        host.startsWith("[fe80:");
+      return (
+        url.protocol === "https:" &&
+        Boolean(host) &&
+        !url.username &&
+        !url.password &&
+        !privateIpv4 &&
+        !localHost
+      );
     } catch {
       return false;
     }
