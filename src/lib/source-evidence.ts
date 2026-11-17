@@ -38,15 +38,17 @@ export function checkSourceEvidence(value: unknown): {
   for (const key of ["version", "attribution", "reviewedBy"]) if (!text(key)) missing.push(key);
   if (!text("sha256") || !/^[a-f0-9]{64}$/i.test(v["sha256"] as string)) missing.push("sha256");
   const retrievedAt = v["retrievedAt"];
-  const dateParts = typeof retrievedAt === "string" ? /^(\d{4})-(\d{2})-(\d{2})T/.exec(retrievedAt) : null;
+  const dateParts =
+    typeof retrievedAt === "string" ? /^(\d{4})-(\d{2})-(\d{2})T/.exec(retrievedAt) : null;
   const validCalendarDate = Boolean(
     dateParts &&
-      Number(dateParts[2]) >= 1 &&
-      Number(dateParts[2]) <= 12 &&
-      Number(dateParts[3]) >= 1 &&
-      Number(dateParts[3]) <= 31 &&
-      new Date(Date.UTC(Number(dateParts[1]), Number(dateParts[2]) - 1, Number(dateParts[3]))).toISOString().slice(0, 10) ===
-        `${dateParts[1]}-${dateParts[2]}-${dateParts[3]}`,
+    Number(dateParts[2]) >= 1 &&
+    Number(dateParts[2]) <= 12 &&
+    Number(dateParts[3]) >= 1 &&
+    Number(dateParts[3]) <= 31 &&
+    new Date(Date.UTC(Number(dateParts[1]), Number(dateParts[2]) - 1, Number(dateParts[3])))
+      .toISOString()
+      .slice(0, 10) === `${dateParts[1]}-${dateParts[2]}-${dateParts[3]}`,
   );
   if (
     !validCalendarDate ||
