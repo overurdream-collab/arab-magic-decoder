@@ -19,7 +19,9 @@ describe("offline source provenance review gate", () => {
   });
   it("fails closed for absent evidence and missing rights review", () => {
     expect(checkSourceEvidence(null).readyForHumanReview).toBe(false);
-    expect(checkSourceEvidence({ ...complete, rightsReviewed: false }).missing).toContain("rightsReviewed");
+    expect(checkSourceEvidence({ ...complete, rightsReviewed: false }).missing).toContain(
+      "rightsReviewed",
+    );
     expect(checkSourceEvidence({ ...complete, reviewedBy: "" }).missing).toContain("reviewedBy");
   });
   it("rejects non-HTTPS links, credentials, invalid hash, year semantics and timestamp", () => {
@@ -32,7 +34,11 @@ describe("offline source provenance review gate", () => {
       retrievedAt: "yesterday",
     };
     expect(checkSourceEvidence(invalid).missing).toEqual([
-      "datasetUrl", "termsUrl", "sha256", "retrievedAt", "yearMeaning",
+      "datasetUrl",
+      "termsUrl",
+      "sha256",
+      "retrievedAt",
+      "yearMeaning",
     ]);
   });
   it("does not mutate the supplied manifest", () => {
