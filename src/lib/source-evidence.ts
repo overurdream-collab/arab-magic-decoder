@@ -28,7 +28,8 @@ export function checkSourceEvidence(value: unknown): {
     if (!text(key)) return false;
     try {
       const url = new URL(v[key] as string);
-      const host = url.hostname.toLowerCase();
+      // DNS names are case-insensitive; a trailing root dot must not bypass local-name checks.
+      const host = url.hostname.toLowerCase().replace(/\.+$/, "");
       // Offline provenance metadata does not need literal IPv6 hosts. Reject all
       // IPv6 literals, including IPv4-mapped forms that bypass IPv4 checks.
       if (host.startsWith("[") && host.endsWith("]")) return false;
@@ -46,6 +47,12 @@ export function checkSourceEvidence(value: unknown): {
       const localHost =
         host === "localhost" ||
         host.endsWith(".localhost") ||
+        host === "local" ||
+        host.endsWith(".local") ||
+        host === "internal" ||
+        host.endsWith(".internal") ||
+        host === "home.arpa" ||
+        host.endsWith(".home.arpa") ||
         host === "[::1]" ||
         host.startsWith("[fc") ||
         host.startsWith("[fd") ||
