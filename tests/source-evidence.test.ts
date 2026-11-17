@@ -41,6 +41,18 @@ describe("offline source provenance review gate", () => {
       "yearMeaning",
     ]);
   });
+  it("rejects impossible calendar dates even when JavaScript normalizes them", () => {
+    for (const retrievedAt of [
+      "2026-02-30T00:00:00Z",
+      "2026-13-01T00:00:00Z",
+      "2025-02-29T00:00:00Z",
+    ]) {
+      expect(checkSourceEvidence({ ...complete, retrievedAt }).missing).toContain("retrievedAt");
+    }
+    expect(
+      checkSourceEvidence({ ...complete, retrievedAt: "2024-02-29T00:00:00Z" }).readyForHumanReview,
+    ).toBe(true);
+  });
   it("does not mutate the supplied manifest", () => {
     const before = JSON.stringify(complete);
     checkSourceEvidence(complete);
