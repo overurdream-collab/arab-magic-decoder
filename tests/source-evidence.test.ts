@@ -81,7 +81,7 @@ describe("offline source provenance review gate", () => {
       checkSourceEvidence({ ...complete, retrievedAt: "9999-12-31T23:59:59Z" }).missing,
     ).toContain("retrievedAt");
   });
-  it("rejects loopback and private network source URLs", () => {
+  it("rejects loopback, private network and IPv6 literal source URLs", () => {
     for (const datasetUrl of [
       "https://localhost/data",
       "https://internal.localhost/data",
@@ -91,6 +91,9 @@ describe("offline source provenance review gate", () => {
       "https://192.168.1.2/data",
       "https://169.254.169.254/latest/meta-data",
       "https://[::1]/data",
+      "https://[::ffff:127.0.0.1]/data",
+      "https://[::ffff:169.254.169.254]/data",
+      "https://[2001:db8::1]/data",
     ]) {
       expect(checkSourceEvidence({ ...complete, datasetUrl }).missing).toContain("datasetUrl");
     }
