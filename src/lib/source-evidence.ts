@@ -55,8 +55,7 @@ export function checkSourceEvidence(value: unknown): {
     Number(dateParts[2]) <= 12 &&
     Number(dateParts[3]) >= 1 &&
     Number(dateParts[3]) <= 31 &&
-    calendarDate.toISOString().slice(0, 10) ===
-      `${dateParts[1]}-${dateParts[2]}-${dateParts[3]}`,
+    calendarDate.toISOString().slice(0, 10) === `${dateParts[1]}-${dateParts[2]}-${dateParts[3]}`,
   );
   if (
     !validCalendarDate ||
