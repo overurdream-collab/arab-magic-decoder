@@ -29,7 +29,7 @@ export function checkSourceEvidence(value: unknown): {
     // WHATWG URL parsing silently strips tabs/newlines and trims whitespace.
     // Preserve provenance exactly as submitted rather than accepting a rewritten URL.
     const raw = v[key] as string;
-    if (/\s|[\u0000-\u001f\u007f]/u.test(raw)) return false;
+    if (/\s/u.test(raw) || Array.from(raw).some((char) => char.charCodeAt(0) <= 31 || char.charCodeAt(0) === 127)) return false;
     try {
       const url = new URL(raw);
       // DNS names are case-insensitive; a trailing root dot must not bypass local-name checks.
