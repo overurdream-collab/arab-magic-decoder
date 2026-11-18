@@ -38,6 +38,8 @@ jobs:
         run: bun test tests/vin.test.mjs tests/nhtsa-vin.test.ts
       - name: Offline source evidence regression
         run: bun test tests/source-evidence.test.ts
+      - name: Catalog CSV regression tests
+        run: bun test tests/catalog-csv.test.ts
       - name: Browser workflow security regression
         run: node --test tests/ci/browser-workflow-security.test.mjs
       - name: Production build
