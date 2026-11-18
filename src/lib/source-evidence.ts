@@ -37,6 +37,9 @@ export function checkSourceEvidence(value: unknown): {
       // hosts are unnecessary here; reject every literal, including CGNAT,
       // benchmarking, multicast and other non-public ranges.
       if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(host)) return false;
+      // A single-label DNS name commonly resolves through private search domains.
+      // Provenance links must use an explicit multi-label HTTPS hostname.
+      if (!host.includes(".")) return false;
       const localHost =
         host === "localhost" ||
         host.endsWith(".localhost") ||

@@ -84,6 +84,8 @@ describe("offline source provenance review gate", () => {
   it("rejects loopback, private network and IPv6 literal source URLs", () => {
     for (const datasetUrl of [
       "https://localhost/data",
+      "https://intranet/data",
+      "https://catalog/data",
       "https://internal.localhost/data",
       "https://localhost./data",
       "https://internal.localhost./data",
@@ -107,6 +109,11 @@ describe("offline source provenance review gate", () => {
     ]) {
       expect(checkSourceEvidence({ ...complete, datasetUrl }).missing).toContain("datasetUrl");
     }
+  });
+  it("rejects single-label terms hosts as well as dataset hosts", () => {
+    expect(
+      checkSourceEvidence({ ...complete, termsUrl: "https://intranet/terms" }).missing,
+    ).toContain("termsUrl");
   });
   it("continues to accept public HTTPS source hostnames", () => {
     expect(
