@@ -104,7 +104,10 @@ describe("offline source provenance review gate", () => {
     }
   });
   it("continues to accept public HTTPS source hostnames", () => {
-    expect(checkSourceEvidence({ ...complete, datasetUrl: "https://example.org/data" }).readyForHumanReview).toBe(true);
+    expect(
+      checkSourceEvidence({ ...complete, datasetUrl: "https://example.org/data" })
+        .readyForHumanReview,
+    ).toBe(true);
   });
   it("does not mutate the supplied manifest", () => {
     const before = JSON.stringify(complete);
