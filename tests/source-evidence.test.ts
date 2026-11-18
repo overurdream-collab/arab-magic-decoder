@@ -111,9 +111,9 @@ describe("offline source provenance review gate", () => {
     }
   });
   it("rejects single-label terms hosts as well as dataset hosts", () => {
-    expect(checkSourceEvidence({ ...complete, termsUrl: "https://intranet/terms" }).missing).toContain(
-      "termsUrl",
-    );
+    expect(
+      checkSourceEvidence({ ...complete, termsUrl: "https://intranet/terms" }).missing,
+    ).toContain("termsUrl");
   });
   it("continues to accept public HTTPS source hostnames", () => {
     expect(
