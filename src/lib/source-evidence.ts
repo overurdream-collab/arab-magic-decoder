@@ -51,11 +51,7 @@ export function checkSourceEvidence(value: unknown): {
         host.startsWith("[fd") ||
         host.startsWith("[fe80:");
       return (
-        url.protocol === "https:" &&
-        Boolean(host) &&
-        !url.username &&
-        !url.password &&
-        !localHost
+        url.protocol === "https:" && Boolean(host) && !url.username && !url.password && !localHost
       );
     } catch {
       return false;
