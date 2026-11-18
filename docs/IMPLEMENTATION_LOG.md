@@ -192,3 +192,11 @@ Current execution gates after PR #45: validate vehicle identity data provenance/
 - Browser E2E verifies actor attribution on both timelines. All five required checks passed: CI `43688980871`, DB Security `43688980886`, Vehicle Preview `43688980937`, HTTP Smoke `43688980904`, Browser E2E `43688980867`.
 - Uses only synthetic disposable E2E data. No production database or deployment was touched. Admin UAT and production migration/RLS parity remain unverified.
 - Current main merge checkpoint: `f1b9ad7d81748755dcf304ee74e8150695e2d65b`.
+
+## 2026-11-19 — Catalog CSV boundary regressions and CI checkpoint
+
+- PR #89 merged into main as `404d0f0cbf98a9302fc569c64d4556122e9792fc` after all five checks passed on final reviewed head `985aff4119680ca32c7fa9630c85d3932f945119`: Qitaa CI `44417743033`, DB Security `44417743116`, HTTP Smoke `44417743078`, Vehicle Reference Preview `44417743211`, Buyer-Seller Browser E2E `44417743027`.
+- Added CSV import regression cases for UTF-8 BOM and reordered required headers, case-insensitive duplicate OEMs, exactly 200 versus 201 rows, duplicate headers, wrong row width and oversize input. The initial PR-head CI failed only on Prettier; formatting was corrected and the final head passed.
+- Confirmed PR #17 and #18 remain merged. Browser E2E concurrency is already isolated by PR number or branch ref; no workflow rewrite is required.
+- This is offline/synthetic test coverage, **not** real supplier-data validation or merchant acceptance testing. No production DB, payments or deployment were touched.
+- Remaining gates: authoritative OEM/fitment provenance, real merchant/customer/admin UAT, production migration/RLS parity, delivery and collections workflows, workshop interfaces, and native apps. Do not declare launch readiness on the basis of CI alone.
