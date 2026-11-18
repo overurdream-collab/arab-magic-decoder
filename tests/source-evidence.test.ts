@@ -121,6 +121,21 @@ describe("offline source provenance review gate", () => {
         .readyForHumanReview,
     ).toBe(true);
   });
+  it("rejects provenance URLs silently rewritten by URL parsing", () => {
+    for (const datasetUrl of [
+      " https://example.org/data",
+      "https://example.org/data ",
+      "https://exa\tmple.org/data",
+      "https://example.org/da\nta",
+      "https://example.org/da\rta",
+      "https://example.org/data\u0000",
+    ]) {
+      expect(checkSourceEvidence({ ...complete, datasetUrl }).missing).toContain("datasetUrl");
+    }
+    expect(
+      checkSourceEvidence({ ...complete, termsUrl: "https://example.org/terms\n" }).missing,
+    ).toContain("termsUrl");
+  });
   it("does not mutate the supplied manifest", () => {
     const before = JSON.stringify(complete);
     checkSourceEvidence(complete);
