@@ -14,8 +14,7 @@ describe("catalog CSV quoted fields", () => {
 
   test("accepts quoted embedded newlines and CRLF row separators", () => {
     const items = parseCatalogCsv(
-      header +
-        '\r\nAB123,"فلتر\nزيت",Oil filter,filters,ALT\r\nCD456,فلتر,Filter,filters,ALT2',
+      header + '\r\nAB123,"فلتر\nزيت",Oil filter,filters,ALT\r\nCD456,فلتر,Filter,filters,ALT2',
     );
     expect(items).toHaveLength(2);
     expect(items[0].name_ar).toBe("فلتر\nزيت");
