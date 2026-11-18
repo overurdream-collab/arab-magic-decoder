@@ -48,6 +48,21 @@ export function checkSourceEvidence(value: unknown): {
       // A single-label DNS name commonly resolves through private search domains.
       // Provenance links must use an explicit multi-label HTTPS hostname.
       if (!host.includes(".")) return false;
+      // A URL parser can accept DNS-like hosts that are not valid public DNS
+      // names (empty labels, leading/trailing hyphens, oversized labels).
+      // Reject them before presenting provenance links for human review.
+      if (
+        host.length > 253 ||
+        host
+          .split(".")
+          .some(
+            (label) =>
+              label.length === 0 ||
+              label.length > 63 ||
+              !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label),
+          )
+      )
+        return false;
       const localHost =
         host === "localhost" ||
         host.endsWith(".localhost") ||

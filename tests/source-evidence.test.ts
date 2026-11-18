@@ -115,6 +115,24 @@ describe("offline source provenance review gate", () => {
       checkSourceEvidence({ ...complete, termsUrl: "https://intranet/terms" }).missing,
     ).toContain("termsUrl");
   });
+  it("rejects malformed DNS labels in both provenance URL fields", () => {
+    const malformed = [
+      "https://example..org/data",
+      "https://-bad.example.org/data",
+      "https://bad-.example.org/data",
+      `https://${"a".repeat(64)}.example.org/data`,
+    ];
+    for (const datasetUrl of malformed) {
+      expect(checkSourceEvidence({ ...complete, datasetUrl }).missing).toContain("datasetUrl");
+      expect(checkSourceEvidence({ ...complete, termsUrl: datasetUrl }).missing).toContain(
+        "termsUrl",
+      );
+    }
+    expect(
+      checkSourceEvidence({ ...complete, datasetUrl: "https://a-b.example.org/data" })
+        .readyForHumanReview,
+    ).toBe(true);
+  });
   it("continues to accept public HTTPS source hostnames", () => {
     expect(
       checkSourceEvidence({ ...complete, datasetUrl: "https://example.org/data" })
