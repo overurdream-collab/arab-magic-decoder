@@ -53,12 +53,14 @@ export function checkSourceEvidence(value: unknown): {
       // Reject them before presenting provenance links for human review.
       if (
         host.length > 253 ||
-        host.split(".").some(
-          (label) =>
-            label.length === 0 ||
-            label.length > 63 ||
-            !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label),
-        )
+        host
+          .split(".")
+          .some(
+            (label) =>
+              label.length === 0 ||
+              label.length > 63 ||
+              !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label),
+          )
       )
         return false;
       const localHost =
