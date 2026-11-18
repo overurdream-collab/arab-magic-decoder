@@ -26,8 +26,16 @@ export function checkSourceEvidence(value: unknown): {
     typeof v[key] === "string" && v[key].trim().length > 0 && v[key].length <= 2048;
   const https = (key: string) => {
     if (!text(key)) return false;
+    // WHATWG URL parsing silently strips tabs/newlines and trims whitespace.
+    // Preserve provenance exactly as submitted rather than accepting a rewritten URL.
+    const raw = v[key] as string;
+    if (
+      /\s/u.test(raw) ||
+      Array.from(raw).some((char) => char.charCodeAt(0) <= 31 || char.charCodeAt(0) === 127)
+    )
+      return false;
     try {
-      const url = new URL(v[key] as string);
+      const url = new URL(raw);
       // DNS names are case-insensitive; a trailing root dot must not bypass local-name checks.
       const host = url.hostname.toLowerCase().replace(/\.+$/, "");
       // Offline provenance metadata does not need literal IPv6 hosts. Reject all
