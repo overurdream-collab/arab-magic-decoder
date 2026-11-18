@@ -47,8 +47,7 @@ describe("catalog CSV import boundaries", () => {
   test("rejects duplicate OEM numbers regardless of case", () => {
     expect(() =>
       parseCatalogCsv(
-        header +
-          "\nAB123,فلتر زيت,Oil filter,filters,ALT\nab123,فلتر هواء,Air filter,filters,ALT2",
+        header + "\nAB123,فلتر زيت,Oil filter,filters,ALT\nab123,فلتر هواء,Air filter,filters,ALT2",
       ),
     ).toThrow();
   });
