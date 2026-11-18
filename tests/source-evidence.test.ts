@@ -85,6 +85,11 @@ describe("offline source provenance review gate", () => {
     for (const datasetUrl of [
       "https://localhost/data",
       "https://internal.localhost/data",
+      "https://localhost./data",
+      "https://internal.localhost./data",
+      "https://printer.local/data",
+      "https://service.internal/data",
+      "https://router.home.arpa/data",
       "https://127.0.0.1/data",
       "https://10.0.0.1/data",
       "https://172.16.0.1/data",
@@ -97,6 +102,12 @@ describe("offline source provenance review gate", () => {
     ]) {
       expect(checkSourceEvidence({ ...complete, datasetUrl }).missing).toContain("datasetUrl");
     }
+  });
+  it("continues to accept public HTTPS source hostnames", () => {
+    expect(
+      checkSourceEvidence({ ...complete, datasetUrl: "https://example.org/data" })
+        .readyForHumanReview,
+    ).toBe(true);
   });
   it("does not mutate the supplied manifest", () => {
     const before = JSON.stringify(complete);
