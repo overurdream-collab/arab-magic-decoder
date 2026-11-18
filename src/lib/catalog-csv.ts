@@ -32,8 +32,7 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
       } else if (ch === '"') {
         quoted = false;
         justClosedQuote = true;
-      }
-      else field += ch;
+      } else field += ch;
     } else if (ch === '"') {
       if (justClosedQuote) throw new Error("تنسيق علامات الاقتباس في CSV غير صالح.");
       if (field.length) throw new Error("تنسيق علامات الاقتباس في CSV غير صالح.");
@@ -43,6 +42,7 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
       row.push(field.trim());
       field = "";
     } else if (ch === "\n" || ch === "\r") {
+      justClosedQuote = false;
       if (ch === "\r" && input[i + 1] === "\n") i++;
       row.push(field.trim());
       field = "";
