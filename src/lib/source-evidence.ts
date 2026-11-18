@@ -33,17 +33,10 @@ export function checkSourceEvidence(value: unknown): {
       // Offline provenance metadata does not need literal IPv6 hosts. Reject all
       // IPv6 literals, including IPv4-mapped forms that bypass IPv4 checks.
       if (host.startsWith("[") && host.endsWith("]")) return false;
-      const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
-      const octets = ipv4?.slice(1).map(Number);
-      const privateIpv4 = Boolean(
-        octets &&
-        (octets[0] === 0 ||
-          octets[0] === 10 ||
-          octets[0] === 127 ||
-          (octets[0] === 169 && octets[1] === 254) ||
-          (octets[0] === 172 && (octets[1] ?? -1) >= 16 && (octets[1] ?? -1) <= 31) ||
-          (octets[0] === 192 && octets[1] === 168)),
-      );
+      // Source evidence is metadata, not a network fetch target. Numeric IPv4
+      // hosts are unnecessary here; reject every literal, including CGNAT,
+      // benchmarking, multicast and other non-public ranges.
+      if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(host)) return false;
       const localHost =
         host === "localhost" ||
         host.endsWith(".localhost") ||
@@ -58,12 +51,7 @@ export function checkSourceEvidence(value: unknown): {
         host.startsWith("[fd") ||
         host.startsWith("[fe80:");
       return (
-        url.protocol === "https:" &&
-        Boolean(host) &&
-        !url.username &&
-        !url.password &&
-        !privateIpv4 &&
-        !localHost
+        url.protocol === "https:" && Boolean(host) && !url.username && !url.password && !localHost
       );
     } catch {
       return false;
