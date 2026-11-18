@@ -20,6 +20,7 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
   let row: string[] = [];
   let field = "";
   let quoted = false;
+  let justClosedQuote = false;
   const input = csv.replace(/^\uFEFF/, "");
   if (input.length > 128_000) throw new Error("ملف CSV كبير جدًا (الحد 128 كيلوبايت).");
   for (let i = 0; i < input.length; i++) {
@@ -28,21 +29,29 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
       if (ch === '"' && input[i + 1] === '"') {
         field += '"';
         i++;
-      } else if (ch === '"') quoted = false;
-      else field += ch;
+      } else if (ch === '"') {
+        quoted = false;
+        justClosedQuote = true;
+      } else field += ch;
     } else if (ch === '"') {
+      if (justClosedQuote) throw new Error("تنسيق علامات الاقتباس في CSV غير صالح.");
       if (field.length) throw new Error("تنسيق علامات الاقتباس في CSV غير صالح.");
       quoted = true;
     } else if (ch === ",") {
+      justClosedQuote = false;
       row.push(field.trim());
       field = "";
     } else if (ch === "\n" || ch === "\r") {
+      justClosedQuote = false;
       if (ch === "\r" && input[i + 1] === "\n") i++;
       row.push(field.trim());
       field = "";
       if (row.some((x) => x !== "")) lines.push(row);
       row = [];
-    } else field += ch;
+    } else {
+      if (justClosedQuote) throw new Error("نص غير صالح بعد إغلاق علامات الاقتباس في CSV.");
+      field += ch;
+    }
   }
   if (quoted) throw new Error("حقل CSV يحتوي على علامات اقتباس غير مكتملة.");
   row.push(field.trim());
