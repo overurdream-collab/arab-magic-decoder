@@ -75,6 +75,8 @@ describe("catalog CSV import boundaries", () => {
 
 describe("catalog CSV invalid control bytes", () => {
   test("rejects NUL bytes in catalog fields", () => {
-    expect(() => parseCatalogCsv(header + "\nAB123,فلتر\u0000 زيت,Oil filter,filters,ALT")).toThrow();
+    expect(() =>
+      parseCatalogCsv(header + "\nAB123,فلتر\u0000 زيت,Oil filter,filters,ALT"),
+    ).toThrow();
   });
 });
