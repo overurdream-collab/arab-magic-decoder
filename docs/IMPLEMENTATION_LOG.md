@@ -200,3 +200,11 @@ Current execution gates after PR #45: validate vehicle identity data provenance/
 - Confirmed PR #17 and #18 remain merged. Browser E2E concurrency is already isolated by PR number or branch ref; no workflow rewrite is required.
 - This is offline/synthetic test coverage, **not** real supplier-data validation or merchant acceptance testing. No production DB, payments or deployment were touched.
 - Remaining gates: authoritative OEM/fitment provenance, real merchant/customer/admin UAT, production migration/RLS parity, delivery and collections workflows, workshop interfaces, and native apps. Do not declare launch readiness on the basis of CI alone.
+
+## 2026-11-19 — Catalog CSV bidi-control protection (PR #93)
+
+- PR #93 merged as `1bc2293f2242f88199dae262b30772661d2fd0e7` after all five PR-head GitHub Actions workflows passed: Qitaa CI `44461844731`, DB Security `44461844788`, HTTP Smoke `44461844735`, Vehicle Reference Preview `44461844732`, Buyer-Seller Browser E2E `44461844743`.
+- Parser rejects Unicode bidi formatting controls U+202A–U+202E and U+2066–U+2069 in CSV imports; synthetic tests cover the control range and ordinary Arabic diacritics.
+- PR #17 and #18 remain merged. Browser E2E concurrency was isolated by PR #19; no new concurrency changes were needed in this checkpoint.
+- Scope is limited to parser and regression tests. This is not proof of verified fitment provenance, production data migration parity, merchant UAT, payments, delivery or release readiness.
+- Next safe gate: provenance and supplier-evidence workflow specification/test fixtures, without ingesting unlicensed external datasets; delivery/COD requires business decisions, and production parity requires explicit authorization.
