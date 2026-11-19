@@ -208,3 +208,10 @@ Current execution gates after PR #45: validate vehicle identity data provenance/
 - PR #17 and #18 remain merged. Browser E2E concurrency was isolated by PR #19; no new concurrency changes were needed in this checkpoint.
 - Scope is limited to parser and regression tests. This is not proof of verified fitment provenance, production data migration parity, merchant UAT, payments, delivery or release readiness.
 - Next safe gate: provenance and supplier-evidence workflow specification/test fixtures, without ingesting unlicensed external datasets; delivery/COD requires business decisions, and production parity requires explicit authorization.
+
+
+## 2026-11-19 — Catalog invisible-character guard verified
+
+- PR #95 merged as `d154a0e22c433604fa153c3fb0b6fab4acc0d626` after all five pull-request workflows succeeded on exact head `d075e43cb3efc3793a72d02e784e165243507111`: Qitaa CI `44493088133`, DB Security `44493088130`, HTTP Smoke `44493088148`, Vehicle Reference Preview `44493088152`, Buyer-Seller Browser E2E `44493088150`.
+- CSV guard rejects embedded U+FEFF, U+200B and U+2060 while preserving the permitted leading BOM; synthetic regressions are included. PR #17 and #18 remain merged. PR #19 previously isolated browser workflow concurrency per pull request/ref; do not repeat the change without evidence of regression.
+- This checkpoint is not approval of authoritative OEM/fitment data, real-user UAT, delivery/COD/refund rules, production migration parity, or release. No production database, real payments or production deployment were changed.
