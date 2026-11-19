@@ -94,3 +94,20 @@ describe("catalog CSV control character validation", () => {
     expect(items[0].name_ar).toBe("فلتر\tزيت");
   });
 });
+
+describe("catalog CSV bidirectional formatting safety", () => {
+  test.each([0x202a, 0x202b, 0x202c, 0x202d, 0x202e, 0x2066, 0x2067, 0x2068, 0x2069])(
+    "rejects bidi formatting code point %i",
+    (code) => {
+      const control = String.fromCharCode(code);
+      expect(() =>
+        parseCatalogCsv(header + "\nAB123,فلتر" + control + " زيت,Oil filter,filters,ALT"),
+      ).toThrow();
+    },
+  );
+
+  test("preserves normal Arabic text and diacritics", () => {
+    const items = parseCatalogCsv(header + "\nAB123,فِلتر زيت,Oil filter,filters,ALT");
+    expect(items[0].name_ar).toBe("فِلتر زيت");
+  });
+});
