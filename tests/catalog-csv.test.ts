@@ -113,15 +113,12 @@ describe("catalog CSV bidirectional formatting safety", () => {
 });
 
 describe("catalog CSV invisible format safeguards", () => {
-  test.each([0xfeff, 0x200b, 0x2060])(
-    "rejects embedded invisible code point %i",
-    (code) => {
-      const invisible = String.fromCharCode(code);
-      expect(() =>
-        parseCatalogCsv(header + "\nAB123,فلتر" + invisible + " زيت,Oil filter,filters,ALT"),
-      ).toThrow();
-    },
-  );
+  test.each([0xfeff, 0x200b, 0x2060])("rejects embedded invisible code point %i", (code) => {
+    const invisible = String.fromCharCode(code);
+    expect(() =>
+      parseCatalogCsv(header + "\nAB123,فلتر" + invisible + " زيت,Oil filter,filters,ALT"),
+    ).toThrow();
+  });
 
   test("still accepts a single BOM at the start of the file", () => {
     const items = parseCatalogCsv("\uFEFF" + header + "\nAB123,فلتر زيت,Oil filter,filters,ALT");
