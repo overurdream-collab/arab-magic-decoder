@@ -31,6 +31,9 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
     // Keep ordinary Arabic letters, combining marks and directional text intact.
     if ((code >= 0x202a && code <= 0x202e) || (code >= 0x2066 && code <= 0x2069))
       throw new Error("ملف CSV يحتوي على محارف اتجاه نص غير آمنة.");
+    // Only a leading UTF-8 BOM is allowed; invisible separators can hide catalog text.
+    if (code === 0xfeff || code === 0x200b || code === 0x2060)
+      throw new Error("ملف CSV يحتوي على محارف غير مرئية غير آمنة.");
   }
   for (let i = 0; i < input.length; i++) {
     const ch = input[i];
