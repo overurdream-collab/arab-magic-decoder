@@ -68,8 +68,16 @@ describe("catalog CSV import boundaries", () => {
     expect(() => parseCatalogCsv(header + "\nAB123,فلتر زيت,Oil filter,filters")).toThrow();
   });
 
-  test("rejects inputs above the 128000-character limit", () => {
+  test("rejects inputs above the 128000-byte UTF-8 limit", () => {
     expect(() => parseCatalogCsv(header + "\n" + "x".repeat(128001))).toThrow();
+  });
+
+  test("rejects multibyte Arabic CSV exceeding the byte limit despite fewer characters", () => {
+    const oversizedArabic = "ع".repeat(65_000);
+    expect(oversizedArabic.length).toBeLessThan(128_000);
+    expect(() =>
+      parseCatalogCsv(header + "\nAB123," + oversizedArabic + ",Oil filter,filters,ALT"),
+    ).toThrow("128 كيلوبايت");
   });
 });
 
