@@ -27,6 +27,10 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
     const code = input.charCodeAt(i);
     if ((code < 32 && code !== 9 && code !== 10 && code !== 13) || code === 127)
       throw new Error("ملف CSV يحتوي على محارف تحكم غير صالحة.");
+    // Reject bidi formatting controls that can visually disguise catalog identifiers or names.
+    // Keep ordinary Arabic letters, combining marks and directional text intact.
+    if ((code >= 0x202a && code <= 0x202e) || (code >= 0x2066 && code <= 0x2069))
+      throw new Error("ملف CSV يحتوي على محارف اتجاه نص غير آمنة.");
   }
   for (let i = 0; i < input.length; i++) {
     const ch = input[i];
