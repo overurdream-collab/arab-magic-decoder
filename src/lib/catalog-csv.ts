@@ -22,7 +22,8 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
   let quoted = false;
   let justClosedQuote = false;
   const input = csv.replace(/^\uFEFF/, "");
-  if (input.length > 128_000) throw new Error("ملف CSV كبير جدًا (الحد 128 كيلوبايت).");
+  if (new TextEncoder().encode(csv).byteLength > 128_000)
+    throw new Error("ملف CSV كبير جدًا (الحد 128 كيلوبايت).");
   for (let i = 0; i < input.length; i++) {
     const code = input.charCodeAt(i);
     if ((code < 32 && code !== 9 && code !== 10 && code !== 13) || code === 127)
