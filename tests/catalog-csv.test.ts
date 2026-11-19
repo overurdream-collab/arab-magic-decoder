@@ -80,3 +80,17 @@ describe("catalog CSV invalid control bytes", () => {
     ).toThrow();
   });
 });
+
+describe("catalog CSV control character validation", () => {
+  test.each([1, 7, 11, 31, 127])("rejects non-text control code %i", (code) => {
+    const control = String.fromCharCode(code);
+    expect(() =>
+      parseCatalogCsv(header + "\nAB123,فلتر" + control + " زيت,Oil filter,filters,ALT"),
+    ).toThrow();
+  });
+
+  test("permits tabs in quoted text and normal CSV newlines", () => {
+    const items = parseCatalogCsv(header + '\nAB123,"فلتر\tزيت",Oil filter,filters,ALT');
+    expect(items[0].name_ar).toBe("فلتر\tزيت");
+  });
+});

@@ -23,7 +23,11 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
   let justClosedQuote = false;
   const input = csv.replace(/^\uFEFF/, "");
   if (input.length > 128_000) throw new Error("ملف CSV كبير جدًا (الحد 128 كيلوبايت).");
-  if (input.includes("\u0000")) throw new Error("ملف CSV يحتوي على محارف NUL غير صالحة.");
+  for (let i = 0; i < input.length; i++) {
+    const code = input.charCodeAt(i);
+    if ((code < 32 && code !== 9 && code !== 10 && code !== 13) || code === 127)
+      throw new Error("ملف CSV يحتوي على محارف تحكم غير صالحة.");
+  }
   for (let i = 0; i < input.length; i++) {
     const ch = input[i];
     if (quoted) {
