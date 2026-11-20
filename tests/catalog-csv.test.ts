@@ -76,7 +76,8 @@ describe("catalog CSV import boundaries", () => {
     const prefix = header + "\nAB123,";
     const suffix = ",Oil filter,filters,ALT";
     const remaining = 128_000 - new TextEncoder().encode(prefix + suffix).byteLength;
-    const exact = prefix + "ع".repeat(Math.floor(remaining / 2)) + (remaining % 2 ? "x" : "") + suffix;
+    const exact =
+      prefix + "ع".repeat(Math.floor(remaining / 2)) + (remaining % 2 ? "x" : "") + suffix;
     expect(new TextEncoder().encode(exact).byteLength).toBe(128_000);
     expect(parseCatalogCsv(exact)).toHaveLength(1);
     expect(() => parseCatalogCsv(exact + "x")).toThrow("128 كيلوبايت");
@@ -86,7 +87,8 @@ describe("catalog CSV import boundaries", () => {
     const prefix = "\uFEFF" + header + "\nAB123,";
     const suffix = ",Oil filter,filters,ALT";
     const remaining = 128_000 - new TextEncoder().encode(prefix + suffix).byteLength;
-    const exact = prefix + "ع".repeat(Math.floor(remaining / 2)) + (remaining % 2 ? "x" : "") + suffix;
+    const exact =
+      prefix + "ع".repeat(Math.floor(remaining / 2)) + (remaining % 2 ? "x" : "") + suffix;
     expect(new TextEncoder().encode(exact).byteLength).toBe(128_000);
     expect(parseCatalogCsv(exact)).toHaveLength(1);
     expect(() => parseCatalogCsv(exact + "x")).toThrow("128 كيلوبايت");
