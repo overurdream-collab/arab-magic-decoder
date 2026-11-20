@@ -72,6 +72,26 @@ describe("catalog CSV import boundaries", () => {
     expect(() => parseCatalogCsv(header + "\n" + "x".repeat(128001))).toThrow();
   });
 
+  test("accepts exactly 128000 UTF-8 bytes and rejects one additional byte", () => {
+    const prefix = header + "\nAB123,";
+    const suffix = ",Oil filter,filters,ALT";
+    const remaining = 128_000 - new TextEncoder().encode(prefix + suffix).byteLength;
+    const exact = prefix + "ع".repeat(Math.floor(remaining / 2)) + (remaining % 2 ? "x" : "") + suffix;
+    expect(new TextEncoder().encode(exact).byteLength).toBe(128_000);
+    expect(parseCatalogCsv(exact)).toHaveLength(1);
+    expect(() => parseCatalogCsv(exact + "x")).toThrow("128 كيلوبايت");
+  });
+
+  test("counts a leading UTF-8 BOM toward the file byte limit", () => {
+    const prefix = "\uFEFF" + header + "\nAB123,";
+    const suffix = ",Oil filter,filters,ALT";
+    const remaining = 128_000 - new TextEncoder().encode(prefix + suffix).byteLength;
+    const exact = prefix + "ع".repeat(Math.floor(remaining / 2)) + (remaining % 2 ? "x" : "") + suffix;
+    expect(new TextEncoder().encode(exact).byteLength).toBe(128_000);
+    expect(parseCatalogCsv(exact)).toHaveLength(1);
+    expect(() => parseCatalogCsv(exact + "x")).toThrow("128 كيلوبايت");
+  });
+
   test("rejects multibyte Arabic CSV exceeding the byte limit despite fewer characters", () => {
     const oversizedArabic = "ع".repeat(65_000);
     expect(oversizedArabic.length).toBeLessThan(128_000);
