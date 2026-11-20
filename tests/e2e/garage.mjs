@@ -47,6 +47,14 @@ try {
   await owner.locator("li").filter({ hasText: "زيت اختبار" }).waitFor({ timeout: 15000 });
   report.push("PASS owner records maintenance and sees service history");
 
+  // Re-fetch from the backend instead of trusting the current React state.
+  await owner.reload();
+  await owner.getByRole("heading", { name: "سياراتي" }).waitFor({ timeout: 15000 });
+  await owner.getByText(vehicleName).waitFor({ timeout: 15000 });
+  await owner.getByText("1 سيارة محفوظة").waitFor({ timeout: 15000 });
+  await owner.locator("li").filter({ hasText: "زيت اختبار" }).waitFor({ timeout: 15000 });
+  report.push("PASS vehicle and maintenance persist after page reload");
+
   const otherContext = await browser.newContext();
   const other = await otherContext.newPage();
   await login(other, outsider);
