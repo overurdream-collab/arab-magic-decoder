@@ -133,3 +133,18 @@ describe("catalog CSV invisible format safeguards", () => {
     expect(items[0].oem_number).toBe("AB123");
   });
 });
+
+describe("catalog CSV category slug validation", () => {
+  test.each(["../filters", "filters/engine", "filters engine", "<script>", "filters_", "Filters", "filters--oil"])(
+    "rejects malformed category slug %s",
+    (slug) => {
+      expect(() => parseCatalogCsv(header + "\nAB123,فلتر زيت,Oil filter," + slug + ",ALT"))
+        .toThrow("معرّف التصنيف غير صحيح");
+    },
+  );
+
+  test("accepts a normalized hyphenated category slug", () => {
+    const items = parseCatalogCsv(header + "\nAB123,فلتر زيت,Oil filter,engine-oil-filters,ALT");
+    expect(items[0].category_slug).toBe("engine-oil-filters");
+  });
+});
