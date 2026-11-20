@@ -67,6 +67,17 @@ try {
   assert.equal(await other.getByText("زيت اختبار").count(), 0);
   report.push("PASS another customer cannot see vehicles or maintenance, including after reload");
 
+  // A separate browser context must recover the same private records from Supabase.
+  // This catches regressions hidden by an existing session or client-side cache.
+  const returningContext = await browser.newContext();
+  const returningOwner = await returningContext.newPage();
+  await login(returningOwner, buyer);
+  await returningOwner.getByText(vehicleName).waitFor({ timeout: 15000 });
+  await returningOwner.getByText("1 سيارة محفوظة").waitFor({ timeout: 15000 });
+  await returningOwner.locator("li").filter({ hasText: "زيت اختبار" }).waitFor({ timeout: 15000 });
+  report.push("PASS owner sees saved vehicle and maintenance in a fresh authenticated session");
+
+  await returningContext.close();
   await ownerContext.close();
   await otherContext.close();
   console.log(report.join("\n"));
