@@ -87,6 +87,10 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
     seen.add(item.oem_number);
     if (item.name_ar.length < 2 || item.name_en.length < 2 || !item.category_slug)
       throw new Error(`بيانات ناقصة في الصف ${i + 2}.`);
+    // Category identifiers are URL/database slugs, not free-form display names.
+    // Reject whitespace, path separators and markup before import or lookup.
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.category_slug))
+      throw new Error(`معرّف التصنيف غير صحيح في الصف ${i + 2}.`);
     return item;
   });
 }
