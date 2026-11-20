@@ -60,7 +60,12 @@ try {
   await login(other, outsider);
   await other.getByText("0 سيارة محفوظة").waitFor({ timeout: 15000 });
   assert.equal(await other.getByText(vehicleName).count(), 0);
-  report.push("PASS another customer cannot see the owner's garage");
+  assert.equal(await other.getByText("زيت اختبار").count(), 0);
+  await other.reload();
+  await other.getByText("0 سيارة محفوظة").waitFor({ timeout: 15000 });
+  assert.equal(await other.getByText(vehicleName).count(), 0);
+  assert.equal(await other.getByText("زيت اختبار").count(), 0);
+  report.push("PASS another customer cannot see vehicles or maintenance, including after reload");
 
   await ownerContext.close();
   await otherContext.close();
