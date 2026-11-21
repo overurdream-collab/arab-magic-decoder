@@ -200,6 +200,8 @@ describe("catalog CSV spreadsheet formula safety", () => {
   test("preserves ordinary Arabic and English names and alternative identifiers", () => {
     const items = parseCatalogCsv(header + "\nAB123,فلتر زيت,Oil filter,filters,ALT-123");
     expect(items[0].alt_numbers).toBe("ALT-123");
-    expect(parseCatalogCsv(header + "\nCD456,فلتر زيت,Oil filter,filters,-PART-123")).toHaveLength(1);
+    expect(parseCatalogCsv(header + "\nCD456,فلتر زيت,Oil filter,filters,-PART-123")).toHaveLength(
+      1,
+    );
   });
 });
