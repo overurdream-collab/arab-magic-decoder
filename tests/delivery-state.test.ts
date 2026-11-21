@@ -73,7 +73,7 @@ describe("delivery state contract (pure, no payments)", () => {
       courierId: "driver",
     });
     expect(() =>
-      transitionDelivery(assigned, { type: "report_failure", reason: "\\u0000" }),
+      transitionDelivery(assigned, { type: "report_failure", reason: "\u0000" }),
     ).toThrow();
   });
 });
