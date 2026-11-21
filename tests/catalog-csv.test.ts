@@ -61,6 +61,15 @@ describe("catalog CSV import boundaries", () => {
     expect(() => parseCatalogCsv(header + "\n" + rows.join("\n"))).toThrow();
   });
 
+  test("rejects unexpected columns rather than silently discarding imported data", () => {
+    expect(() =>
+      parseCatalogCsv(header + ",secret_note\nAB123,فلتر زيت,Oil filter,filters,ALT,hidden"),
+    ).toThrow("أعمدة غير معروفة");
+    expect(() => parseCatalogCsv(header + ",\nAB123,فلتر زيت,Oil filter,filters,ALT,")).toThrow(
+      "أعمدة غير معروفة",
+    );
+  });
+
   test("rejects duplicate column names and inconsistent row widths", () => {
     expect(() =>
       parseCatalogCsv(header + ",oem_number\nAB123,فلتر زيت,Oil filter,filters,ALT,AB123"),

@@ -74,6 +74,11 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
     throw new Error("أعمدة CSV المطلوبة: " + CATALOG_HEADERS.join(", "));
   }
   if (new Set(headers).size !== headers.length) throw new Error("يوجد عمود CSV مكرر.");
+  if (
+    headers.length !== CATALOG_HEADERS.length ||
+    headers.some((h) => !CATALOG_HEADERS.includes(h as (typeof CATALOG_HEADERS)[number]))
+  )
+    throw new Error("ملف CSV يحتوي على أعمدة غير معروفة.");
   if (!lines.length || lines.length > 200) throw new Error("يجب أن يحتوي الملف على 1 إلى 200 صف.");
   const seen = new Set<string>();
   return lines.map((values, i) => {
