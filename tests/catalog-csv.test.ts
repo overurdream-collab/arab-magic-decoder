@@ -188,7 +188,7 @@ describe("catalog CSV category slug validation", () => {
 
 describe("catalog CSV spreadsheet formula safety", () => {
   test.each([
-    "AB123,=HYPERLINK(1),Oil filter,filters,ALT",
+    "AB123,=1+1,Oil filter,filters,ALT",
     "AB123,فلتر زيت,+SUM(1),filters,ALT",
     "AB123,فلتر زيت,Oil filter,filters,@cmd",
   ])("rejects formula-prefixed display fields: %s", (row) => {
