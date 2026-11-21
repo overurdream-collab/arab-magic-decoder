@@ -90,6 +90,10 @@ export function parseCatalogCsv(csv: string): CatalogCsvItem[] {
       throw new Error(`OEM غير صحيح في الصف ${i + 2}.`);
     if (seen.has(item.oem_number)) throw new Error(`رقم OEM مكرر: ${item.oem_number}.`);
     seen.add(item.oem_number);
+    // Keep imported display fields safe if later exported to spreadsheet software.
+    // Formula prefixes must never be interpreted as executable spreadsheet cells.
+    if ([item.name_ar, item.name_en, item.alt_numbers].some((value) => /^[=+@]/.test(value)))
+      throw new Error(`صيغة جدول بيانات غير آمنة في الصف ${i + 2}.`);
     if (item.name_ar.length < 2 || item.name_en.length < 2 || !item.category_slug)
       throw new Error(`بيانات ناقصة في الصف ${i + 2}.`);
     // Category identifiers are URL/database slugs, not free-form display names.
