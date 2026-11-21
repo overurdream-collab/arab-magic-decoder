@@ -4,12 +4,7 @@
  * Caller must enforce authentication, ownership, and evidence authorization.
  */
 export type DeliveryStatus =
-  | "awaiting_dispatch"
-  | "assigned"
-  | "in_transit"
-  | "delivered"
-  | "failed"
-  | "cancelled";
+  "awaiting_dispatch" | "assigned" | "in_transit" | "delivered" | "failed" | "cancelled";
 
 export type DeliveryEvent =
   | { type: "assign"; courierId: string }
