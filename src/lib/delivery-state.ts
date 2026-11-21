@@ -3,7 +3,13 @@
  * No payment/COD settlement, database mutation, or courier dispatch occurs here.
  * Caller must enforce authentication, ownership, and evidence authorization.
  */
-export type DeliveryStatus = "awaiting_dispatch" | "assigned" | "in_transit" | "delivered" | "failed" | "cancelled";
+export type DeliveryStatus =
+  | "awaiting_dispatch"
+  | "assigned"
+  | "in_transit"
+  | "delivered"
+  | "failed"
+  | "cancelled";
 
 export type DeliveryEvent =
   | { type: "assign"; courierId: string }
@@ -28,7 +34,10 @@ export const initialDeliverySnapshot: DeliverySnapshot = {
 
 function requiredText(value: string, field: string): string {
   const trimmed = value.trim();
-  if (!trimmed || trimmed.length > 500 || /[\u0000-\u001f\u007f]/.test(trimmed))
+  if (!trimmed || trimmed.length > 500 || Array.from(trimmed).some((char) => {
+    const code = char.charCodeAt(0);
+    return code <= 31 || code === 127;
+  }))
     throw new Error(`Invalid ${field}`);
   return trimmed;
 }
