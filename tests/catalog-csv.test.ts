@@ -191,6 +191,8 @@ describe("catalog CSV spreadsheet formula safety", () => {
     "AB123,=1+1,Oil filter,filters,ALT",
     "AB123,فلتر زيت,+SUM(1),filters,ALT",
     "AB123,فلتر زيت,Oil filter,filters,@cmd",
+    "AB123,فلتر زيت,-SUM(1),filters,ALT",
+    "AB123,فلتر زيت,Oil filter,filters,-@cmd",
   ])("rejects formula-prefixed display fields: %s", (row) => {
     expect(() => parseCatalogCsv(header + "\n" + row)).toThrow("صيغة جدول بيانات غير آمنة");
   });
@@ -198,5 +200,6 @@ describe("catalog CSV spreadsheet formula safety", () => {
   test("preserves ordinary Arabic and English names and alternative identifiers", () => {
     const items = parseCatalogCsv(header + "\nAB123,فلتر زيت,Oil filter,filters,ALT-123");
     expect(items[0].alt_numbers).toBe("ALT-123");
+    expect(parseCatalogCsv(header + "\nCD456,فلتر زيت,Oil filter,filters,-PART-123")).toHaveLength(1);
   });
 });
