@@ -32,6 +32,9 @@ function requiredText(value: string, field: string): string {
   // Reject invisible and bidi formatting controls in audit-facing identifiers and reasons.
   if (/[\u061C\u200B\u200E-\u200F\u2060\u202A-\u202E\u2066-\u2069\uFEFF]/u.test(trimmed))
     throw new Error(`Invalid ${field}`);
+  // Reject malformed UTF-16 before persisting or displaying audit metadata.
+  if (/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u.test(trimmed))
+    throw new Error(`Invalid ${field}`);
   if (
     !trimmed ||
     trimmed.length > 500 ||
