@@ -77,19 +77,23 @@ describe("delivery state contract (pure, no payments)", () => {
     ).toThrow();
   });
   test("rejects invisible and bidi controls in delivery metadata", () => {
-    for (const control of ["\\u200B", "\\u2060", "\\u202A", "\\u202E", "\\u2066", "\\u2069", "\\uFEFF"]) {
-      const char = JSON.parse('"' + control + '"') as string;
+    const assigned = transitionDelivery(initialDeliverySnapshot, {
+      type: "assign",
+      courierId: "driver",
+    });
+    for (const char of ["\u200B", "\u2060", "\u202A", "\u202E", "\u2066", "\u2069", "\uFEFF"]) {
       expect(() =>
-        transitionDelivery(initialDeliverySnapshot, { type: "assign", courierId: `driver${char}1` }),
+        transitionDelivery(initialDeliverySnapshot, {
+          type: "assign",
+          courierId: `driver${char}1`,
+        }),
       ).toThrow();
-      const assigned = transitionDelivery(initialDeliverySnapshot, {
-        type: "assign",
-        courierId: "driver",
-      });
       expect(() =>
-        transitionDelivery(assigned, { type: "report_failure", reason: `bad${char}reason` }),
+        transitionDelivery(assigned, {
+          type: "report_failure",
+          reason: `bad${char}reason`,
+        }),
       ).toThrow();
     }
   });
-
 });
