@@ -135,6 +135,40 @@ describe("delivery state contract (pure, no payments)", () => {
       }).failureReason,
     ).toBe("buyer withdrew");
   });
+  test("rejects unpaired UTF-16 surrogates while accepting valid emoji", () => {
+    const assigned = transitionDelivery(initialDeliverySnapshot, {
+      type: "assign",
+      courierId: "driver",
+    });
+    const transit = transitionDelivery(assigned, { type: "pickup" });
+    for (const invalid of [String.fromCharCode(0xd800), String.fromCharCode(0xdc00)]) {
+      expect(() =>
+        transitionDelivery(initialDeliverySnapshot, {
+          type: "assign",
+          courierId: `driver${invalid}`,
+        }),
+      ).toThrow();
+      expect(() =>
+        transitionDelivery(transit, {
+          type: "confirm_delivery",
+          proofReference: `proof${invalid}`,
+        }),
+      ).toThrow();
+      expect(() =>
+        transitionDelivery(assigned, {
+          type: "report_failure",
+          reason: `failed${invalid}`,
+        }),
+      ).toThrow();
+    }
+    expect(
+      transitionDelivery(initialDeliverySnapshot, {
+        type: "cancel",
+        reason: "customer requested cancellation 😀",
+      }).status,
+    ).toBe("cancelled");
+  });
+
   test("rejects C1 and Unicode line separators in audit metadata", () => {
     const assigned = transitionDelivery(initialDeliverySnapshot, {
       type: "assign",
