@@ -114,7 +114,7 @@ describe("delivery state contract (pure, no payments)", () => {
       courierId: "driver",
     });
     const transit = transitionDelivery(assigned, { type: "pickup" });
-    for (const value of ["", "  ", "proof\\u200Fref", "proof\\u0000ref", "x".repeat(501)]) {
+    for (const value of ["", "  ", "proof\u200Fref", "proof\u0000ref", "x".repeat(501)]) {
       expect(() =>
         transitionDelivery(transit, { type: "confirm_delivery", proofReference: value }),
       ).toThrow();
