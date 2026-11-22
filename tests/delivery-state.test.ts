@@ -135,4 +135,31 @@ describe("delivery state contract (pure, no payments)", () => {
       }).failureReason,
     ).toBe("buyer withdrew");
   });
+  test("rejects C1 and Unicode line separators in audit metadata", () => {
+    const assigned = transitionDelivery(initialDeliverySnapshot, {
+      type: "assign",
+      courierId: "driver",
+    });
+    const transit = transitionDelivery(assigned, { type: "pickup" });
+    for (const char of ["\u0085", "\u009B", "\u2028", "\u2029"]) {
+      expect(() =>
+        transitionDelivery(initialDeliverySnapshot, {
+          type: "assign",
+          courierId: `driver${char}1`,
+        }),
+      ).toThrow();
+      expect(() =>
+        transitionDelivery(transit, {
+          type: "confirm_delivery",
+          proofReference: `proof${char}ref`,
+        }),
+      ).toThrow();
+      expect(() =>
+        transitionDelivery(assigned, {
+          type: "report_failure",
+          reason: `failed${char}reason`,
+        }),
+      ).toThrow();
+    }
+  });
 });

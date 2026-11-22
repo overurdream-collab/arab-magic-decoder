@@ -37,7 +37,7 @@ function requiredText(value: string, field: string): string {
     trimmed.length > 500 ||
     Array.from(trimmed).some((char) => {
       const code = char.charCodeAt(0);
-      return code <= 31 || code === 127;
+      return code <= 31 || (code >= 127 && code <= 159) || code === 0x2028 || code === 0x2029;
     })
   )
     throw new Error(`Invalid ${field}`);
