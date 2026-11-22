@@ -108,4 +108,31 @@ describe("delivery state contract (pure, no payments)", () => {
       ).toThrow();
     }
   });
+  test("validates proof references and cancellation reasons at boundaries", () => {
+    const assigned = transitionDelivery(initialDeliverySnapshot, {
+      type: "assign",
+      courierId: "driver",
+    });
+    const transit = transitionDelivery(assigned, { type: "pickup" });
+    for (const value of ["", "  ", "proof\u200Fref", "proof\u0000ref", "x".repeat(501)]) {
+      expect(() =>
+        transitionDelivery(transit, { type: "confirm_delivery", proofReference: value }),
+      ).toThrow();
+      expect(() =>
+        transitionDelivery(initialDeliverySnapshot, { type: "cancel", reason: value }),
+      ).toThrow();
+    }
+    expect(
+      transitionDelivery(transit, {
+        type: "confirm_delivery",
+        proofReference: "x".repeat(500),
+      }).proofReference,
+    ).toHaveLength(500);
+    expect(
+      transitionDelivery(initialDeliverySnapshot, {
+        type: "cancel",
+        reason: " buyer withdrew ",
+      }).failureReason,
+    ).toBe("buyer withdrew");
+  });
 });
