@@ -135,5 +135,4 @@ describe("delivery state contract (pure, no payments)", () => {
       }).failureReason,
     ).toBe("buyer withdrew");
   });
-
 });
