@@ -76,4 +76,25 @@ describe("delivery state contract (pure, no payments)", () => {
       transitionDelivery(assigned, { type: "report_failure", reason: "\u0000" }),
     ).toThrow();
   });
+  test("rejects invisible and bidi controls in delivery metadata", () => {
+    const assigned = transitionDelivery(initialDeliverySnapshot, {
+      type: "assign",
+      courierId: "driver",
+    });
+    const controls = ["\u200B", "\u2060", "\u202A", "\u202E", "\u2066", "\u2069", "\uFEFF"];
+    for (const char of controls) {
+      expect(() =>
+        transitionDelivery(initialDeliverySnapshot, {
+          type: "assign",
+          courierId: `driver${char}1`,
+        }),
+      ).toThrow();
+      expect(() =>
+        transitionDelivery(assigned, {
+          type: "report_failure",
+          reason: `bad${char}reason`,
+        }),
+      ).toThrow();
+    }
+  });
 });
