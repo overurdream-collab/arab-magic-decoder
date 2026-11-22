@@ -30,7 +30,7 @@ export const initialDeliverySnapshot: DeliverySnapshot = {
 function requiredText(value: string, field: string): string {
   const trimmed = value.trim();
   // Reject invisible and bidi formatting controls in audit-facing identifiers and reasons.
-  if (/[\u200B\u2060\u202A-\u202E\u2066-\u2069\uFEFF]/u.test(trimmed))
+  if (/[\u061C\u200B\u200E-\u200F\u2060\u202A-\u202E\u2066-\u2069\uFEFF]/u.test(trimmed))
     throw new Error(`Invalid ${field}`);
   if (
     !trimmed ||
