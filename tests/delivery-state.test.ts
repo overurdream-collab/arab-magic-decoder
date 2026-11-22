@@ -141,7 +141,7 @@ describe("delivery state contract (pure, no payments)", () => {
       courierId: "driver",
     });
     const transit = transitionDelivery(assigned, { type: "pickup" });
-    for (const char of ["\\u0085", "\\u009B", "\\u2028", "\\u2029"]) {
+    for (const char of ["\u0085", "\u009B", "\u2028", "\u2029"]) {
       expect(() =>
         transitionDelivery(initialDeliverySnapshot, {
           type: "assign",
