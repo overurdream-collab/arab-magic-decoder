@@ -30,10 +30,10 @@ export function checkFitmentClaim(value: unknown): {
   for (const key of ["partId", "vehicleId", "sourceRecordId"]) {
     if (!safeId(key)) missing.push(key);
   }
-  if (claim['claimedFit'] !== "fits" && claim['claimedFit'] !== "does_not_fit") {
+  if (claim["claimedFit"] !== "fits" && claim["claimedFit"] !== "does_not_fit") {
     missing.push("claimedFit");
   }
-  const evidence = checkSourceEvidence(claim['source']);
+  const evidence = checkSourceEvidence(claim["source"]);
   for (const field of evidence.missing) missing.push(`source.${field}`);
   return { readyForHumanReview: missing.length === 0, missing };
 }
