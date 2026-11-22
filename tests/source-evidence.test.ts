@@ -156,11 +156,18 @@ describe("offline source provenance review gate", () => {
   });
   it("rejects disguised human-review metadata and malformed Unicode", () => {
     for (const field of ["version", "attribution", "reviewedBy"]) {
-      for (const value of ["valid\\u202Eevil", "valid\\u200Bhidden", "valid\\u0000control", "valid\\uD800"]) {
+      for (const value of [
+        "valid\u202Eevil",
+        "valid\u200Bhidden",
+        "valid\u0000control",
+        "valid\uD800",
+      ]) {
         expect(checkSourceEvidence({ ...complete, [field]: value }).missing).toContain(field);
       }
     }
-    expect(checkSourceEvidence({ ...complete, attribution: "مراجعة عربية سليمة" }).readyForHumanReview).toBe(true);
+    expect(
+      checkSourceEvidence({ ...complete, attribution: "مراجعة عربية سليمة" }).readyForHumanReview,
+    ).toBe(true);
   });
   it("does not mutate the supplied manifest", () => {
     const before = JSON.stringify(complete);
