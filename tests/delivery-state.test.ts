@@ -81,7 +81,8 @@ describe("delivery state contract (pure, no payments)", () => {
       type: "assign",
       courierId: "driver",
     });
-    for (const char of ["\u200B", "\u2060", "\u202A", "\u202E", "\u2066", "\u2069", "\uFEFF"]) {
+    const controls = ["\u200B", "\u2060", "\u202A", "\u202E", "\u2066", "\u2069", "\uFEFF"];
+    for (const char of controls) {
       expect(() =>
         transitionDelivery(initialDeliverySnapshot, {
           type: "assign",
