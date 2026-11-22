@@ -42,5 +42,7 @@ jobs:
         run: bun test tests/catalog-csv.test.ts
       - name: Browser workflow security regression
         run: node --test tests/ci/browser-workflow-security.test.mjs
+      - name: Delivery state regression tests
+        run: bun test tests/delivery-state.test.ts
       - name: Production build
         run: bun run build
