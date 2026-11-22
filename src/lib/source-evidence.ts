@@ -23,7 +23,15 @@ export function checkSourceEvidence(value: unknown): {
     return { readyForHumanReview: false, missing: ["source evidence object"] };
   const v = value as Record<string, unknown>;
   const text = (key: string) =>
-    typeof v[key] === "string" && v[key].trim().length > 0 && v[key].length <= 2048;
+    typeof v[key] === "string" &&
+    v[key].trim().length > 0 &&
+    v[key].length <= 2048 &&
+    // Human-reviewed provenance must not contain hidden direction overrides,
+    // line/control characters or malformed UTF-16 that disguise attribution.
+    !/[\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]/u.test(v[key]) &&
+    !Array.from(v[key]).some(
+      (char) => char.length === 1 && /[\\uD800-\\uDFFF]/.test(char),
+    );
   const https = (key: string) => {
     if (!text(key)) return false;
     // WHATWG URL parsing silently strips tabs/newlines and trims whitespace.
