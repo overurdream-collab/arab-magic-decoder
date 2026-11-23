@@ -42,6 +42,17 @@ describe("offline fitment review conflict detection", () => {
     ]);
   });
 
+  it("keeps the first valid decision as baseline across alternating decisions", () => {
+    const rejected = { ...review, decision: "rejected" };
+    expect(inspectFitmentReviewBatch([review, rejected, review, rejected]).issues).toEqual([
+      "reviews[1].conflictingDecision",
+      "reviews[3].conflictingDecision",
+    ]);
+    expect(inspectFitmentReviewBatch([rejected, review, rejected]).issues).toEqual([
+      "reviews[1].conflictingDecision",
+    ]);
+  });
+
   it("does not confuse distinct source records or vehicles", () => {
     const other = {
       ...review,
