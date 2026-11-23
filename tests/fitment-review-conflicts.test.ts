@@ -76,6 +76,19 @@ describe("offline fitment review conflict detection", () => {
     ]);
   });
 
+  it("flags different source evidence for the same source record", () => {
+    const changedSource = {
+      ...review,
+      claim: {
+        ...review.claim,
+        source: { ...source, sha256: "b".repeat(64) },
+      },
+    };
+    expect(inspectFitmentReviewBatch([review, changedSource]).issues).toEqual([
+      "reviews[1].conflictingSourceEvidence",
+    ]);
+  });
+
   it("does not confuse distinct source records or vehicles", () => {
     const other = {
       ...review,
