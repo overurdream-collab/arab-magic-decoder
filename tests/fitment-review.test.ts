@@ -40,10 +40,14 @@ describe("offline fitment review decision intake", () => {
     expect(result.missing).toEqual(["reviewerId", "decision", "reason", "reviewedAt"]);
   });
   it("rejects hidden control characters in reasons", () => {
-    expect(checkFitmentReview({ ...review, reason: "Reviewed and approved\u202Ehidden" }).missing).toContain("reason");
+    expect(
+      checkFitmentReview({ ...review, reason: "Reviewed and approved\u202Ehidden" }).missing,
+    ).toContain("reason");
   });
   it("rejects invalid claims even with an approved decision", () => {
-    expect(checkFitmentReview({ ...review, claim: { ...review.claim, sourceRecordId: "" } }).missing).toContain("claim.sourceRecordId");
+    expect(
+      checkFitmentReview({ ...review, claim: { ...review.claim, sourceRecordId: "" } }).missing,
+    ).toContain("claim.sourceRecordId");
   });
   it("accepts a documented rejection and does not mutate inputs", () => {
     const rejected = { ...review, decision: "rejected" };
