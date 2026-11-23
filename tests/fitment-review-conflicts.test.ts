@@ -89,6 +89,34 @@ describe("offline fitment review conflict detection", () => {
     ]);
   });
 
+  it("preserves the original evidence baseline after repeated conflicting revisions", () => {
+    const changed = {
+      ...review,
+      claim: { ...review.claim, source: { ...source, sha256: "b".repeat(64) } },
+    };
+    expect(inspectFitmentReviewBatch([review, changed, review, changed]).issues).toEqual([
+      "reviews[1].conflictingSourceEvidence",
+      "reviews[3].conflictingSourceEvidence",
+    ]);
+  });
+
+  it("reports evidence, fit, and decision contradictions independently", () => {
+    const changed = {
+      ...review,
+      decision: "rejected",
+      claim: {
+        ...review.claim,
+        claimedFit: "does_not_fit",
+        source: { ...source, sha256: "b".repeat(64) },
+      },
+    };
+    expect(inspectFitmentReviewBatch([review, changed]).issues).toEqual([
+      "reviews[1].conflictingDecision",
+      "reviews[1].conflictingClaimedFit",
+      "reviews[1].conflictingSourceEvidence",
+    ]);
+  });
+
   it("treats equivalent source evidence with reordered properties as identical", () => {
     const reorderedSource = Object.fromEntries(Object.entries(source).reverse());
     const reorderedReview = {
