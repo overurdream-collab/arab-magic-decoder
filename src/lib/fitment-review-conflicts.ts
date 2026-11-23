@@ -29,7 +29,12 @@ export function inspectFitmentReviewBatch(value: unknown): {
     const key = JSON.stringify([claim["partId"], claim["vehicleId"], claim["sourceRecordId"]]);
     const decision = review["decision"] as string;
     const claimedFit = claim["claimedFit"] as string;
-    const sourceFingerprint = JSON.stringify(claim["source"]);
+    // Evidence identity must not depend on JSON object property insertion order.
+    const sourceFingerprint = JSON.stringify(
+      Object.entries(claim["source"] as Record<string, unknown>).sort(([a], [b]) =>
+        a < b ? -1 : a > b ? 1 : 0,
+      ),
+    );
     const previous = decisions.get(key);
     if (previous !== undefined && previous.decision !== decision) {
       issues.push(`reviews[${index}].conflictingDecision`);
