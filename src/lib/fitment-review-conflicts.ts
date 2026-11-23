@@ -13,7 +13,10 @@ export function inspectFitmentReviewBatch(value: unknown): {
   }
 
   const issues: string[] = [];
-  const decisions = new Map<string, { decision: string; claimedFit: string; sourceFingerprint: string }>();
+  const decisions = new Map<
+    string,
+    { decision: string; claimedFit: string; sourceFingerprint: string }
+  >();
   for (const [index, candidate] of value.entries()) {
     const checked = checkFitmentReview(candidate);
     if (!checked.readyToRecord) {
