@@ -49,7 +49,8 @@ describe("offline fitment review decision intake", () => {
     for (const codePoint of unsafeCharacters) {
       const unsafe = String.fromCharCode(codePoint);
       expect(
-        checkFitmentReview({ ...review, reason: `Evidence inspected ${unsafe} and checked.` }).missing,
+        checkFitmentReview({ ...review, reason: `Evidence inspected ${unsafe} and checked.` })
+          .missing,
       ).toContain("reason");
     }
     expect(
