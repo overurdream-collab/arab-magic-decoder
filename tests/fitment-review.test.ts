@@ -44,6 +44,19 @@ describe("offline fitment review decision intake", () => {
       checkFitmentReview({ ...review, reason: "Reviewed and approved\u202Ehidden" }).missing,
     ).toContain("reason");
   });
+  it("rejects bidi markers, line separators and unpaired surrogates in audit reasons", () => {
+    const unsafeCharacters = [0x061c, 0x200e, 0x200f, 0x2028, 0x2029, 0xd800, 0xdc00];
+    for (const codePoint of unsafeCharacters) {
+      const unsafe = String.fromCharCode(codePoint);
+      expect(
+        checkFitmentReview({ ...review, reason: `Evidence inspected ${unsafe} and checked.` })
+          .missing,
+      ).toContain("reason");
+    }
+    expect(
+      checkFitmentReview({ ...review, reason: "Evidence inspected 😀 and checked." }).readyToRecord,
+    ).toBe(true);
+  });
   it("rejects invalid claims even with an approved decision", () => {
     expect(
       checkFitmentReview({ ...review, claim: { ...review.claim, sourceRecordId: "" } }).missing,
