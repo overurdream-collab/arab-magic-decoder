@@ -9,6 +9,12 @@ function hasForbiddenControl(text: string): boolean {
     const code = char.codePointAt(0)!;
     return (
       code <= 31 ||
+      code === 0x061c ||
+      code === 0x200e ||
+      code === 0x200f ||
+      code === 0x2028 ||
+      code === 0x2029 ||
+      (code >= 0xd800 && code <= 0xdfff) ||
       (code >= 127 && code <= 159) ||
       code === 0x200b ||
       (code >= 0x202a && code <= 0x202e) ||
