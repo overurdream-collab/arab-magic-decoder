@@ -194,6 +194,34 @@ describe("offline fitment review conflict detection", () => {
     expect(result.issues.some((issue) => issue.startsWith("reviews[0].claim."))).toBe(true);
   });
 
+  it("isolates review decisions for different vehicles with the same part and source row", () => {
+    const differentVehicle = {
+      ...review,
+      decision: "rejected",
+      claim: { ...review.claim, vehicleId: "make:other-model:2026" },
+    };
+    expect(inspectFitmentReviewBatch([review, differentVehicle])).toEqual({
+      readyForManualReconciliation: true,
+      issues: [],
+    });
+  });
+
+  it("isolates evidence conflicts across distinct source rows for the same vehicle and part", () => {
+    const differentRow = {
+      ...review,
+      decision: "rejected",
+      claim: {
+        ...review.claim,
+        sourceRecordId: "row-43",
+        source: { ...source, sha256: "b".repeat(64) },
+      },
+    };
+    expect(inspectFitmentReviewBatch([review, differentRow])).toEqual({
+      readyForManualReconciliation: true,
+      issues: [],
+    });
+  });
+
   it("does not modify the input", () => {
     const batch = [review, { ...review, decision: "rejected" }];
     const snapshot = JSON.stringify(batch);
