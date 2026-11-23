@@ -53,6 +53,29 @@ describe("offline fitment review conflict detection", () => {
     ]);
   });
 
+  it("flags conflicting claimed fit even when review decisions agree", () => {
+    const opposite = {
+      ...review,
+      claim: { ...review.claim, claimedFit: "does_not_fit" },
+    };
+    expect(inspectFitmentReviewBatch([review, opposite, review, opposite]).issues).toEqual([
+      "reviews[1].conflictingClaimedFit",
+      "reviews[3].conflictingClaimedFit",
+    ]);
+  });
+
+  it("reports both claim and decision contradictions independently", () => {
+    const opposite = {
+      ...review,
+      decision: "rejected",
+      claim: { ...review.claim, claimedFit: "does_not_fit" },
+    };
+    expect(inspectFitmentReviewBatch([review, opposite]).issues).toEqual([
+      "reviews[1].conflictingDecision",
+      "reviews[1].conflictingClaimedFit",
+    ]);
+  });
+
   it("does not confuse distinct source records or vehicles", () => {
     const other = {
       ...review,
