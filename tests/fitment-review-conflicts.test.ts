@@ -89,6 +89,18 @@ describe("offline fitment review conflict detection", () => {
     ]);
   });
 
+  it("treats equivalent source evidence with reordered properties as identical", () => {
+    const reorderedSource = Object.fromEntries(Object.entries(source).reverse());
+    const reorderedReview = {
+      ...review,
+      claim: { ...review.claim, source: reorderedSource },
+    };
+    expect(inspectFitmentReviewBatch([review, reorderedReview])).toEqual({
+      readyForManualReconciliation: true,
+      issues: [],
+    });
+  });
+
   it("does not confuse distinct source records or vehicles", () => {
     const other = {
       ...review,
