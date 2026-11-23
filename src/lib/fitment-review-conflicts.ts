@@ -29,7 +29,9 @@ export function inspectFitmentReviewBatch(value: unknown): {
     if (previous !== undefined && previous !== decision) {
       issues.push(`reviews[${index}].conflictingDecision`);
     }
-    decisions.set(key, decision);
+    // Preserve the first valid decision as the reconciliation baseline. A later
+    // conflicting entry must not silently redefine it for subsequent records.
+    if (previous === undefined) decisions.set(key, decision);
   }
 
   return { readyForManualReconciliation: issues.length === 0, issues };
