@@ -45,7 +45,9 @@ describe("offline fitment review decision intake", () => {
     ).toContain("reason");
   });
   it("rejects bidi markers, line separators and unpaired surrogates in audit reasons", () => {
-    for (const unsafe of ["\u005cu061c", "\u005cu200e", "\u005cu200f", "\u005cu2028", "\u005cu2029", "\u005cud800", "\u005cudc00"]) {
+    const unsafeCharacters = [0x061c, 0x200e, 0x200f, 0x2028, 0x2029, 0xd800, 0xdc00];
+    for (const codePoint of unsafeCharacters) {
+      const unsafe = String.fromCharCode(codePoint);
       expect(
         checkFitmentReview({ ...review, reason: `Evidence inspected ${unsafe} and checked.` }).missing,
       ).toContain("reason");
