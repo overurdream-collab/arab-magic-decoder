@@ -150,6 +150,26 @@ describe("offline fitment review conflict detection", () => {
     expect(inspectFitmentReviewBatch(Array(1001).fill(review)).issues).toEqual(["reviews"]);
   });
 
+  it("accepts the documented maximum of 1000 valid reviews", () => {
+    const batch = Array.from({ length: 1000 }, (_, index) => ({
+      ...review,
+      claim: { ...review.claim, sourceRecordId: `row-${index}` },
+    }));
+    expect(inspectFitmentReviewBatch(batch)).toEqual({
+      readyForManualReconciliation: true,
+      issues: [],
+    });
+  });
+
+  it("does not let an invalid first record establish the conflict baseline", () => {
+    const invalid = { ...review, reviewerId: "" };
+    const rejected = { ...review, decision: "rejected" };
+    expect(inspectFitmentReviewBatch([invalid, rejected, review]).issues).toEqual([
+      "reviews[0].reviewerId",
+      "reviews[2].conflictingDecision",
+    ]);
+  });
+
   it("does not modify the input", () => {
     const batch = [review, { ...review, decision: "rejected" }];
     const snapshot = JSON.stringify(batch);
