@@ -170,6 +170,30 @@ describe("offline fitment review conflict detection", () => {
     ]);
   });
 
+  it("isolates contradictory reviews across different part identifiers", () => {
+    const otherPart = {
+      ...review,
+      decision: "rejected",
+      claim: { ...review.claim, partId: "OEM-456" },
+    };
+    expect(inspectFitmentReviewBatch([review, otherPart])).toEqual({
+      readyForManualReconciliation: true,
+      issues: [],
+    });
+  });
+
+  it("does not let invalid source evidence establish a conflict baseline", () => {
+    const invalid = {
+      ...review,
+      claim: { ...review.claim, source: { ...source, sha256: "invalid" } },
+    };
+    const rejected = { ...review, decision: "rejected" };
+    const result = inspectFitmentReviewBatch([invalid, rejected, review]);
+    expect(result.readyForManualReconciliation).toBe(false);
+    expect(result.issues).toContain("reviews[2].conflictingDecision");
+    expect(result.issues.some((issue) => issue.startsWith("reviews[0].claim."))).toBe(true);
+  });
+
   it("does not modify the input", () => {
     const batch = [review, { ...review, decision: "rejected" }];
     const snapshot = JSON.stringify(batch);
