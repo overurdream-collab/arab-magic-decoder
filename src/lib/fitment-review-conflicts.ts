@@ -23,11 +23,7 @@ export function inspectFitmentReviewBatch(value: unknown): {
 
     const review = candidate as Record<string, unknown>;
     const claim = review["claim"] as Record<string, unknown>;
-    const key = JSON.stringify([
-      claim["partId"],
-      claim["vehicleId"],
-      claim["sourceRecordId"],
-    ]);
+    const key = JSON.stringify([claim["partId"], claim["vehicleId"], claim["sourceRecordId"]]);
     const decision = review["decision"] as string;
     const previous = decisions.get(key);
     if (previous !== undefined && previous !== decision) {
