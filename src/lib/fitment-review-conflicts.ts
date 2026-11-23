@@ -13,7 +13,7 @@ export function inspectFitmentReviewBatch(value: unknown): {
   }
 
   const issues: string[] = [];
-  const decisions = new Map<string, string>();
+  const decisions = new Map<string, { decision: string; claimedFit: string }>();
   for (const [index, candidate] of value.entries()) {
     const checked = checkFitmentReview(candidate);
     if (!checked.readyToRecord) {
@@ -25,13 +25,17 @@ export function inspectFitmentReviewBatch(value: unknown): {
     const claim = review["claim"] as Record<string, unknown>;
     const key = JSON.stringify([claim["partId"], claim["vehicleId"], claim["sourceRecordId"]]);
     const decision = review["decision"] as string;
+    const claimedFit = claim["claimedFit"] as string;
     const previous = decisions.get(key);
-    if (previous !== undefined && previous !== decision) {
+    if (previous !== undefined && previous.decision !== decision) {
       issues.push(`reviews[${index}].conflictingDecision`);
+    }
+    if (previous !== undefined && previous.claimedFit !== claimedFit) {
+      issues.push(`reviews[${index}].conflictingClaimedFit`);
     }
     // Preserve the first valid decision as the reconciliation baseline. A later
     // conflicting entry must not silently redefine it for subsequent records.
-    if (previous === undefined) decisions.set(key, decision);
+    if (previous === undefined) decisions.set(key, { decision, claimedFit });
   }
 
   return { readyForManualReconciliation: issues.length === 0, issues };
