@@ -4,6 +4,21 @@ import { checkFitmentClaim } from "./fitment-claim";
  * Offline decision intake only. An accepted decision is NOT permission to
  * publish a fitment, mutate production data, or bypass administrator review.
  */
+function hasForbiddenControl(text: string): boolean {
+  return Array.from(text).some((char) => {
+    const code = char.codePointAt(0)!;
+    return (
+      code <= 31 ||
+      (code >= 127 && code <= 159) ||
+      code === 0x200b ||
+      (code >= 0x202a && code <= 0x202e) ||
+      code === 0x2060 ||
+      (code >= 0x2066 && code <= 0x2069) ||
+      code === 0xfeff
+    );
+  });
+}
+
 export function checkFitmentReview(value: unknown): {
   readyToRecord: boolean;
   missing: string[];
@@ -27,7 +42,7 @@ export function checkFitmentReview(value: unknown): {
     typeof review["reason"] !== "string" ||
     review["reason"].trim().length < 10 ||
     review["reason"].length > 1000 ||
-    /[\u0000-\u001F\u007F-\u009F\u200B\u202A-\u202E\u2060\u2066-\u2069\uFEFF]/u.test(review["reason"])
+    hasForbiddenControl(review["reason"])
   ) {
     missing.push("reason");
   }
@@ -35,8 +50,7 @@ export function checkFitmentReview(value: unknown): {
     typeof review["reviewedAt"] !== "string" ||
     !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(review["reviewedAt"]) ||
     !Number.isFinite(Date.parse(review["reviewedAt"])) ||
-    new Date(review["reviewedAt"]).toISOString().slice(0, 19) !==
-      review["reviewedAt"].slice(0, 19)
+    new Date(review["reviewedAt"]).toISOString().slice(0, 19) !== review["reviewedAt"].slice(0, 19)
   ) {
     missing.push("reviewedAt");
   }
